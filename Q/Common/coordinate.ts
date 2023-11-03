@@ -1,0 +1,1 @@
+../src/game/map/coordinate.ts

@@ -1,0 +1,1 @@
+../src/game/rules/ruleBook.ts

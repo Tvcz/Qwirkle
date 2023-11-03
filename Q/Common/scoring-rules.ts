@@ -1,0 +1,1 @@
+../src/game/rules/scoringRules.ts

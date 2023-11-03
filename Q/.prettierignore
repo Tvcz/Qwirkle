@@ -1,0 +1,7 @@
+.eslintrc.js
+.prettierrc.js
+webpack.config.js
+tsconfig.*.json
+*.md
+jest.config.js
+*.json
