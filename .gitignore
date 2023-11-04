@@ -132,7 +132,7 @@ dist
 
 # vscode settings
 .vscode/
-thoughtful-mustangs.code-workspace
+*.code-workspace
 
 # custom temporary files
 *.tmp
