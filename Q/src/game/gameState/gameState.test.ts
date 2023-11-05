@@ -604,7 +604,8 @@ describe('tests for gameState class', () => {
     const htmlRenderer = new HtmlRenderer();
 
     // Act
-    const gameStateRenderableData = gameState.getRenderableData(htmlRenderer);
+    const gameStateRenderableData =
+      gameState.getRenderableDataForPlayer(htmlRenderer);
 
     // Assert
     expect(gameStateRenderableData.replace(/\s/g, '')).toBe(

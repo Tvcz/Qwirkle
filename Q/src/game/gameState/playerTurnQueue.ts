@@ -3,6 +3,7 @@ import { QTile } from '../map/tile';
 import {
   PlayerEndGameInformation,
   PlayerSetupInformation,
+  RenderablePlayer,
   Scoreboard,
   TilePlacement,
   TurnState
@@ -109,6 +110,13 @@ export interface QPlayerTurnQueue<T extends QTile> {
    * @returns a list of objects containing each player's name and respective win callback
    */
   getAllPlayersEndGameInformation: () => PlayerEndGameInformation[];
+
+  /**
+   * Gets the information needed to render each player state from the referee's perspective
+   * @returns a list of objects containing each player's score and tiles, in the
+   * turn order of the players
+   */
+  getRenderablePlayerStates: () => RenderablePlayer<T>[];
 }
 
 /**
@@ -258,6 +266,13 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     return this.playerQueue.map((playerState) => ({
       name: playerState.getName(),
       win: (w: boolean) => playerState.getPlayerController().win(w)
+    }));
+  }
+
+  public getRenderablePlayerStates() {
+    return this.playerQueue.map((playerState) => ({
+      score: playerState.getScore(),
+      tiles: [...playerState.getAllTiles()]
     }));
   }
 }

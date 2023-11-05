@@ -1,5 +1,5 @@
 import { QTile } from '../../map/tile';
-import { MapState, TilePlacement } from '../../types/gameState.types';
+import { RenderableMapState, TilePlacement } from '../../types/gameState.types';
 import { Dimensions } from '../../types/map.types';
 import { tileHtmlBuilder } from './tileHtmlBuilder';
 
@@ -14,7 +14,7 @@ import { tileHtmlBuilder } from './tileHtmlBuilder';
 export const mapHtmlBuilder = ({
   dimensions,
   tilePlacements
-}: MapState<QTile>) => {
+}: RenderableMapState<QTile>) => {
   const width = dimensions.rightmost + 1 - dimensions.leftmost;
   const height = dimensions.topmost + 1 - dimensions.bottommost;
 

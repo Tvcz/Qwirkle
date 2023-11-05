@@ -34,6 +34,13 @@ export interface QBagOfTiles<T extends QTile> {
    * @returns the number of tiles in the bag
    */
   getRemainingCount: () => number;
+
+  /**
+   * Gets all the remaining tiles in the bag.
+   * @returns the tiles remaining in the bag, in the order which they will be
+   * drawn
+   */
+  getRemainingTiles: () => T[];
 }
 
 /**
@@ -66,6 +73,10 @@ abstract class AbstractQBagOfTiles<T extends QTile> implements QBagOfTiles<T> {
 
   public getRemainingCount(): number {
     return this.tiles.length;
+  }
+
+  public getRemainingTiles(): T[] {
+    return [...this.tiles];
   }
 }
 

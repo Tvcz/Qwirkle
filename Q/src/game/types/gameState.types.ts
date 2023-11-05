@@ -53,7 +53,7 @@ export type RelevantPlayerInfo<T extends QTile> = {
  * the a list of tile placements (tiles and coordinates) and the dimensions of
  * the map, which helps the graphical renderer create the map more efficiently.
  */
-export type MapState<T extends QTile> = {
+export type RenderableMapState<T extends QTile> = {
   tilePlacements: TilePlacement<T>[];
   dimensions: Dimensions;
 };
@@ -65,7 +65,7 @@ export type MapState<T extends QTile> = {
  * (in the order that they will be drawn).
  */
 export type RenderableGameState<T extends QTile> = {
-  mapState: MapState<T>;
+  mapState: RenderableMapState<T>;
   players: RenderablePlayer<T>[];
   remainingTiles: T[];
 };
