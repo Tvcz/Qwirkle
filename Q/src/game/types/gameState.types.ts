@@ -1,4 +1,4 @@
-import { TurnAction } from '../../player/strategy.types';
+import { TurnAction } from '../../player/turnAction';
 import Coordinate from '../map/coordinate';
 import { QTile } from '../map/tile';
 import { Dimensions } from './map.types';
@@ -59,15 +59,25 @@ export type MapState<T extends QTile> = {
 };
 
 /**
- * Type representing the publicly available data needed to create a graphical
- * rendering of the game state. Includes the map state, the scoreboard, the
- * order of players turns, and the number of remaining tiles.
+ * Type representing the all the referee's knowledge of a game state needed in
+ * order to create a graphical rendering of the game state. Includes the map
+ * state, the player data (in their turn order), and the remaining referee tiles
+ * (in the order that they will be drawn).
  */
 export type RenderableGameState<T extends QTile> = {
   mapState: MapState<T>;
-  scoreboard: Scoreboard;
-  turnQueue: string[];
-  remainingTilesCount: number;
+  players: RenderablePlayer<T>[];
+  remainingTiles: T[];
+};
+
+/**
+ * Type representing a referee's knowledge of a player's state needed in order to
+ * create a graphical rendering of the player's state. Includes the player's
+ * score and their tiles.
+ */
+export type RenderablePlayer<T extends QTile> = {
+  score: number;
+  tiles: T[];
 };
 
 /**

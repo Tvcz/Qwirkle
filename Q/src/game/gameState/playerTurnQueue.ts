@@ -74,7 +74,7 @@ export interface QPlayerTurnQueue<T extends QTile> {
 
   /**
    * Update the given player's score by the given amount
-   * @param playerId player whose score to update
+   * @param playerName player whose score to update
    * @param scoreDelta amount to update by
    * @throws error if player name does not exist in turn queue
    * @returns void
@@ -224,6 +224,8 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
 
   public isRoundOver() {
     return (
+      // TODO: Bug about round over right after construction or after first
+      // player eliminated?
       this.playersActedThisRound.size() === 0 ||
       this.playerQueue.every((playerState) =>
         this.playersActedThisRound.contains(playerState.getName())

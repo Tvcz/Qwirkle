@@ -49,8 +49,8 @@ export interface ShapeColorTile extends QTile {
  * A tile that implements the ShapeColorTile interface
  */
 export class BaseTile implements ShapeColorTile {
-  private shape: Readonly<Shape>;
-  private color: Readonly<Color>;
+  private readonly shape: Shape;
+  private readonly color: Color;
 
   constructor(shape: Shape, color: Color) {
     this.shape = shape;
