@@ -2,6 +2,7 @@ import { QGameState } from '../game/gameState/gameState';
 import { QTile } from '../game/map/tile';
 import { QRuleBook } from '../game/rules/ruleBook';
 import { Player } from '../player/player';
+import { ObserverAPI } from '../observer/observer';
 
 /**
  * Type representing the return type of a referee.
@@ -16,6 +17,7 @@ export type GameResult = [string[], string[]];
  */
 export type RefereeFunction<T extends QTile> = (
   players: Player<T>[],
+  observers: ObserverAPI<T>[],
   ruleBook: QRuleBook<T>,
   existingGameState?: QGameState<T>
 ) => GameResult;

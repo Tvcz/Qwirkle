@@ -8,16 +8,16 @@ import BaseMap from '../game/map/map';
 import { BaseTile } from '../game/map/tile';
 import { QRuleBook } from '../game/rules/ruleBook';
 import {
-  TilePlacement,
   Scoreboard,
-  PlayerSetupInformation,
-  PlayerEndGameInformation
+  PlayerEndGameInformation,
+  RenderableGameState
 } from '../game/types/gameState.types';
 import { colorList, shapeList } from '../game/types/map.types';
 import { PlacementRule, ScoringRule } from '../game/types/rules.types';
 import { TurnAction } from '../player/turnAction';
 import { Player } from '../player/player';
 import { GameResult } from './referee.types';
+import { ObserverAPI } from '../observer/observer';
 
 /**
  * Set up a game of Q by creating the initial game state and communicating to each of the players the initial state.
@@ -171,15 +171,31 @@ export const setUpPlayers = (gameState: QGameState<BaseTile>) => {
  */
 export const runGame = (
   gameState: QGameState<BaseTile>,
-  rulebook: QRuleBook<BaseTile>
+  rulebook: QRuleBook<BaseTile>,
+  observers: ObserverAPI<BaseTile>[]
 ): QGameState<BaseTile> => {
   const isGameOver = () => gameState.isGameOver(rulebook.getEndOfGameRules());
 
+  updateObservers(gameState.getRenderableData(), observers);
   while (!isGameOver()) {
     manageTurn(gameState, rulebook);
+    updateObservers(gameState.getRenderableData(), observers);
   }
 
   return gameState;
+};
+
+/**
+ * Informs all observers of the current state of the game
+ * @param gameState the data from the current game state from the
+ * referee's perspective
+ * @param observers the observers to inform of the current game state
+ */
+const updateObservers = (
+  gameState: RenderableGameState<BaseTile>,
+  observers: ObserverAPI<BaseTile>[]
+): void => {
+  observers.forEach((observer) => observer.receiveState(gameState));
 };
 
 /**
@@ -345,7 +361,10 @@ const executeTurnAction = (
  * @param finalGameState The final game state for the game
  * @returns A GameResult of the winners and eliminated players
  */
-export function endGame(finalGameState: QGameState<BaseTile>): GameResult {
+export function endGame(
+  finalGameState: QGameState<BaseTile>,
+  observers: ObserverAPI<BaseTile>[]
+): GameResult {
   const scoreboard = finalGameState.getScoreboard();
 
   const winners = getWinnersNames(scoreboard);
@@ -356,8 +375,30 @@ export function endGame(finalGameState: QGameState<BaseTile>): GameResult {
     [winners, eliminated]
   );
 
+  informObserversOfEndGame(
+    observers,
+    finalGameState.getRenderableData(),
+    winners,
+    eliminated
+  );
+
   return finalResult;
 }
+
+/**
+ * Informs the observers that the game has completed.
+ * @param observers the observers to inform about the end of the game
+ */
+const informObserversOfEndGame = (
+  observers: ObserverAPI<BaseTile>[],
+  gameState: RenderableGameState<BaseTile>,
+  winnerNames: string[],
+  eliminatedNames: string[]
+) => {
+  observers.forEach((observer) =>
+    observer.gameOver(gameState, winnerNames, eliminatedNames)
+  );
+};
 
 /**
  * Get names of the winners of the game

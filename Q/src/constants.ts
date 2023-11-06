@@ -10,3 +10,6 @@ export const NUMBER_OF_EACH_TILE = 30;
 // Number of tiles each player should have in their hand,
 // used by the BaseReferee
 export const NUMBER_OF_PLAYER_TILES = 6;
+
+// The id for the html of the rendered view of the game
+export const VIEW_BODY_ID = 'view-body';

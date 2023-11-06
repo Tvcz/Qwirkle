@@ -1,13 +1,13 @@
-import { RandomBagOfTiles } from '../game/gameState/bagOfTiles';
-import { BaseGameState } from '../game/gameState/gameState';
-import PlayerState from '../game/gameState/playerState';
-import PlayerTurnQueue from '../game/gameState/playerTurnQueue';
-import HtmlRenderer from '../game/graphicalRenderer/graphicalRenderer';
-import Coordinate from '../game/map/coordinate';
-import BaseMap from '../game/map/map';
-import { BaseTile } from '../game/map/tile';
-import { Color, Shape } from '../game/types/map.types';
-import { createWindow } from './main/gameStateWindow';
+import { RandomBagOfTiles } from '../../game/gameState/bagOfTiles';
+import { BaseGameState } from '../../game/gameState/gameState';
+import PlayerState from '../../game/gameState/playerState';
+import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
+import HtmlRenderer from '../../game/graphicalRenderer/graphicalRenderer';
+import Coordinate from '../../game/map/coordinate';
+import BaseMap from '../../game/map/map';
+import { BaseTile } from '../../game/map/tile';
+import { Color, Shape } from '../../game/types/map.types';
+import { createWindow } from './gameStateWindow';
 
 const createPlacement = (shape: Shape, color: Color, x: number, y: number) => {
   return {

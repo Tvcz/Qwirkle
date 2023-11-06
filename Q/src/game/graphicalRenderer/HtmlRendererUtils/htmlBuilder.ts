@@ -1,3 +1,4 @@
+import { VIEW_BODY_ID } from '../../../constants';
 import { QTile } from '../../map/tile';
 import { RenderableGameState } from '../../types/gameState.types';
 import { mapHtmlBuilder } from './mapHtmlBuilder';
@@ -36,7 +37,7 @@ const bodyHtmlBuilder = (renderableData: RenderableGameState<QTile>) => {
   const gameStateInfoStyle = ['display: flex;', 'column-gap: 50px;'].join('');
 
   return `
-<body>
+<body id=${VIEW_BODY_ID}>
     ${gameHeader}
     ${mapHtmlBuilder(renderableData.mapState)}
     <div style="${gameStateInfoStyle}">
