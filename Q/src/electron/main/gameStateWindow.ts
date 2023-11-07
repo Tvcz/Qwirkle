@@ -32,12 +32,13 @@ export const createWindow = (observer: ObserverAPI<QTile>) => {
       (_event: Electron.IpcMainEvent, filepath: string) =>
         observer.saveState(filepath)
     );
-    observer.setUpdateViewCallback((html: string) =>
-      window.webContents.send('update-view', html)
-    );
+    observer.setUpdateViewCallback((html: string) => {
+      window.webContents.send('update-view', html);
+    });
     observer.setEndGameCallback(
       (gameStateHtml: string, endGameCardHtml: string) =>
         window.webContents.send('end-game', gameStateHtml, endGameCardHtml)
     );
   });
+  return app.whenReady();
 };

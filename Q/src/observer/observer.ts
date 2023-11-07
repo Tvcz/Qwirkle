@@ -70,7 +70,7 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
   endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void;
 
   constructor() {
-    createWindow(this);
+    createWindow(this).then(() => this.updateGUIView());
     this.stateHistory = [];
     this.currenStateIndex = 0;
     this.updateViewCallback = () => {};
