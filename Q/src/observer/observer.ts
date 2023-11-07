@@ -4,6 +4,8 @@ import { RenderableGameState } from '../game/types/gameState.types';
 import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
 
+const TILE_SCALE = 50;
+
 /**
  * Interface for observing a game.
  * Provides functionality for receiving game state updates and game over
@@ -116,8 +118,9 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
 
   private calculateHeightAndWidth(gameState: RenderableGameState<T>) {
     const dimensions = gameState.mapState.dimensions;
-    const width = dimensions.rightmost + 1 - dimensions.leftmost;
-    const height = dimensions.topmost + 1 - dimensions.bottommost;
+    const width = (dimensions.rightmost + 1 - dimensions.leftmost) * TILE_SCALE;
+    const height =
+      (dimensions.topmost + 1 - dimensions.bottommost) * TILE_SCALE;
     return { width, height };
   }
 
@@ -126,12 +129,12 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
     outputPath: string,
     widthAndHeight: { width: number; height: number }
   ) {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     await page.setContent(html);
 
-    await page.setViewport(widthAndHeight);
+    // await page.setViewport(widthAndHeight);
 
     await page.screenshot({ path: outputPath });
 

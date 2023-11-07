@@ -14,7 +14,7 @@ export const createWindow = (observer: ObserverAPI<QTile>) => {
         sandbox: false,
         nodeIntegration: true,
         contextIsolation: true,
-        preload: path.join('..', 'preload', 'preload.js')
+        preload: path.join(__dirname, '..', 'preload', 'preload.js')
       }
     };
     const window = new BrowserWindow(windowOptions);
@@ -23,7 +23,7 @@ export const createWindow = (observer: ObserverAPI<QTile>) => {
       window.show();
     });
 
-    window.loadFile('../renderer/index.html');
+    window.loadFile('src/electron/renderer/index.html');
 
     ipcMain.on('next-state', (_event) => observer.nextState());
     ipcMain.on('previous-state', (_event) => observer.previousState());
