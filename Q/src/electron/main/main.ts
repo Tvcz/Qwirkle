@@ -1,4 +1,3 @@
-import { app, ipcMain } from 'electron';
 import { RandomBagOfTiles } from '../../game/gameState/bagOfTiles';
 import { BaseGameState } from '../../game/gameState/gameState';
 import PlayerState from '../../game/gameState/playerState';

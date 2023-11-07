@@ -1,12 +1,7 @@
 import puppeteer from 'puppeteer';
 import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
-import {
-  gameStateHtmlBuilder,
-  gameStateHtmlBuilder
-} from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
-import { RenderProcessGoneEvent } from 'electron';
-import { stat } from 'fs/promises';
+import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
 
 /**
@@ -79,6 +74,21 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
     this.updateViewCallback = () => {};
     // TODO make a then for end game so it always runs if called
     this.endGameCallback = () => {};
+  }
+
+  public gameOver(
+    gameState: RenderableGameState<T>,
+    winnerNames: string[],
+    eliminatedNames: string[]
+  ) {
+    this.endGameCallback(
+      this.toHtmlView(gameState),
+      this.makeGameOverCard(winnerNames, eliminatedNames)
+    );
+  }
+
+  private makeGameOverCard(winners: string[], eliminated: string[]): string {
+    return '<h1> GAME OVER </h1>';
   }
 
   public receiveState(gameState: RenderableGameState<T>) {
@@ -167,20 +177,5 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
     endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void
   ): void {
     this.endGameCallback = endGameCallback;
-  }
-
-  private gameOver(
-    gameState: RenderableGameState<T>,
-    winnerNames: string[],
-    eliminatedNames: string[]
-  ) {
-    this.endGameCallback(
-      this.toHtmlView(gameState),
-      this.makeGameOverCard(winnerNames, eliminatedNames)
-    );
-  }
-
-  private makeGameOverCard(winners: string[], eliminated: string[]): string {
-    return '<h1> GAME OVER </h1>';
   }
 }

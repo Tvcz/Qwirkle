@@ -2,7 +2,6 @@ import { BrowserWindow, app, ipcMain } from 'electron';
 import path from 'path';
 import { ObserverAPI } from '../../observer/observer';
 import { QTile } from '../../game/map/tile';
-import { eventNames } from 'process';
 
 export const createWindow = (observer: ObserverAPI<QTile>) => {
   app.on('ready', () => {
