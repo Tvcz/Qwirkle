@@ -1,4 +1,4 @@
-import { htmlBuilder } from './HtmlRendererUtils/htmlBuilder';
+import { gameStateHtmlBuilder } from './HtmlRendererUtils/htmlBuilder';
 import HtmlRenderer from './graphicalRenderer';
 
 jest.mock('./HtmlRendererUtils/htmlBuilder');
@@ -17,7 +17,7 @@ describe('tests for HtmlGraphicalRenderer', () => {
     };
     const htmlRenderer = new HtmlRenderer();
     const mockHtmlBuilder = jest.fn();
-    jest.mocked(htmlBuilder).mockImplementation(mockHtmlBuilder);
+    jest.mocked(gameStateHtmlBuilder).mockImplementation(mockHtmlBuilder);
 
     // Act
     htmlRenderer.getRenderableString(gameStateData);

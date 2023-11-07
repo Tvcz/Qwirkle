@@ -1,9 +1,13 @@
 import puppeteer from 'puppeteer';
-import { QTile } from '../game/map/tile';
+import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
-import { htmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
+import {
+  gameStateHtmlBuilder,
+  gameStateHtmlBuilder
+} from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
 import { RenderProcessGoneEvent } from 'electron';
 import { stat } from 'fs/promises';
+import { createWindow } from '../electron/main/gameStateWindow';
 
 /**
  * Interface for observing a game.
@@ -45,17 +49,36 @@ export interface ObserverAPI<T extends QTile> {
    * Saves the current game state as a JState to a specified JSON file.
    */
   saveState(filepath: string): void;
+
+  // TODO Check for correctness
+  /**
+   * Sets the callback function for updating the GUI view.
+   * @param updateViewCallback the callback function for updating the GUI view
+   */
+  setUpdateViewCallback(updateViewCallback: (html: string) => void): void;
+
+  /**
+   * Sets the callback function for displaying the end game card.
+   * @param endGameCallback the callback function for displaying the end game card
+   */
+  setEndGameCallback(
+    endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void
+  ): void;
 }
 
-export class BaseObserver<T extends QTile> implements ObserverAPI<T> {
-  gui;
+export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
   stateHistory: RenderableGameState<T>[];
   currenStateIndex: number;
+  updateViewCallback: (html: string) => void;
+  endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void;
 
   constructor() {
-    gui = new GUI();
+    createWindow(this);
     this.stateHistory = [];
     this.currenStateIndex = 0;
+    this.updateViewCallback = () => {};
+    // TODO make a then for end game so it always runs if called
+    this.endGameCallback = () => {};
   }
 
   public receiveState(gameState: RenderableGameState<T>) {
@@ -78,7 +101,7 @@ export class BaseObserver<T extends QTile> implements ObserverAPI<T> {
   }
 
   private toHtmlView(gameState: RenderableGameState<T>): string {
-    return htmlBuilder(gameState);
+    return gameStateHtmlBuilder(gameState);
   }
 
   private calculateHeightAndWidth(gameState: RenderableGameState<T>) {
@@ -105,12 +128,6 @@ export class BaseObserver<T extends QTile> implements ObserverAPI<T> {
     await browser.close();
   }
 
-  private updateGUIView() {
-    this.gui.updateView(
-      this.toHtmlView(this.stateHistory[this.currenStateIndex])
-    );
-  }
-
   public nextState() {
     if (this.currenStateIndex < this.stateHistory.length - 1) {
       this.currenStateIndex++;
@@ -125,14 +142,42 @@ export class BaseObserver<T extends QTile> implements ObserverAPI<T> {
     }
   }
 
-  private saveStateToJSON(gameState: RenderableGameState<T>) {}
+  // TODO
+  public saveState(filepath: string): void {
+    const jstate = this.getJSONOfGameState(
+      this.stateHistory[this.currenStateIndex]
+    );
+  }
 
-  public gameOver(
+  private getJSONOfGameState(gameState: RenderableGameState<T>) {}
+
+  public setUpdateViewCallback(
+    updateViewCallback: (html: string) => void
+  ): void {
+    this.updateViewCallback = updateViewCallback;
+  }
+
+  private updateGUIView() {
+    this.updateViewCallback(
+      this.toHtmlView(this.stateHistory[this.currenStateIndex])
+    );
+  }
+
+  public setEndGameCallback(
+    endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void
+  ): void {
+    this.endGameCallback = endGameCallback;
+  }
+
+  private gameOver(
     gameState: RenderableGameState<T>,
     winnerNames: string[],
     eliminatedNames: string[]
   ) {
-    this.gui.showGameOver(gameState, winnerNames, eliminatedNames);
+    this.endGameCallback(
+      this.toHtmlView(gameState),
+      this.makeGameOverCard(winnerNames, eliminatedNames)
+    );
   }
 
   private makeGameOverCard(winners: string[], eliminated: string[]): string {

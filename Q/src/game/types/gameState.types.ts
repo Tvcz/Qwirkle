@@ -76,6 +76,7 @@ export type RenderableGameState<T extends QTile> = {
  * score and their tiles.
  */
 export type RenderablePlayer<T extends QTile> = {
+  name: string;
   score: number;
   tiles: T[];
 };

@@ -271,6 +271,7 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
 
   public getRenderablePlayerStates() {
     return this.playerQueue.map((playerState) => ({
+      name: playerState.getName(),
       score: playerState.getScore(),
       tiles: [...playerState.getAllTiles()]
     }));
