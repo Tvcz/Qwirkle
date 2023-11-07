@@ -20,7 +20,10 @@ export default defineConfig({
     root: 'src/electron/renderer',
     build: {
       rollupOptions: {
-        input: 'src/electron/renderer/renderer.ts'
+        input: 'src/electron/renderer/renderer.ts',
+        output: {
+          entryFileNames: 'renderer.js'
+        }
       }
     }
   }
