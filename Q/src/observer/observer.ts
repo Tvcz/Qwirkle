@@ -3,8 +3,7 @@ import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
 import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
-
-const TILE_SCALE = 50;
+import { TILE_SCALE } from '../constants';
 
 /**
  * Interface for observing a game.

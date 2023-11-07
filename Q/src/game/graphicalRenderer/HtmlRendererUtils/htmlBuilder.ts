@@ -6,7 +6,8 @@ import { scoreboardHtmlBuilder } from './scoreboardHtmlBuilder';
 import { turnOrderHtmlBuilder } from './turnOrderHtmlBuilder';
 
 /**
- * Build the body with a header, the map state, the scoreboard, the player turn queue, and the number of remaining tiles
+ * Build the game state view view with a header, the map, the players, including
+ * their names, scores, and order, and the remaining tiles
  * @param renderableData The game state data that is publically available to be rendered
  * @returns the body of an HTML string visualizing the game state data
  */

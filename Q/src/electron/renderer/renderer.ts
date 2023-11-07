@@ -1,10 +1,10 @@
-import { VIEW_BODY_ID } from '../../constants';
+import { VIEW_ID } from '../../constants';
 
 window.electronAPI.updateViewHandler(
   (_event: Electron.IpcRendererEvent, html: string) => {
-    const viewBody = document.getElementById(VIEW_BODY_ID);
-    if (viewBody) {
-      viewBody.innerHTML = html;
+    const gameStateView = document.getElementById(VIEW_ID);
+    if (gameStateView) {
+      gameStateView.innerHTML = html;
     }
   }
 );
@@ -15,9 +15,12 @@ window.electronAPI.endGameHandler(
     gameStateHtml: string,
     endGameCardHtml: string
   ) => {
-    const viewBody = document.getElementById(VIEW_BODY_ID);
-    if (viewBody) {
-      viewBody.innerHTML = buildEndGameHtml(gameStateHtml, endGameCardHtml);
+    const gameStateView = document.getElementById(VIEW_ID);
+    if (gameStateView) {
+      gameStateView.innerHTML = buildEndGameHtml(
+        gameStateHtml,
+        endGameCardHtml
+      );
     }
   }
 );
@@ -35,12 +38,12 @@ const buildEndGameHtml = (
   `;
 };
 
-const previousButton = document.getElementById('previous-turn-button');
+const previousButton = document.getElementById('previous-state-button');
 previousButton?.addEventListener('click', () => {
   window.electronAPI.previousState();
 });
 
-const nextButton = document.getElementById('next-turn-button');
+const nextButton = document.getElementById('next-state-button');
 nextButton?.addEventListener('click', () => {
   window.electronAPI.nextState();
 });
