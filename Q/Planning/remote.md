@@ -56,6 +56,13 @@ sequenceDiagram
 
 ```
 
+// TODO RefereeProxy does not implement Referee and thus should be called something else
+
+The players for a game are collected by the following process:
+- Players looking to join a game call a method in a RefereeProxy, passing in a `Player`.
+  - The RefereeProxy builds a PlayerProxy which exists to mediate interactions between the Referee and a Player across a network by implementing the `Player` interface.
+  - The RefereeProxy then creates a connection between the PlayerProxy client component and the corresponding PlayerProxy component on the server side.
+
 - Server needs to gather players
     - `Player` hits a `RefereeProxy` with `joinGame` which then triggers the
       referee proxy to build a corresponding `PlayerProxy`
