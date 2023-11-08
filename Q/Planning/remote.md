@@ -79,7 +79,7 @@ The players for a game are collected by the following process:
     args: [<PlayerProxyClientAddress>]
 }
 ```
-- Where `<PlayerProxyClientAddress>` is a representation of the network
+- _Where_ `<PlayerProxyClientAddress>` is a representation of the network
   information needed to connect to the `PlayerProxyClient` instance on the
   client machine. This allows an instance of `PlayerProxyServer` to establish a network
   connection with a corresponding `PlayerProxyClient` instance.
@@ -94,9 +94,9 @@ The players for a game are collected by the following process:
     args: [<arg1>, ..., <argn>]
 }
 ```
-- Where `<method name>` is one of the following: `name`, `takeTurn`, `newTiles`,
+- _Where_ `<method name>` is one of the following: `name`, `takeTurn`, `newTiles`,
   `win`.
-- Where each `<argi>` (1 <= i <= n) in the `args` array is a JSON representation of an argument
+- _Where_ each `<argi>` (1 <= i <= n) in the `args` array is a JSON representation of an argument
   passed to the method call. It is serialized using `JSON.stringify()` in order
   to make the objects valid JSON.
   - Since all arguments to methods in the `Player` interface are serializable,
@@ -117,11 +117,11 @@ The players for a game are collected by the following process:
     result: <result>
 }
 ```
-- Where `<player name>` is the name of the player that the `PlayerProxyClient`
+- _Where_ `<player name>` is the name of the player that the `PlayerProxyClient`
   is representing. This allows the request to be directed to the correct `PlayerProxyServer`.
-- Where `<method name>` is one of the following: `name`, `takeTurn`, `newTiles`,
+- _Where_ `<method name>` is one of the following: `name`, `takeTurn`, `newTiles`,
   `win`.
-- Where `<result>` is the result of the method call against the `Player`
+- _Where_ `<result>` is the result of the method call against the `Player`
   instance. Similar to above, it is serialized using `JSON.stringify()` and
   parse by the `PlayerProxyServer` using `JSON.parse()`. As with arguments, all
   return values from methods in the `Player` interface are serializable.
