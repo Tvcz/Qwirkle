@@ -5,6 +5,8 @@ import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtil
 import { createWindow } from '../electron/main/gameStateWindow';
 import { TILE_SCALE } from '../constants';
 
+import { writeFile } from 'fs';
+import { toJState } from './parser';
 /**
  * Interface for observing a game.
  * Provides functionality for receiving game state updates and game over
@@ -154,14 +156,10 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
     }
   }
 
-  // TODO
   public saveState(filepath: string): void {
-    const jstate = this.getJSONOfGameState(
-      this.stateHistory[this.currenStateIndex]
-    );
+    const jstate = toJState(this.stateHistory[this.currenStateIndex]);
+    saveJsonToFilePath(jstate, filepath);
   }
-
-  private getJSONOfGameState(gameState: RenderableGameState<T>) {}
 
   public setUpdateViewCallback(
     updateViewCallback: (html: string) => void
@@ -180,4 +178,15 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
   ): void {
     this.endGameCallback = endGameCallback;
   }
+}
+
+function saveJsonToFilePath(json: Object, filePath: string) {
+  const jsonString = JSON.stringify(json);
+  writeFile(filePath, jsonString, 'utf8', (err) => {
+    if (err) {
+      console.error('An error occurred:', err);
+      return;
+    }
+    console.log('File has been saved.');
+  });
 }

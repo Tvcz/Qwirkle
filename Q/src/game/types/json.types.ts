@@ -26,6 +26,7 @@ export interface JPub {
  * A JSON representation of a player which contains the player's score and the tiles in their hand
  */
 export interface JPlayer {
+  name: JName;
   score: number;
   'tile*': JTile[];
 }
