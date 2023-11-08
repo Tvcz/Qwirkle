@@ -26,6 +26,7 @@ window.electronAPI.endGameHandler(
 );
 
 // display the end game card overlayed on the game state
+// TODO: make it actually display in a card overlayed on the game state
 const buildEndGameHtml = (
   gameStateHtml: string,
   endGameCardHtml: string
