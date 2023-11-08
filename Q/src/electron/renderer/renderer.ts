@@ -1,4 +1,5 @@
 import { VIEW_ID } from '../../constants';
+import { dialog } from 'electron';
 
 window.electronAPI.updateViewHandler(
   (_event: Electron.IpcRendererEvent, html: string) => {
@@ -51,6 +52,34 @@ nextButton?.addEventListener('click', () => {
 
 const saveButton = document.getElementById('save-state-button');
 saveButton?.addEventListener('click', () => {
-  // TODO file path dialog
-  window.electronAPI.saveState('test.json');
+  saveFile().then((fileName) => {
+    window.electronAPI.saveState(fileName);
+  });
 });
+
+async function saveFile() {
+  try {
+    // Open the save dialog
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Select the File Path to save',
+      buttonLabel: 'Save',
+      // Specify the file type filters here
+      filters: [
+        { name: 'JSON Files', extensions: ['json'] },
+        { name: 'All Files', extensions: ['*'] }
+      ],
+      properties: []
+    });
+
+    if (canceled) {
+      console.log('User canceled the save dialog');
+      return;
+    }
+
+    // Use the file path to save the file
+    console.log(`File saved at ${filePath}`);
+    // Your logic to save the file goes here
+  } catch (err) {
+    console.error('An error occurred: ', err);
+  }
+}
