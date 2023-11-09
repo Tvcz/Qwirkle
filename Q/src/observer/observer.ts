@@ -71,12 +71,12 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
   endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void;
 
   constructor() {
-    createWindow(this).then(() => this.updateGUIView());
     this.stateHistory = [];
     this.currenStateIndex = 0;
     this.updateViewCallback = () => {};
     // TODO make a then for end game so it always runs if called
     this.endGameCallback = () => {};
+    createWindow(this);
   }
 
   public gameOver(
@@ -130,16 +130,12 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
     outputPath: string,
     widthAndHeight: { width: number; height: number }
   ) {
-    const browser = await puppeteer.launch({ headless: 'new' });
-    const page = await browser.newPage();
-
-    await page.setContent(html);
-
-    // await page.setViewport(widthAndHeight);
-
-    await page.screenshot({ path: outputPath });
-
-    await browser.close();
+    // const browser = await puppeteer.launch({ headless: 'new' });
+    // const page = await browser.newPage();
+    // await page.setContent(html);
+    // // await page.setViewport(widthAndHeight);
+    // await page.screenshot({ path: outputPath });
+    // await browser.close();
   }
 
   public nextState() {

@@ -41,4 +41,14 @@ export type JAction = 'pass' | 'replace' | OnePlacement;
 
 export type JExn = 'setup' | 'take-turn' | 'new-tiles' | 'win';
 
-export type JActor = [string, JStrategy] | [string, JStrategy, JExn];
+export type JActor =
+  | [string, JStrategy]
+  | [string, JStrategy, JExn]
+  | [string, JStrategy, 'a cheat', JCheat];
+
+export type JCheat =
+  | 'non-adjacent-coordinate'
+  | 'tile-not-owned'
+  | 'not-a-line'
+  | 'bad-ask-for-tiles'
+  | 'no-fit';

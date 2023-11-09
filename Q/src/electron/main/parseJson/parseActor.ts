@@ -1,4 +1,4 @@
-import { JActor, JExn, JStrategy, Json } from '../types';
+import { JActor, JCheat, JExn, JStrategy, Json } from '../types';
 
 export function mustParseAsJActors(json: Json): JActor[] {
   if (!Array.isArray(json)) {
@@ -20,7 +20,25 @@ function mustParseAsSingleActor(json: Json): JActor {
     return [jName, jStrategy, jExn];
   }
 
+  if (json[3]) {
+    const jCheat = mustParseAsJCheat(json[3]);
+    return [jName, jStrategy, 'a cheat', jCheat];
+  }
+
   return [jName, jStrategy];
+}
+
+function mustParseAsJCheat(json: Json): JCheat {
+  if (
+    json !== 'non-adjacent-coordinate' &&
+    json !== 'tile-not-owned' &&
+    json !== 'not-a-line' &&
+    json !== 'bad-ask-for-tiles' &&
+    json !== 'no-fit'
+  ) {
+    throw new Error('invalid JCheat');
+  }
+  return json;
 }
 
 function mustParseAsJName(json: Json): string {

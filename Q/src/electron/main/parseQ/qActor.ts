@@ -5,8 +5,17 @@ import {
   RelevantPlayerInfo
 } from '../../../game/types/gameState.types';
 import { Player, BasePlayer } from '../../../player/player';
-import { Strategy, DagStrategy, LdasgStrategy } from '../../../player/strategy';
-import { JActor, JStrategy, JExn } from '../types';
+import {
+  Strategy,
+  DagStrategy,
+  LdasgStrategy,
+  NonAdjacentCoordinateStrategy,
+  TileNotOwnedStrategy,
+  NotALineStrategy,
+  BadAskForTilesStrategy,
+  NoFitStrategy
+} from '../../../player/strategy';
+import { JActor, JStrategy, JExn, JCheat } from '../types';
 
 export const toQPlayers = (
   jActors: JActor[],
@@ -17,12 +26,37 @@ export const toQPlayers = (
     const jStrategy = jActor[1];
     const qStrategy = jStrategyToQStrategy(jStrategy);
 
-    const basePlayer = new BasePlayer(name, qStrategy, rulebook);
+    let cheatStrategy;
+    if (jActor.length === 4) {
+      const jCheat = jActor[3];
+      cheatStrategy = getCheatStrategy(jCheat, qStrategy);
+    }
 
-    const exn = jActor[2];
+    const basePlayer = new BasePlayer(
+      name,
+      cheatStrategy ?? qStrategy,
+      rulebook
+    );
+
+    const exn = jActor[2] === 'a cheat' ? undefined : jActor[2];
 
     return new ExceptionPlayer(basePlayer, exn);
   });
+};
+
+const getCheatStrategy = (jCheat: JCheat, qStrategy: Strategy<BaseTile>) => {
+  switch (jCheat) {
+    case 'non-adjacent-coordinate':
+      return new NonAdjacentCoordinateStrategy();
+    case 'tile-not-owned':
+      return new TileNotOwnedStrategy(qStrategy);
+    case 'not-a-line':
+      return new NotALineStrategy(qStrategy);
+    case 'bad-ask-for-tiles':
+      return new BadAskForTilesStrategy(qStrategy);
+    case 'no-fit':
+      return new NoFitStrategy(qStrategy);
+  }
 };
 
 const jStrategyToQStrategy = (jStrategy: JStrategy): Strategy<BaseTile> => {

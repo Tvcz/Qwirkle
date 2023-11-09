@@ -64,8 +64,6 @@ function runGame(observers: BaseObserver<BaseTile>[]) {
 
     const qGameState = new BaseGameState(qMap, qPlayerTurnQueue, qBagOfTiles);
 
-    setTimeout(() => {}, 5000);
-
     const [winners, eliminated] = BaseReferee(
       players,
       observers,
