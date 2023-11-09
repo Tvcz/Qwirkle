@@ -1,0 +1,9 @@
+[
+    {
+        "testScript": "8/xgames",
+        "directories": [
+            "8/Tests",
+            "8/grade/staff-tests"
+        ]
+    }
+]

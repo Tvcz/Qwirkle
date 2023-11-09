@@ -224,20 +224,41 @@ const manageTurn = (
     return;
   }
 
+  doTurnAndUpdatePlayer(
+    turnAction,
+    activePlayerName,
+    activePlayerController,
+    gameState,
+    rulebook
+  );
+};
+
+const doTurnAndUpdatePlayer = (
+  turnAction: TurnAction<BaseTile>,
+  playerName: string,
+  playerController: Player<BaseTile>,
+  gameState: QGameState<BaseTile>,
+  rulebook: QRuleBook<BaseTile>
+) => {
+  const newTiles = executeTurnAction(turnAction, gameState);
+
   const score = scoreTurnAction(
     turnAction,
     gameState,
     rulebook.getScoringRules()
   );
 
-  const newTiles = executeTurnAction(turnAction, gameState);
+  gameState.updatePlayerScore(playerName, score);
 
-  gameState.updatePlayerScore(activePlayerName, score);
-
-  interactWithPlayer(
-    () => activePlayerController.newTiles(newTiles),
-    () => gameState.eliminatePlayer(activePlayerName)
-  );
+  if (
+    newTiles.length > 0 &&
+    !gameState.isGameOver(rulebook.getEndOfGameRules())
+  ) {
+    interactWithPlayer(
+      () => playerController.newTiles(newTiles),
+      () => gameState.eliminatePlayer(playerName)
+    );
+  }
 };
 
 /**
@@ -427,16 +448,17 @@ const communicateWinWithPlayers = (
   [winners, eliminated]: GameResult
 ): GameResult => {
   playersEndGameInformation.forEach(({ name, win }) => {
-    const playerWon =
-      winners.find((winnerName) => name === winnerName) !== undefined;
+    const playerWon = winners.includes(name);
 
     interactWithPlayer(
       () => win(playerWon),
       () => {
-        winners.splice(
-          winners.findIndex((winnerName) => winnerName === name),
-          1
-        );
+        if (playerWon) {
+          winners.splice(
+            winners.findIndex((winnerName) => winnerName === name),
+            1
+          );
+        }
         eliminated.push(name);
       }
     );

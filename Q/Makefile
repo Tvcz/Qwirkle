@@ -1,3 +1,8 @@
+# Build the Electron app
+all:
+	npm install
+	npx electron-vite build
+
 # Install frontend dependencies
 node_modules: package.json
 	npm install
@@ -6,3 +11,6 @@ node_modules: package.json
 .PHONY: clean
 clean:
 	rm -rf node_modules
+
+
+	
