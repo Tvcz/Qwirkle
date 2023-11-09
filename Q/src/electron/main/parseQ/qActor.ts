@@ -26,7 +26,7 @@ export const toQPlayers = (
     const jStrategy = jActor[1];
     const qStrategy = jStrategyToQStrategy(jStrategy);
 
-    let cheatStrategy;
+    let cheatStrategy: Strategy<BaseTile> | undefined;
     if (jActor.length === 4) {
       const jCheat = jActor[3];
       cheatStrategy = getCheatStrategy(jCheat, qStrategy);
@@ -38,7 +38,11 @@ export const toQPlayers = (
       rulebook
     );
 
-    const exn = jActor[2] === 'a cheat' ? undefined : jActor[2];
+    let exn = jActor[2];
+
+    if (exn === 'a cheat') {
+      exn = undefined;
+    }
 
     return new ExceptionPlayer(basePlayer, exn);
   });

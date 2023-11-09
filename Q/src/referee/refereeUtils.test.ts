@@ -224,7 +224,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockTakeTurn);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockTakeTurn).toBeCalledWith(mockActivePlayerInfo);
@@ -248,7 +248,7 @@ describe('tests for referee util methods', () => {
         .mockImplementationOnce(mockTakeTurn);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(gameState.getActivePlayerInfo().playersQueue).toStrictEqual([
@@ -275,7 +275,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockEliminatePlayer);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockEliminatePlayer).not.toHaveBeenCalled();
@@ -299,7 +299,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockEliminatePlayer);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockEliminatePlayer).not.toHaveBeenCalled();
@@ -332,7 +332,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockEliminatePlayer);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockEliminatePlayer).toHaveBeenCalled();
@@ -359,7 +359,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockEliminatePlayer);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockEliminatePlayer).not.toHaveBeenCalled();
@@ -391,7 +391,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockEliminatePlayer);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockEliminatePlayer).toHaveBeenCalledWith('joe', mockTurnAction);
@@ -423,7 +423,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockGetPlacementScore);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockIsValidPlacement.mock.invocationCallOrder[0]).toBeLessThan(
@@ -457,7 +457,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
 
@@ -486,7 +486,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
 
@@ -525,7 +525,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockUpdatePlayerScore).toBeCalledWith('joe', 10);
@@ -553,7 +553,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockPassTurn);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockPassTurn).toBeCalled();
@@ -581,7 +581,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockExchangeTurn);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockExchangeTurn).toBeCalled();
@@ -613,7 +613,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockPlaceTurn);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockPlaceTurn).toBeCalledWith(turnAction.getPlacements());
@@ -641,7 +641,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockNewTiles);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockNewTiles).toBeCalledWith([]);
@@ -677,7 +677,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockEliminatePlayer);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockEliminatePlayer).toBeCalledWith('joe');
@@ -709,7 +709,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockUpdatePlayerScore.mock.invocationCallOrder[0]).toBeLessThan(
@@ -729,7 +729,7 @@ describe('tests for referee util methods', () => {
         .mockImplementation(mockGetActivePlayerInfo);
 
       // Act
-      runGame(gameState, rulebook);
+      runGame(gameState, rulebook, []);
 
       // Assert
       expect(mockGetActivePlayerInfo).not.toHaveBeenCalled();
@@ -748,7 +748,7 @@ describe('tests for referee util methods', () => {
       gameState.updatePlayerScore('bob', 20);
 
       // Act
-      const result = endGame(gameState);
+      const result = endGame(gameState, []);
 
       // Assert
       expect(result[0]).toStrictEqual(['joe', 'bob']);
@@ -760,7 +760,7 @@ describe('tests for referee util methods', () => {
       gameState.eliminatePlayer('john');
 
       // Act
-      const result = endGame(gameState);
+      const result = endGame(gameState, []);
 
       // Assert
       expect(result[1]).toStrictEqual(['bob', 'john']);
@@ -776,7 +776,7 @@ describe('tests for referee util methods', () => {
       jest.spyOn(BasePlayer.prototype, 'win').mockImplementation(mockWin);
 
       // Act
-      endGame(gameState);
+      endGame(gameState, []);
 
       // Assert
       expect(mockWin).toBeCalledTimes(3);
@@ -796,7 +796,7 @@ describe('tests for referee util methods', () => {
       jest.spyOn(BasePlayer.prototype, 'win').mockImplementation(mockWin);
 
       // Act
-      endGame(gameState);
+      endGame(gameState, []);
 
       // Assert
       expect(mockWin).toBeCalledTimes(2);
@@ -818,7 +818,7 @@ describe('tests for referee util methods', () => {
       jest.spyOn(BasePlayer.prototype, 'win').mockImplementation(mockWin);
 
       // Act
-      const [winners, eliminated] = endGame(gameState);
+      const [winners, eliminated] = endGame(gameState, []);
 
       // Assert
       expect(winners).toStrictEqual(['john']);

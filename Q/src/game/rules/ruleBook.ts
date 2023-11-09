@@ -129,9 +129,9 @@ export class BaseRuleBook extends AbstractRuleBook<BaseTile> {
         pointsPerQ(Q_BONUS_POINT_AMOUNT)
       ],
       [
+        noPlayersRemaining,
         allPlayersPassedOrExchangedInRound,
-        playerHasPlacedAllTilesInPossession,
-        noPlayersRemaining
+        playerHasPlacedAllTilesInPossession
       ]
     );
   }
