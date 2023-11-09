@@ -46,7 +46,7 @@ const getTilesOrdering = <T extends ShapeColorTile>(playerTiles: T[]): T[] => {
  * @param mapState A list of the tile placements on the map
  * @returns A map of coordinates to tiles
  */
-const tilePlacementsToMap = <T extends QTile>(
+export const tilePlacementsToMap = <T extends QTile>(
   mapState: TilePlacement<T>[]
 ): Dictionary<Coordinate, T> => {
   const map = new Dictionary<Coordinate, T>();
@@ -66,9 +66,8 @@ const tilePlacementsToMap = <T extends QTile>(
  * @param placementRules Placement rules a valid placement needs to adhere to
  * @returns a list of the coordinates where the given tile could be placed
  */
-const getAllValidPlacements = <T extends ShapeColorTile>(
+export const getAllValidPlacements = <T extends ShapeColorTile>(
   tile: T,
-  placedTiles: TilePlacement<T>[],
   map: Dictionary<Coordinate, T>,
   placementRules: ReadonlyArray<PlacementRule<T>>
 ): Coordinate[] => {
@@ -79,30 +78,15 @@ const getAllValidPlacements = <T extends ShapeColorTile>(
     .keys()
     .flatMap((coord) => Object.values(coord.getNeighbors()));
 
-  const tilePlacementNeighbors = placedTiles.flatMap((placement) =>
-    Object.values(placement.coordinate.getNeighbors())
-  );
-
-  let potentialPlacements = [...allMapNeighbors, ...tilePlacementNeighbors];
-
-  potentialPlacements = potentialPlacements.filter(
-    (coord) =>
-      placedTiles.find((placement) => placement.coordinate.equals(coord)) ===
-      undefined
-  );
-
-  const validPlacements = potentialPlacements.filter((coordinate) => {
+  const validPlacements = allMapNeighbors.filter((coordinate) => {
     const hasNotBeenSeen = !seenTiles.contains(coordinate);
-
-    const isValid = isValidPlacement(
-      [...placedTiles, { tile, coordinate }],
-      placementRules,
-      getTile
-    );
 
     seenTiles.add(coordinate);
 
-    return hasNotBeenSeen && isValid;
+    return (
+      hasNotBeenSeen &&
+      isValidPlacement([{ tile, coordinate }], placementRules, getTile)
+    );
   });
 
   return validPlacements;
@@ -156,22 +140,14 @@ const getTileWithPlacements = <T extends QTile>(
  */
 const getNewTilePlacementForSingleTile = <T extends ShapeColorTile>(
   tile: T,
-  placedTiles: TilePlacement<T>[],
   map: Dictionary<Coordinate, T>,
   placementRules: ReadonlyArray<PlacementRule<T>>,
   coordinateSorter: SorterFunction<T>
 ): TilePlacement<T> | undefined => {
-  const validPlacements = getAllValidPlacements(
-    tile,
-    placedTiles,
-    map,
-    placementRules
-  );
+  const validPlacements = getAllValidPlacements(tile, map, placementRules);
 
   const getTile = (coord: Coordinate) => map.getValue(coord);
-  validPlacements.sort((a, b) =>
-    coordinateSorter(a, b, getTileWithPlacements(placedTiles, getTile))
-  );
+  validPlacements.sort((a, b) => coordinateSorter(a, b, getTile));
 
   if (validPlacements.length > 0) {
     return {
@@ -181,64 +157,6 @@ const getNewTilePlacementForSingleTile = <T extends ShapeColorTile>(
   }
 
   return undefined;
-};
-
-/**
- * Get all of the places on the map that the player's tiles should be placed in the given order.
- * Placements must abide by the placement rules and are chosen in the order given by the coordinate sorter function
- * @param orderedPlayerTiles players tiles sorted by their lexicographical ordering
- * @param map map of the Q game
- * @param placementRules list of placement rules
- * @param coordinateSorter A function to sort coordinates to prioritize which ones should be chosen first
- * @returns The list of new tile placements for the players tiles
- */
-const getNewTilesPlacementsForPlayerTiles = <T extends ShapeColorTile>(
-  orderedPlayerTiles: T[],
-  map: Dictionary<Coordinate, T>,
-  placementRules: ReadonlyArray<PlacementRule<T>>,
-  coordinateSorter: SorterFunction<T>
-) => {
-  return orderedPlayerTiles.reduce((newTilePlacements, tile) => {
-    const newTilePlacement = getNewTilePlacementForSingleTile(
-      tile,
-      newTilePlacements,
-      map,
-      placementRules,
-      coordinateSorter
-    );
-
-    if (newTilePlacement === undefined) {
-      return newTilePlacements;
-    }
-
-    return [...newTilePlacements, newTilePlacement];
-  }, [] as TilePlacement<T>[]);
-};
-
-/**
- * Determine which turn action should be used based on the new tile placements and number of remaining tiles.
- * If there are new tiles to place, they should be returned, indicating a 'place' turn.
- * If not, and there are more or equal remaining tiles than the player has, return an 'exchange' turn.
- * Otherwise, pass.
- * @param newTilePlacements List of new tile placements, or an empty list if no tiles can be placed
- * @param remainingTilesCount number of remaining tiles that the referee has
- * @param playerTilesCount Number of tiles that the player has in their hand
- * @returns The TurnAction that the player should take
- */
-const determineTurnAction = <T extends ShapeColorTile>(
-  newTilePlacements: TilePlacement<T>[],
-  remainingTilesCount: number,
-  playerTilesCount: number
-): TurnAction<T> => {
-  if (newTilePlacements.length > 0) {
-    return new BaseTurnAction('PLACE', newTilePlacements);
-  }
-
-  if (remainingTilesCount >= playerTilesCount) {
-    return new BaseTurnAction('EXCHANGE');
-  }
-
-  return new BaseTurnAction('PASS');
 };
 
 /**
@@ -261,16 +179,87 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
 
   const orderedPlayerTiles = getTilesOrdering(playerTiles);
 
-  const newTilePlacements = getNewTilesPlacementsForPlayerTiles(
-    orderedPlayerTiles,
-    map,
-    placementRules,
-    coordinateSorter
-  );
+  const iterate = (
+    placements: TilePlacement<T>[],
+    mapState: Dictionary<Coordinate, T>,
+    playerTiles: T[],
+    remainingTilesCount: number
+  ): TurnAction<T> => {
+    const turnaction = strategyForSinglePlacement(
+      mapState,
+      playerTiles,
+      remainingTilesCount,
+      placementRules,
+      coordinateSorter
+    );
+    if (turnaction.ofType('PASS')) {
+      if (placements.length == 0) {
+        return turnaction;
+      } else {
+        return new BaseTurnAction('PLACE', placements);
+      }
+    } else if (turnaction.ofType('EXCHANGE')) {
+      if (placements.length == 0) {
+        return turnaction;
+      } else {
+        return new BaseTurnAction('PLACE', placements);
+      }
+    } else {
+      const potentialPlacement = turnaction.getPlacements()[0];
+      const placementSoFar = [...placements, potentialPlacement];
+      const isLegal = isValidPlacement(
+        placementSoFar,
+        placementRules,
+        getTileWithPlacements(placementSoFar, (key) => mapState.getValue(key))
+      );
+      if (!isLegal) {
+        return new BaseTurnAction('PLACE', placements);
+      } else {
+        mapState.setValue(
+          potentialPlacement.coordinate,
+          potentialPlacement.tile
+        );
+        const newPlayerTiles = playerTiles.filter(
+          (tile) => tile.equals(potentialPlacement.tile) === false
+        );
+        return iterate(
+          placementSoFar,
+          mapState,
+          newPlayerTiles,
+          remainingTilesCount
+        );
+      }
+    }
+  };
 
-  return determineTurnAction(
-    newTilePlacements,
-    remainingTilesCount,
-    playerTiles.length
-  );
+  return iterate([], map, orderedPlayerTiles, remainingTilesCount);
+};
+
+export const strategyForSinglePlacement = <T extends ShapeColorTile>(
+  mapState: Dictionary<Coordinate, T>,
+  playerTiles: T[],
+  remainingTilesCount: number,
+  placementRules: ReadonlyArray<PlacementRule<T>>,
+  coordinateSorter: SorterFunction<T>
+): TurnAction<T> => {
+  for (const tile of playerTiles) {
+    const placement = getNewTilePlacementForSingleTile(
+      tile,
+      mapState,
+      placementRules,
+      coordinateSorter
+    );
+    if (placement !== undefined) {
+      return new BaseTurnAction('PLACE', [placement]);
+    } else if (remainingTilesCount >= playerTiles.length) {
+      return new BaseTurnAction('EXCHANGE');
+    } else {
+      return new BaseTurnAction('PASS');
+    }
+  }
+  if (remainingTilesCount >= playerTiles.length) {
+    return new BaseTurnAction('EXCHANGE');
+  } else {
+    return new BaseTurnAction('PASS');
+  }
 };

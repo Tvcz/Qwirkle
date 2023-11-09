@@ -1,4 +1,4 @@
-import { htmlBuilder } from './htmlBuilder';
+import { gameStateHtmlBuilder } from './htmlBuilder';
 import { mapHtmlBuilder } from './mapHtmlBuilder';
 import { remainingTilesHtmlBuilder } from './remainingTilesHtmlBuilder';
 import { scoreboardHtmlBuilder } from './scoreboardHtmlBuilder';
@@ -47,7 +47,7 @@ describe('tests for htmlBuilder functions', () => {
 `;
 
     // Act
-    const html = htmlBuilder(renderableData);
+    const html = gameStateHtmlBuilder(renderableData);
 
     // Assert
     expect(html.replace(/\s/g, '')).toBe(htmlExpected.replace(/\s/g, ''));

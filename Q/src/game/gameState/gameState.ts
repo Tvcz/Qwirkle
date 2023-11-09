@@ -4,7 +4,6 @@ import { QMap } from '../map/map';
 import { QPlayerTurnQueue } from './playerTurnQueue';
 import { QBagOfTiles } from './bagOfTiles';
 import PlayerState from './playerState';
-import { GraphicalRenderer } from '../graphicalRenderer/graphicalRenderer';
 import {
   PlayerEndGameInformation,
   PlayerSetupInformation,
@@ -19,6 +18,7 @@ import {
 } from '../types/rules.types';
 import { Player } from '../../player/player';
 import { BaseTurnAction, TurnAction } from '../../player/turnAction';
+import { RenderableGameState } from '../types/gameState.types';
 
 /**
  * Interface representing the game state for a game of Q. Contains the game
@@ -144,17 +144,11 @@ export interface QGameState<T extends QTile> {
   isGameOver: (endOfGameRules: ReadonlyArray<EndOfGameRule<T>>) => boolean;
 
   /**
-   * Converts the game state into a string that can be rendered graphically. For
-   * example, this could be in the form of an HTML string. The function uses the
-   * passed in renderer from the interface GraphicalRenderer. The graphical
-   * representation of the game state displays the map, scoreboard, turn order,
-   * and remaining tiles count. Which is all of the data public to all players.
-   * @param renderer The object to turn the game state into a string. Comes with
-   * a getRenderableString method that takes a game state and returns the
-   * string.
-   * @returns A string that shows the game state graphically
+   * Gets the data that the referee knows about the game state that is needed to
+   * render the game
+   * @returns An object containing the map state, player data, and remaining tiles
    */
-  getRenderableData: (renderer: GraphicalRenderer) => string;
+  getRenderableData: () => RenderableGameState<T>;
 
   /**
    * Check if a full round of turns has been completed.
@@ -340,12 +334,12 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
   public getActivePlayerInfo() {
     const player = this.playerTurnQueue.getActivePlayer();
     const playerTiles = player.getAllTiles();
-    const { mapState, scoreboard, remainingTilesCount, playersQueue } =
+    const { tilePlacements, scoreboard, remainingTilesCount, playersQueue } =
       this.getRenderablePublicData();
 
     return {
       playerTiles,
-      mapState: mapState.tilePlacements,
+      mapState: tilePlacements,
       scoreboard,
       remainingTilesCount,
       playersQueue
@@ -396,22 +390,21 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     return endOfGameRules.some((rule) => rule(this.playerTurnQueue));
   }
 
-  public getRenderableData(renderer: GraphicalRenderer) {
-    const {
-      mapState,
-      scoreboard,
-      remainingTilesCount,
-      playersQueue: turnQueue
-    } = this.getRenderablePublicData();
+  // TODO: Make this return json rather than objects
+  public getRenderableData() {
+    const tilePlacements = this.getTilePlacementsList();
+    const dimensions = this.map.getDimensions();
+    const players = this.playerTurnQueue.getRenderablePlayerStates();
+    const remainingTiles = this.bagOfTiles.getRemainingTiles();
 
-    const renderableStr = renderer.getRenderableString({
-      mapState,
-      scoreboard,
-      remainingTilesCount,
-      turnQueue
-    });
-
-    return renderableStr;
+    return {
+      mapState: {
+        tilePlacements,
+        dimensions
+      },
+      players,
+      remainingTiles
+    };
   }
 
   /**
@@ -426,10 +419,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     const playersQueue = this.playerTurnQueue.getAllPlayersNames();
 
     return {
-      mapState: {
-        tilePlacements,
-        dimensions: this.map.getDimensions()
-      },
+      tilePlacements,
       scoreboard,
       remainingTilesCount,
       playersQueue

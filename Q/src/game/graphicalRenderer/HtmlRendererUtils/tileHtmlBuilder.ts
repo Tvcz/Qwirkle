@@ -1,6 +1,17 @@
 import { BaseTile, QTile, ShapeColorTile } from '../../map/tile';
 import { Color, Shape } from '../../types/map.types';
 
+// TODO: Use constant for tile size and scale according to that constant for sub-elements
+
+export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
+  const htmlTiles = tiles
+    .map((tile) => shapeColorTileHtmlBuilder(tile.getShape(), tile.getColor()))
+    .join('');
+  return `<span>
+            ${htmlTiles}
+          </span>`;
+};
+
 /**
  * Build a tile as an html string.
  * Only BaseTiles can be displayed
@@ -51,7 +62,7 @@ const baseTileHtmlBuilder = (x: number, y: number, tile: ShapeColorTile) => {
  * @param color color of the tile
  * @returns An HTML string visualizing a shape color tile
  */
-const shapeColorTileHtmlBuilder = (shape: Shape, color: Color) => {
+export const shapeColorTileHtmlBuilder = (shape: Shape, color: Color) => {
   switch (shape) {
     case '8star':
       return eightStarTileHtmlBuilder(color);

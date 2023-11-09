@@ -44,12 +44,14 @@ import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
  *      - This is not handled by the referee. Will be handled by the remote communication layer.
  *
  * @param players a list of Players, already sorted in order of age. Players have distinct names.
+ * @param observers a list of Observers, which spectate a game
  * @param ruleBook the rulebook for this game
  * @param existingGameState optional QGameState type. When passed in, the referee resumes the game from that game state.
  * @returns GameResult type: pair of a list of the winners and a list of the eliminated players
  */
 export const BaseReferee: RefereeFunction<BaseTile> = (
   players,
+  observers,
   ruleBook,
   existingGameState
 ) => {
@@ -59,7 +61,7 @@ export const BaseReferee: RefereeFunction<BaseTile> = (
 
   setUpPlayers(gameState);
 
-  const finalGameState = runGame(gameState, ruleBook);
+  const finalGameState = runGame(gameState, ruleBook, observers);
 
-  return endGame(finalGameState);
+  return endGame(finalGameState, observers);
 };

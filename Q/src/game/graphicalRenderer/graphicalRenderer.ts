@@ -1,6 +1,6 @@
 import { QTile } from '../map/tile';
 import { RenderableGameState } from '../types/gameState.types';
-import { htmlBuilder } from './HtmlRendererUtils/htmlBuilder';
+import { gameStateHtmlBuilder } from './HtmlRendererUtils/htmlBuilder';
 
 /**
  * Interface for converting a game state into an graphical representation.
@@ -31,7 +31,7 @@ class HtmlRenderer implements GraphicalRenderer {
   constructor() {}
 
   public getRenderableString(renderableGameState: RenderableGameState<QTile>) {
-    return htmlBuilder(renderableGameState);
+    return gameStateHtmlBuilder(renderableGameState);
   }
 }
 

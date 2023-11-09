@@ -136,3 +136,6 @@ dist
 
 # custom temporary files
 *.tmp
+
+# images outputed by observer
+[0-9]*.png

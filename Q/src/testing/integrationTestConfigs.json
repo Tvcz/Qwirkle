@@ -1,0 +1,8 @@
+[
+    {
+        "testScript": "8/xgame-with-observer",
+        "directories": [
+            "8/grade/staff-tests"
+        ]
+    }
+]
