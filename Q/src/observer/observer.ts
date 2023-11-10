@@ -106,36 +106,19 @@ export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
 
   private saveStateToImage(gameStateIndex: number) {
     const gameState = this.stateHistory[gameStateIndex];
-    this.saveHtmlToImage(
-      this.toHtmlView(gameState),
-      `${gameStateIndex}.png`,
-      this.calculateHeightAndWidth(gameState)
-    );
+    this.saveHtmlToImage(this.toHtmlView(gameState), `${gameStateIndex}.png`);
   }
 
   private toHtmlView(gameState: RenderableGameState<T>): string {
     return gameStateHtmlBuilder(gameState);
   }
 
-  private calculateHeightAndWidth(gameState: RenderableGameState<T>) {
-    const dimensions = gameState.mapState.dimensions;
-    const width = (dimensions.rightmost + 1 - dimensions.leftmost) * TILE_SCALE;
-    const height =
-      (dimensions.topmost + 1 - dimensions.bottommost) * TILE_SCALE;
-    return { width, height };
-  }
-
-  private async saveHtmlToImage(
-    html: string,
-    outputPath: string,
-    widthAndHeight: { width: number; height: number }
-  ) {
-    // const browser = await puppeteer.launch({ headless: 'new' });
-    // const page = await browser.newPage();
-    // await page.setContent(html);
-    // // await page.setViewport(widthAndHeight);
-    // await page.screenshot({ path: outputPath });
-    // await browser.close();
+  private async saveHtmlToImage(html: string, outputPath: string) {
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+    await page.setContent(html);
+    await page.screenshot({ path: outputPath });
+    await browser.close();
   }
 
   public nextState() {
