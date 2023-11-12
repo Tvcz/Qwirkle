@@ -1,0 +1,54 @@
+{
+    "map": [
+        [
+            0,
+            [
+                0,
+                {
+                    "color": "blue",
+                    "shape": "star"
+                }
+            ]
+        ]
+    ],
+    "tile*": [],
+    "players": [
+        {
+            "score": 10,
+            "tile*": []
+        },
+        {
+            "score": 10,
+            "tile*": []
+        },
+        {
+            "score": 10,
+            "tile*": []
+        },
+        {
+            "score": 0,
+            "tile*": []
+        }
+    ]
+}
+[
+    [
+        "A",
+        "dag",
+        "win"
+    ],
+    [
+        "B",
+        "dag",
+        "win"
+    ],
+    [
+        "C",
+        "dag",
+        "win"
+    ],
+    [
+        "D",
+        "dag"
+    ]
+]

@@ -1,0 +1,194 @@
+{
+    "map": [
+        [
+            0,
+            [
+                0,
+                {
+                    "color": "blue",
+                    "shape": "star"
+                }
+            ]
+        ]
+    ],
+    "tile*": [
+        {
+            "color": "yellow",
+            "shape": "circle"
+        },
+        {
+            "color": "yellow",
+            "shape": "square"
+        },
+        {
+            "color": "yellow",
+            "shape": "clover"
+        },
+        {
+            "color": "yellow",
+            "shape": "diamond"
+        },
+        {
+            "color": "yellow",
+            "shape": "clover"
+        },
+        {
+            "color": "purple",
+            "shape": "square"
+        },
+        {
+            "color": "yellow",
+            "shape": "square"
+        },
+        {
+            "color": "orange",
+            "shape": "clover"
+        },
+        {
+            "color": "purple",
+            "shape": "clover"
+        },
+        {
+            "color": "blue",
+            "shape": "diamond"
+        }
+    ],
+    "players": [
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "yellow",
+                    "shape": "8star"
+                },
+                {
+                    "color": "red",
+                    "shape": "star"
+                },
+                {
+                    "color": "green",
+                    "shape": "star"
+                },
+                {
+                    "color": "red",
+                    "shape": "square"
+                },
+                {
+                    "color": "orange",
+                    "shape": "8star"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "square"
+                }
+            ]
+        },
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "yellow",
+                    "shape": "8star"
+                },
+                {
+                    "color": "blue",
+                    "shape": "circle"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "clover"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "red",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "purple",
+                    "shape": "square"
+                }
+            ]
+        },
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "yellow",
+                    "shape": "circle"
+                },
+                {
+                    "color": "red",
+                    "shape": "clover"
+                },
+                {
+                    "color": "green",
+                    "shape": "square"
+                },
+                {
+                    "color": "red",
+                    "shape": "square"
+                },
+                {
+                    "color": "red",
+                    "shape": "square"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "star"
+                }
+            ]
+        },
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "orange",
+                    "shape": "square"
+                },
+                {
+                    "color": "blue",
+                    "shape": "square"
+                },
+                {
+                    "color": "purple",
+                    "shape": "8star"
+                },
+                {
+                    "color": "green",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "purple",
+                    "shape": "circle"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "square"
+                }
+            ]
+        }
+    ]
+}
+[
+    [
+        "A",
+        "dag"
+    ],
+    [
+        "B",
+        "ldasg",
+        "take-turn"
+    ],
+    [
+        "C",
+        "ldasg"
+    ],
+    [
+        "D",
+        "dag",
+        "take-turn"
+    ]
+]

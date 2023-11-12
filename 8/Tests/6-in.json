@@ -1,0 +1,192 @@
+{
+    "map": [
+        [
+            0,
+            [
+                0,
+                {
+                    "color": "blue",
+                    "shape": "star"
+                }
+            ]
+        ]
+    ],
+    "tile*": [
+        {
+            "color": "red",
+            "shape": "8star"
+        },
+        {
+            "color": "green",
+            "shape": "diamond"
+        },
+        {
+            "color": "purple",
+            "shape": "8star"
+        },
+        {
+            "color": "purple",
+            "shape": "clover"
+        },
+        {
+            "color": "orange",
+            "shape": "clover"
+        },
+        {
+            "color": "orange",
+            "shape": "8star"
+        },
+        {
+            "color": "orange",
+            "shape": "diamond"
+        },
+        {
+            "color": "purple",
+            "shape": "diamond"
+        },
+        {
+            "color": "orange",
+            "shape": "circle"
+        },
+        {
+            "color": "green",
+            "shape": "8star"
+        }
+    ],
+    "players": [
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "orange",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "green",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "green",
+                    "shape": "square"
+                },
+                {
+                    "color": "red",
+                    "shape": "8star"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "8star"
+                },
+                {
+                    "color": "red",
+                    "shape": "circle"
+                }
+            ]
+        },
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "green",
+                    "shape": "8star"
+                },
+                {
+                    "color": "orange",
+                    "shape": "clover"
+                },
+                {
+                    "color": "red",
+                    "shape": "clover"
+                },
+                {
+                    "color": "orange",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "purple",
+                    "shape": "8star"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "clover"
+                }
+            ]
+        },
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "green",
+                    "shape": "circle"
+                },
+                {
+                    "color": "red",
+                    "shape": "8star"
+                },
+                {
+                    "color": "green",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "green",
+                    "shape": "circle"
+                },
+                {
+                    "color": "purple",
+                    "shape": "circle"
+                },
+                {
+                    "color": "orange",
+                    "shape": "8star"
+                }
+            ]
+        },
+        {
+            "score": 0,
+            "tile*": [
+                {
+                    "color": "orange",
+                    "shape": "8star"
+                },
+                {
+                    "color": "yellow",
+                    "shape": "clover"
+                },
+                {
+                    "color": "orange",
+                    "shape": "square"
+                },
+                {
+                    "color": "orange",
+                    "shape": "square"
+                },
+                {
+                    "color": "orange",
+                    "shape": "diamond"
+                },
+                {
+                    "color": "red",
+                    "shape": "8star"
+                }
+            ]
+        }
+    ]
+}
+[
+    [
+        "A",
+        "dag"
+    ],
+    [
+        "B",
+        "ldasg"
+    ],
+    [
+        "C",
+        "ldasg"
+    ],
+    [
+        "D",
+        "dag"
+    ]
+]
