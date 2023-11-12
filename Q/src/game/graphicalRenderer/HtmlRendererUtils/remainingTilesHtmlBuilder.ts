@@ -1,5 +1,5 @@
 import { ShapeColorTile } from '../../map/tile';
-import { renderTilesInline } from './tileHtmlBuilder';
+import { renderTilesVerticallyScrolling } from './tileHtmlBuilder';
 
 /**
  * Build an html string to display the remaining tiles
@@ -11,9 +11,7 @@ export const remainingTilesHtmlBuilder = (remainingTiles: ShapeColorTile[]) => {
   return `
         <div>
             ${remainingTilesHeader}
-            <span>
-                ${renderTilesInline(remainingTiles)}
-            </span>
+            ${renderTilesVerticallyScrolling(remainingTiles)}
         </div>
     `;
 };

@@ -213,7 +213,7 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
         getTileWithPlacements(placementSoFar, (key) => mapState.getValue(key))
       );
       if (!isLegal) {
-        return new BaseTurnAction('PLACE', placements);
+        return new BaseTurnAction('PLACE', placementSoFar);
       } else {
         mapState.setValue(
           potentialPlacement.coordinate,
@@ -251,10 +251,6 @@ export const strategyForSinglePlacement = <T extends ShapeColorTile>(
     );
     if (placement !== undefined) {
       return new BaseTurnAction('PLACE', [placement]);
-    } else if (remainingTilesCount >= playerTiles.length) {
-      return new BaseTurnAction('EXCHANGE');
-    } else {
-      return new BaseTurnAction('PASS');
     }
   }
   if (remainingTilesCount >= playerTiles.length) {

@@ -3,10 +3,8 @@ import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
 import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
-import { TILE_SCALE } from '../constants';
-
 import { writeFile } from 'fs';
-import { toJState } from './parser';
+import { toJState } from './serialize';
 /**
  * Interface for observing a game.
  * Provides functionality for receiving game state updates and game over

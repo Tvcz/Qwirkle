@@ -1,4 +1,4 @@
-import { QTile } from '../map/tile';
+import { QTile, ShapeColorTile } from '../map/tile';
 import { RenderableGameState } from '../types/gameState.types';
 import { gameStateHtmlBuilder } from './HtmlRendererUtils/htmlBuilder';
 
@@ -30,7 +30,9 @@ export interface GraphicalRenderer {
 class HtmlRenderer implements GraphicalRenderer {
   constructor() {}
 
-  public getRenderableString(renderableGameState: RenderableGameState<QTile>) {
+  public getRenderableString(
+    renderableGameState: RenderableGameState<ShapeColorTile>
+  ) {
     return gameStateHtmlBuilder(renderableGameState);
   }
 }

@@ -1,9 +1,8 @@
-import { QTile, ShapeColorTile } from '../../map/tile';
+import { ShapeColorTile } from '../../map/tile';
 import { RenderableGameState } from '../../types/gameState.types';
 import { mapHtmlBuilder } from './mapHtmlBuilder';
 import { remainingTilesHtmlBuilder } from './remainingTilesHtmlBuilder';
 import { scoreboardHtmlBuilder } from './scoreboardHtmlBuilder';
-import { turnOrderHtmlBuilder } from './turnOrderHtmlBuilder';
 
 /**
  * Build the game state view view with a header, the map, the players, including
@@ -19,11 +18,15 @@ export const gameStateHtmlBuilder = (
 
   return `
     ${gameHeader}
-    ${mapHtmlBuilder(renderableData.mapState)}
-    <div style="${gameStateInfoStyle}">
-        ${scoreboardHtmlBuilder(renderableData.players)}
-        ${turnOrderHtmlBuilder(renderableData.players)}
-        ${remainingTilesHtmlBuilder(renderableData.remainingTiles)}
-    </div>
+    <span style="${gameStateInfoStyle}">
+      <div>
+        ${mapHtmlBuilder(renderableData.mapState)}
+        <div style="${gameStateInfoStyle}">
+            ${scoreboardHtmlBuilder(renderableData.players)}
+            ${/*turnOrderHtmlBuilder(renderableData.players)*/ ''}
+        </div>
+      </div>
+      ${remainingTilesHtmlBuilder(renderableData.remainingTiles)}
+    </span>
     `;
 };

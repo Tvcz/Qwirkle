@@ -74,6 +74,8 @@ function runGame(observers: BaseObserver<BaseTile>[]) {
 
     process.stdout.write(JSON.stringify([winners, eliminated]));
 
-    process.exit();
+    if (observers.length == 0) {
+      process.exit();
+    }
   });
 }

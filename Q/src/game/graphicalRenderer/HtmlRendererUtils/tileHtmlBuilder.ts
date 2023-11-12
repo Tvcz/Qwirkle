@@ -1,15 +1,33 @@
+import { TILE_SCALE } from '../../../constants';
 import { BaseTile, QTile, ShapeColorTile } from '../../map/tile';
 import { Color, Shape } from '../../types/map.types';
 
 // TODO: Use constant for tile size and scale according to that constant for sub-elements
 
 export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
-  const htmlTiles = tiles
-    .map((tile) => shapeColorTileHtmlBuilder(tile.getShape(), tile.getColor()))
-    .join('');
-  return `<span>
+  const htmlTiles = tiles.map((tile) => baseTileHtmlBuilder(tile)).join('');
+  const style = `
+    display: flex;
+  `;
+  return `<span style="${style}">
             ${htmlTiles}
           </span>`;
+};
+
+export const renderTilesVerticallyScrolling = (tiles: ShapeColorTile[]) => {
+  const htmlTiles = tiles.map((tile) => baseTileHtmlBuilder(tile)).join('');
+  const MAX_TILES_DISPLAYED_BEFORE_SCROLLING = 8;
+  const style = `
+    display: flex;
+    flex-direction: column;
+    gap: ${TILE_SCALE / 5}px;
+    overflow-y: scroll;
+    max-height: ${MAX_TILES_DISPLAYED_BEFORE_SCROLLING * TILE_SCALE}px;
+  `;
+  return `<div style="${style}">
+          <div></div>
+            ${htmlTiles}
+          </div>`;
 };
 
 /**
@@ -18,11 +36,11 @@ export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
  * @param x x-coordinate
  * @param y y-coordinate
  * @param tile A QTile
- * @returns If tile is a BaseTile, n HTML string visualizing a tile at a coordinate, otherwise an empty string
+ * @returns If tile is a BaseTile, an HTML string visualizing a tile at a coordinate, otherwise an empty string
  */
 export const tileHtmlBuilder = (x: number, y: number, tile: QTile) => {
   if (tile instanceof BaseTile) {
-    return baseTileHtmlBuilder(x, y, tile);
+    return baseTileHtmlBuilder(tile, x, y);
   }
   return '';
 };
@@ -34,20 +52,32 @@ export const tileHtmlBuilder = (x: number, y: number, tile: QTile) => {
  * @param tile A QTile
  * @returns an HTML string visualizing a ShapeColorTile
  */
-const baseTileHtmlBuilder = (x: number, y: number, tile: ShapeColorTile) => {
+const baseTileHtmlBuilder = (
+  tile: ShapeColorTile,
+  x?: number,
+  y?: number,
+  inGrid: boolean = true
+) => {
   const shape = tile.getShape();
   const color = tile.getColor();
 
-  const containerStyle = [
-    'width: 50px;',
-    'height: 50px;',
+  const containerStyleItems = [
+    `width: ${TILE_SCALE}px;`,
+    `min-height: ${TILE_SCALE}px;`,
     'position: relative;',
     'display: flex;',
     'justify-content: center;',
-    'align-items: center;',
-    `grid-column-start: ${x};`,
-    `grid-row-start: ${y};`
-  ].join('');
+    'align-items: center;'
+  ];
+
+  if (inGrid) {
+    containerStyleItems.push(
+      `grid-column-start: ${x};`,
+      `grid-row-start: ${y};`
+    );
+  }
+
+  const containerStyle = containerStyleItems.join('');
 
   return `
       <div style="${containerStyle}">

@@ -15,14 +15,14 @@ function mustParseAsSingleActor(json: Json): JActor {
   const jName = mustParseAsJName(json[0]);
   const jStrategy = mustParseAsJStrategy(json[1]);
 
-  if (json[2]) {
-    const jExn = mustParseAsJExn(json[2]);
-    return [jName, jStrategy, jExn];
-  }
-
   if (json[3]) {
     const jCheat = mustParseAsJCheat(json[3]);
     return [jName, jStrategy, 'a cheat', jCheat];
+  }
+
+  if (json[2]) {
+    const jExn = mustParseAsJExn(json[2]);
+    return [jName, jStrategy, jExn];
   }
 
   return [jName, jStrategy];

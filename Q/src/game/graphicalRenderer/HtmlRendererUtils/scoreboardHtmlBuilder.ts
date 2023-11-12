@@ -1,9 +1,6 @@
 import { ShapeColorTile } from '../../map/tile';
 import { RenderablePlayer } from '../../types/gameState.types';
-import {
-  renderTilesInline,
-  shapeColorTileHtmlBuilder
-} from './tileHtmlBuilder';
+import { renderTilesInline } from './tileHtmlBuilder';
 
 /**
  * Build an html string to display the scoreboard and header
@@ -20,25 +17,36 @@ export const scoreboardHtmlBuilder = (
     'flex-direction: column;'
   ].join('');
 
-  const scoreboardHeaderRowStyle = [
-    'display: flex;',
-    'flex-direction: row;',
-    'justifycontent: space-between;',
+  const scoreboardStyle = [
+    'display: grid;',
+    'grid-template-columns: 1fr 1fr 3fr;',
+    'justify-items: center;',
+    'align-items: center;',
     'column-gap: 20px;',
-    'font-size: 24px;'
+    'font-size: 20px;'
   ].join('');
 
-  const headerRowId = '<p>Name</p>';
-  const headerRowScore = '<p>Score</p>';
+  const nameStyle = ['width: 100px;', 'text-align: left;'].join('');
+  const scoreStyleFixed = ['width: 100px;', 'text-align: center;'].join('');
+
+  const headerRowName = `<p style="${nameStyle}">Name</p>`;
+  const headerRowScore = `<p style="${scoreStyleFixed}">Score</p>`;
+  const headerRowTiles = '<p>Tiles</p>';
 
   return `
         <div style="${scoreboardContainerStyle}">
             ${scoreboardHeader}
-            <div style="${scoreboardHeaderRowStyle}">
-                ${headerRowId}
-                ${headerRowScore}
+            <div style="${scoreboardStyle}">
+              ${headerRowName}
+              ${headerRowScore}
+              ${headerRowTiles}
             </div>
-            ${scoreHtmlBuilder(players).join('')}
+            ${scoreHtmlBuilder(
+              players,
+              scoreboardStyle,
+              nameStyle,
+              scoreStyleFixed
+            ).join('')}
         </div>
     `;
 };
@@ -48,19 +56,17 @@ export const scoreboardHtmlBuilder = (
  * @param scoreboard a list of player names and their scores
  * @returns An HTML string visualizing the scoreboard
  */
-const scoreHtmlBuilder = (players: RenderablePlayer<ShapeColorTile>[]) => {
-  const scoreStyle = [
-    'display: flex;',
-    'flex-direction: row;',
-    'justify-dontent: space-between;',
-    'column-gap: 20px;'
-  ].join('');
-
+const scoreHtmlBuilder = (
+  players: RenderablePlayer<ShapeColorTile>[],
+  scoreboardStyle: string,
+  nameStyle: string,
+  scoreStyleFixed: string
+) => {
   return players.map(({ name, score, tiles }) => {
     return `
-            <div style="${scoreStyle}">
-                <p>${name}</p>
-                <p>${score}</p>
+            <div style="${scoreboardStyle}">
+                <p style="${nameStyle}">${name}</p>
+                <p style="${scoreStyleFixed}">${score}</p>
                 ${renderTilesInline(tiles)}
             </div>
         `;

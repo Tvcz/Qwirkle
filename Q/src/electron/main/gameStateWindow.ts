@@ -7,8 +7,8 @@ import { dialog } from 'electron';
 export const createWindow = (observer: ObserverAPI<QTile>) => {
   app.on('ready', () => {
     const windowOptions: Electron.BrowserWindowConstructorOptions = {
-      height: 500,
-      width: 500,
+      height: 750,
+      width: 750,
       show: true,
       webPreferences: {
         offscreen: false,

@@ -1,3 +1,4 @@
+import { TILE_SCALE } from '../../../constants';
 import { QTile } from '../../map/tile';
 import { RenderableMapState, TilePlacement } from '../../types/gameState.types';
 import { Dimensions } from '../../types/map.types';
@@ -20,8 +21,8 @@ export const mapHtmlBuilder = ({
 
   const mapContainerStyle = [
     'display: grid;',
-    `grid-template-rows: repeat(${height}, 50px);`,
-    `grid-template-columns: repeat(${width}, 50px);`,
+    `grid-template-rows: repeat(${height}, ${TILE_SCALE});`,
+    `grid-template-columns: repeat(${width}, ${TILE_SCALE});`,
     'column-gap: 10px;',
     'row-gap: 10px;',
     'width: max-content;',

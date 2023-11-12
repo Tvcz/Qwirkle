@@ -54,14 +54,13 @@ export class DagStrategy implements Strategy<BaseTile> {
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<BaseTile>>
   ) {
-    const ta = suggestMoveByStrategy<BaseTile>(
+    return suggestMoveByStrategy<BaseTile>(
       mapState,
       playerTiles,
       remainingTilesCount,
       placementRules,
       sortCoordinatesByRowColumnOrder
     );
-    return ta;
   }
 }
 

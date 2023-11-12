@@ -2,14 +2,19 @@
 <html style="height: 100vh;">
     <head>
         <title>Q</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+        </style>
     </head>
     <body>
-        <div id='game-state-view'></div>
-        <span>
-            <button id="previous-state-button">Previous</button>
-            <button id="save-state-button">Save</button> 
-            <button id="next-state-button">Next</button>
+        <span style="display: flex; justify-content: center; align-items: center; position: sticky; top: 0; width: 100%; background-color: transparent; z-index: 1;">
+            <button id="previous-state-button" style="font-size: 24px; padding: 12px 24px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
+            <button id="save-state-button" style="font-size: 24px; padding: 12px 24px; background-color: #008CBA; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 16px; margin-right: 16px;">Save</button> 
+            <button id="next-state-button" style="font-size: 24px; padding: 12px 24px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
         </span>
+        <div id='game-state-view'></div>
         <script type="text/javascript" src="../../../out/renderer/renderer.js"></script>
     </body>
 </html>
