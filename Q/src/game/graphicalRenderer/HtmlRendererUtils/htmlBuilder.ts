@@ -20,13 +20,10 @@ export const gameStateHtmlBuilder = (
     ${gameHeader}
     <span style="${gameStateInfoStyle}">
       <div>
-        ${mapHtmlBuilder(renderableData.mapState)}
-        <div style="${gameStateInfoStyle}">
-            ${scoreboardHtmlBuilder(renderableData.players)}
-            ${/*turnOrderHtmlBuilder(renderableData.players)*/ ''}
-        </div>
+        ${scoreboardHtmlBuilder(renderableData.players)}
+        ${remainingTilesHtmlBuilder(renderableData.remainingTiles)}
       </div>
-      ${remainingTilesHtmlBuilder(renderableData.remainingTiles)}
+      ${mapHtmlBuilder(renderableData.mapState)}
     </span>
     `;
 };

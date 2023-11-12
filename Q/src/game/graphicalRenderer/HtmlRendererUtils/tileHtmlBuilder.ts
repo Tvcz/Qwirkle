@@ -25,7 +25,7 @@ export const renderTilesVerticallyScrolling = (tiles: ShapeColorTile[]) => {
     max-height: ${MAX_TILES_DISPLAYED_BEFORE_SCROLLING * TILE_SCALE}px;
   `;
   return `<div style="${style}">
-          <div></div>
+            <div></div>
             ${htmlTiles}
           </div>`;
 };
