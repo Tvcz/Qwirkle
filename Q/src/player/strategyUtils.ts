@@ -6,7 +6,6 @@ import { colorList, shapeList } from '../game/types/map.types';
 import { CoordinateGetter, PlacementRule } from '../game/types/rules.types';
 import { SorterFunction } from './strategy.types';
 import { BaseTurnAction, TurnAction } from './turnAction';
-import { sortCoordinatesByRowColumnOrder } from './strategySorters';
 
 /**
  * Function to sort tiles based their shape, and if the shapes are equal, then based on their color

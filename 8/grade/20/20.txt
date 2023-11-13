@@ -1,0 +1,128 @@
+(testing /course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/xgames)
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/7/20/Tests/6-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/7/20/Tests/6-out.json)
+/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:26
+    throw new Error('RowIndex set cannot contain gaps');
+          ^
+Error: RowIndex set cannot contain gaps
+    at validateJMap (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:26:11)
+    at validateJState (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:7:3)
+    at Socket.<anonymous> (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/xgames.ts:36:17)
+    at Socket.emit (node:events:525:35)
+    at Socket.emit (node:domain:489:12)
+    at endReadableNT (node:internal/streams/readable:1359:12)
+    at processTicksAndRejections (node:internal/process/task_queues:82:21)
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map
+           .
+           ((0 (0 #hasheq((color . "red") (shape . "circle"))))
+            (-1 (0 #hasheq((color . "green") (shape . "circle"))))
+            (-2 (0 #hasheq((color . "blue") (shape . "circle"))))
+            (-3 (0 #hasheq((color . "yellow") (shape . "circle"))))
+            (-4 (0 #hasheq((color . "orange") (shape . "circle"))))))
+          (players
+           .
+           (#hasheq((score . 0) (tile* . ()))
+            #hasheq((score . 0) (tile* . ()))))
+          (tile* . ()))
+  (("B" "dag") ("A" "dag")))
+(*** expected)
+'((("A" "B") ()))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ()))
+
+
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/7/20/Tests/7-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/7/20/Tests/7-out.json)
+/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:26
+    throw new Error('RowIndex set cannot contain gaps');
+          ^
+Error: RowIndex set cannot contain gaps
+    at validateJMap (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:26:11)
+    at validateJState (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:7:3)
+    at Socket.<anonymous> (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/xgames.ts:36:17)
+    at Socket.emit (node:events:525:35)
+    at Socket.emit (node:domain:489:12)
+    at endReadableNT (node:internal/streams/readable:1359:12)
+    at processTicksAndRejections (node:internal/process/task_queues:82:21)
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map
+           .
+           ((0 (0 #hasheq((color . "red") (shape . "circle"))))
+            (-1 (0 #hasheq((color . "green") (shape . "circle"))))
+            (-2 (0 #hasheq((color . "blue") (shape . "circle"))))
+            (-3 (0 #hasheq((color . "yellow") (shape . "circle"))))
+            (-4 (0 #hasheq((color . "orange") (shape . "circle"))))))
+          (players
+           .
+           (#hasheq((score . 0) (tile* . ()))
+            #hasheq((score . 1)
+                    (tile* . (#hasheq((color . "purple") (shape . "8star")))))
+            #hasheq((score . 1) (tile* . ()))
+            #hasheq((score . 1) (tile* . ()))))
+          (tile* . (#hasheq((color . "purple") (shape . "8star")))))
+  (("A" "dag" "win")
+   ("B" "dag" "new-tiles")
+   ("C" "dag" "take-turn")
+   ("D" "dag" "setup")))
+(*** expected)
+'((() ("D" "B" "C" "A")))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ()))
+
+
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/7/20/Tests/8-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/7/20/Tests/8-out.json)
+/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:26
+    throw new Error('RowIndex set cannot contain gaps');
+          ^
+Error: RowIndex set cannot contain gaps
+    at validateJMap (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:26:11)
+    at validateJState (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/validate/validateJState.ts:7:3)
+    at Socket.<anonymous> (/course/cs4500f23/ta/tedium-workdir/github/thoughtful-mustangs/7/Other/xgames.ts:36:17)
+    at Socket.emit (node:events:525:35)
+    at Socket.emit (node:domain:489:12)
+    at endReadableNT (node:internal/streams/readable:1359:12)
+    at processTicksAndRejections (node:internal/process/task_queues:82:21)
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map
+           .
+           ((0
+             (0 #hasheq((color . "red") (shape . "circle")))
+             (1 #hasheq((color . "red") (shape . "star"))))
+            (-1 (0 #hasheq((color . "green") (shape . "circle"))))
+            (-2 (0 #hasheq((color . "blue") (shape . "circle"))))
+            (-3 (0 #hasheq((color . "yellow") (shape . "circle"))))
+            (-4
+             (0 #hasheq((color . "orange") (shape . "circle")))
+             (1 #hasheq((color . "orange") (shape . "star"))))))
+          (players
+           .
+           (#hasheq((score . 0)
+                    (tile*
+                     .
+                     (#hasheq((color . "green") (shape . "star"))
+                      #hasheq((color . "blue") (shape . "star"))
+                      #hasheq((color . "yellow") (shape . "star"))
+                      #hasheq((color . "purple") (shape . "diamond")))))
+            #hasheq((score . 0)
+                    (tile*
+                     .
+                     (#hasheq((color . "green") (shape . "star"))
+                      #hasheq((color . "blue") (shape . "star"))
+                      #hasheq((color . "yellow") (shape . "star"))
+                      #hasheq((color . "purple") (shape . "diamond")))))))
+          (tile* . ()))
+  (("A" "ldasg") ("B" "dag")))
+(*** expected)
+'((("A") ()))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ()))
+
+
+()
+((passed 0) (total 3) (partial-score 0))
+
