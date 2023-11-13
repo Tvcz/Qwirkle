@@ -1,10 +1,6 @@
 import { BaseTile, QTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
-import {
-  getAllValidPlacements,
-  suggestMoveByStrategy,
-  tilePlacementsToMap
-} from './strategyUtils';
+import { suggestMoveByStrategy, tilePlacementsToMap } from './strategyUtils';
 import { PlacementRule } from '../game/types/rules.types';
 import {
   sortCoordinatesByMostNeighbors,
@@ -223,7 +219,8 @@ export class NoFitStrategy implements Strategy<BaseTile> {
   ) {
     const map = tilePlacementsToMap(mapState);
     for (const tile of playerTiles) {
-      const validPlacements = getAllValidPlacements(tile, map, placementRules);
+      //const validPlacements = getAllValidPlacements(tile, map, placementRules);
+      const validPlacements = [];
       for (const placement of validPlacements) {
         const turnAction = this.getUnmatchingNeighborIfExists(
           tile,

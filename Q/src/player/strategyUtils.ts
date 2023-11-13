@@ -68,9 +68,10 @@ export const tilePlacementsToMap = <T extends QTile>(
  * @param placementRules Placement rules a valid placement needs to adhere to
  * @returns a list of the coordinates where the given tile could be placed
  */
-export const getAllValidPlacements = <T extends ShapeColorTile>(
+const getAllValidPlacements = <T extends ShapeColorTile>(
   tile: T,
   map: Dictionary<Coordinate, T>,
+  placements: TilePlacement<T>[],
   placementRules: ReadonlyArray<PlacementRule<T>>
 ): Coordinate[] => {
   const getTile = (coord: Coordinate) => map.getValue(coord);
@@ -87,7 +88,11 @@ export const getAllValidPlacements = <T extends ShapeColorTile>(
 
     return (
       hasNotBeenSeen &&
-      isValidPlacement([{ tile, coordinate }], placementRules, getTile)
+      isValidPlacement(
+        [...placements, { tile, coordinate }],
+        placementRules,
+        getTile
+      )
     );
   });
 
@@ -147,11 +152,16 @@ const getTileWithPlacements = <T extends QTile>(
 const getNewTilePlacementForSingleTile = <T extends ShapeColorTile>(
   tile: T,
   map: Dictionary<Coordinate, T>,
+  placements: TilePlacement<T>[],
   placementRules: ReadonlyArray<PlacementRule<T>>,
   coordinateSorter: SorterFunction<T>
 ): TilePlacement<T> | undefined => {
-  const validPlacements = getAllValidPlacements(tile, map, placementRules);
-
+  const validPlacements = getAllValidPlacements(
+    tile,
+    map,
+    placements,
+    placementRules
+  );
   const getTile = (coord: Coordinate) => map.getValue(coord);
   validPlacements.sort((a, b) => coordinateSorter(a, b, getTile));
 
@@ -207,7 +217,8 @@ const iterate = <T extends ShapeColorTile>(
   coordinateSorter: SorterFunction<T>
 ): TurnAction<T> => {
   const turnaction = strategyForSinglePlacement(
-    mutableMap,
+    stableMap,
+    placements,
     playerTiles,
     remainingTilesCount,
     placementRules,
@@ -217,6 +228,7 @@ const iterate = <T extends ShapeColorTile>(
     return handlePassOrExchange(placements, turnaction);
   } else {
     const potentialPlacement = turnaction.getPlacements()[0];
+
     const placementSoFar = [...placements, potentialPlacement];
     const isLegal = isValidPlacement(placementSoFar, placementRules, (key) =>
       stableMap.getValue(key)
@@ -268,6 +280,7 @@ const handlePassOrExchange = <T extends ShapeColorTile>(
 
 export const strategyForSinglePlacement = <T extends ShapeColorTile>(
   mapState: Dictionary<Coordinate, T>,
+  placements: TilePlacement<T>[],
   playerTiles: T[],
   remainingTilesCount: number,
   placementRules: ReadonlyArray<PlacementRule<T>>,
@@ -277,6 +290,7 @@ export const strategyForSinglePlacement = <T extends ShapeColorTile>(
     const placement = getNewTilePlacementForSingleTile(
       tile,
       mapState,
+      placements,
       placementRules,
       coordinateSorter
     );
