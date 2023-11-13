@@ -1,11 +1,15 @@
 import { TILE_SCALE } from '../../../constants';
+import { getTilesOrdering } from '../../../player/strategyUtils';
 import { BaseTile, QTile, ShapeColorTile } from '../../map/tile';
 import { Color, Shape } from '../../types/map.types';
 
 // TODO: Use constant for tile size and scale according to that constant for sub-elements
 
 export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
-  const htmlTiles = tiles.map((tile) => baseTileHtmlBuilder(tile)).join('');
+  const tilesSorted = getTilesOrdering(tiles);
+  const htmlTiles = tilesSorted
+    .map((tile) => baseTileHtmlBuilder(tile))
+    .join('');
   const style = `
     display: flex;
   `;
