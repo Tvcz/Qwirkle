@@ -17,7 +17,7 @@ import { PlacementRule, ScoringRule } from '../game/types/rules.types';
 import { TurnAction } from '../player/turnAction';
 import { Player } from '../player/player';
 import { GameResult } from './referee.types';
-import { ObserverAPI } from '../observer/observer';
+import { Observer } from '../observer/observer';
 
 /**
  * Set up a game of Q by creating the initial game state and communicating to each of the players the initial state.
@@ -172,7 +172,7 @@ export const setUpPlayers = (gameState: QGameState<BaseTile>) => {
 export const runGame = (
   gameState: QGameState<BaseTile>,
   rulebook: QRuleBook<BaseTile>,
-  observers: ObserverAPI<BaseTile>[]
+  observers: Observer<BaseTile>[]
 ): QGameState<BaseTile> => {
   const isGameOver = () => gameState.isGameOver(rulebook.getEndOfGameRules());
 
@@ -193,7 +193,7 @@ export const runGame = (
  */
 const updateObservers = (
   gameState: RenderableGameState<BaseTile>,
-  observers: ObserverAPI<BaseTile>[]
+  observers: Observer<BaseTile>[]
 ): void => {
   observers.forEach((observer) => observer.receiveState(gameState));
 };
@@ -384,7 +384,7 @@ const executeTurnAction = (
  */
 export function endGame(
   finalGameState: QGameState<BaseTile>,
-  observers: ObserverAPI<BaseTile>[]
+  observers: Observer<BaseTile>[]
 ): GameResult {
   const scoreboard = finalGameState.getScoreboard();
 
@@ -411,7 +411,7 @@ export function endGame(
  * @param observers the observers to inform about the end of the game
  */
 const informObserversOfEndGame = (
-  observers: ObserverAPI<BaseTile>[],
+  observers: Observer<BaseTile>[],
   gameState: RenderableGameState<BaseTile>,
   winnerNames: string[],
   eliminatedNames: string[]

@@ -1,10 +1,9 @@
 import { BrowserWindow, app, ipcMain } from 'electron';
 import path from 'path';
 import { ObserverAPI } from '../../observer/observer';
-import { QTile } from '../../game/map/tile';
 import { dialog } from 'electron';
 
-export const createWindow = (observer: ObserverAPI<QTile>) => {
+export const createWindow = (observer: ObserverAPI) => {
   app.on('ready', () => {
     const windowOptions: Electron.BrowserWindowConstructorOptions = {
       height: 800,
@@ -40,7 +39,7 @@ export const createWindow = (observer: ObserverAPI<QTile>) => {
   return app.whenReady();
 };
 
-async function saveFileHelper(observer: ObserverAPI<QTile>) {
+async function saveFileHelper(observer: ObserverAPI) {
   const { canceled, filePath } = await openDialog();
   if (!canceled && filePath) {
     observer.saveState(filePath);

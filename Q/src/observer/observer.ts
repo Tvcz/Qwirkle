@@ -5,12 +5,13 @@ import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtil
 import { createWindow } from '../electron/main/gameStateWindow';
 import { writeFile } from 'fs';
 import { toJState } from './serialize';
+
 /**
  * Interface for observing a game.
  * Provides functionality for receiving game state updates and game over
  * notifications.
  */
-export interface ObserverAPI<T extends QTile> {
+export interface Observer<T extends QTile> {
   /**
    * Receives an updated game state which can be used to render the game.
    * @param gameState the game data which is available for observation
@@ -28,7 +29,13 @@ export interface ObserverAPI<T extends QTile> {
     winnerNames: string[],
     eliminatedNames: string[]
   ): void;
+}
 
+/**
+ * Interface for the api of an observer, which provides functionality for
+ * controlling the observer's state, and interacts with the GUI.
+ */
+export interface ObserverAPI {
   /**
    * Moves the observer's current game state to the chronological next state.
    * If there is no next state, the observer's state will not change.
@@ -62,7 +69,9 @@ export interface ObserverAPI<T extends QTile> {
   ): void;
 }
 
-export class BaseObserver<T extends ShapeColorTile> implements ObserverAPI<T> {
+export class BaseObserver<T extends ShapeColorTile>
+  implements Observer<T>, ObserverAPI
+{
   stateHistory: RenderableGameState<T>[];
   currenStateIndex: number;
   updateViewCallback: (html: string) => void;
