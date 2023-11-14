@@ -8,11 +8,13 @@ import { SorterFunction } from './strategy.types';
 import { BaseTurnAction, TurnAction } from './turnAction';
 
 /**
- * Function to sort tiles based their shape, and if the shapes are equal, then based on their color
- * Shapes and colors are weighted in the order that they're defined in the shapeList and colorList variables
+ * Function to sort tiles based their shape, and if the shapes are equal, then
+ * based on their color Shapes and colors are weighted in the order that they're
+ * defined in the shapeList and colorList variables
  * @param tile1 First ShapeColorTile tile to compare
  * @param tile2 Second ShapeColorTile tile to compare
- * @returns A positive value if 'tile1 > tile2', and negative number if 'tile1 < tile2', or 0 if they are equal
+ * @returns A positive value if 'tile1 > tile2', and negative number if 'tile1 <
+ * tile2', or 0 if they are equal
  */
 const sortShapeColorTiles = (
   tile1: ShapeColorTile,
@@ -31,7 +33,8 @@ const sortShapeColorTiles = (
 };
 
 /**
- * Function to sort a list of tiles in lexicographical order, as describe in the documentation for the sortShapeColorTiles function
+ * Function to sort a list of tiles in lexicographical order, as described in
+ * the documentation for the sortShapeColorTiles function
  * @param playerTiles A list of the player's tiles
  * @returns a sorted copy of the players tiles
  */
@@ -44,9 +47,9 @@ export const getTilesOrdering = <T extends ShapeColorTile>(
 };
 
 /**
- * Convert a list of TilePlacement into a dictionary from Coordinate to Tile
+ * Convert a list of TilePlacement into a dictionary of Coordinates to Tiles.
  * @param mapState A list of the tile placements on the map
- * @returns A map of coordinates to tiles
+ * @returns A dictionary of coordinates to tiles
  */
 export const tilePlacementsToMap = <T extends QTile>(
   mapState: TilePlacement<T>[]
@@ -61,40 +64,35 @@ export const tilePlacementsToMap = <T extends QTile>(
 };
 
 /**
- * Get all of the valid tile placements for a given tile in the map according to the given placement rules
+ * Get all of the valid tile placements for a given tile in the map according to the given placement rules.
  * @param tile tile to get placements for
- * @param placedTiles The tiles already placed this turn
  * @param map The existing map of the game
+ * @param placements The tiles already placed this turn
  * @param placementRules Placement rules a valid placement needs to adhere to
  * @returns a list of the coordinates where the given tile could be placed
  */
-const getAllValidPlacements = <T extends ShapeColorTile>(
+const getAllValidPlacementCoordinates = <T extends ShapeColorTile>(
   tile: T,
   map: Dictionary<Coordinate, T>,
   placements: TilePlacement<T>[],
   placementRules: ReadonlyArray<PlacementRule<T>>
 ): Coordinate[] => {
   const getTile = (coord: Coordinate) => map.getValue(coord);
-  const seenTiles = new Set<Coordinate>();
 
-  const allMapNeighbors = map
-    .keys()
-    .flatMap((coord) => Object.values(coord.getNeighbors()));
+  const allSpacesAdjacentToMap = new Set<Coordinate>();
+  [...map.keys(), ...placements.map(({ coordinate }) => coordinate)]
+    .flatMap((coord) => Object.values(coord.getNeighbors()))
+    .forEach((coord) => allSpacesAdjacentToMap.add(coord));
 
-  const validPlacements = allMapNeighbors.filter((coordinate) => {
-    const hasNotBeenSeen = !seenTiles.contains(coordinate);
-
-    seenTiles.add(coordinate);
-
-    return (
-      hasNotBeenSeen &&
-      isValidPlacement(
+  const validPlacements = allSpacesAdjacentToMap
+    .toArray()
+    .filter((coordinate) => {
+      return isValidPlacement(
         [...placements, { tile, coordinate }],
         placementRules,
         getTile
-      )
-    );
-  });
+      );
+    });
 
   return validPlacements;
 };
@@ -113,9 +111,6 @@ const isValidPlacement = <T extends ShapeColorTile>(
 ): boolean => {
   return placementRules.every((rule) => {
     const res = rule(tilePlacements, (coord: Coordinate) => getTile(coord));
-    // if (!res) {
-    //   console.log(rule);
-    // }
     return res;
   });
 };
@@ -140,39 +135,37 @@ const getTileWithPlacements = <T extends QTile>(
 };
 
 /**
- * Given a single tile, get places where that tile can be placed on the map with the given placement rules and the coordinate sorter function.
- * If there are no valid placements, return undefined.
+ * Given a single tile, get places where that tile can be placed on the map with the given placement rules
+ * ordered according to the given coordinate sorter function.
  * @param tile The tile to attempt to place
  * @param placedTiles The tiles already placed this turn
  * @param map The map of the game
  * @param placementRules list of placement rules
- * @param coordinateSorter A function to sort coordinates to prioritize which ones should be chosen first
- * @returns The new tile placment for the given tile, or undefined if there are no valid placements.
+ * @param coordinateSorter A function to sort coordinates
+ * @returns The sorted list of valid placements, which is empty if there are none.
  */
-const getNewTilePlacementForSingleTile = <T extends ShapeColorTile>(
+const getSortedValidPlacementsForTile = <T extends ShapeColorTile>(
   tile: T,
   map: Dictionary<Coordinate, T>,
   placements: TilePlacement<T>[],
   placementRules: ReadonlyArray<PlacementRule<T>>,
   coordinateSorter: SorterFunction<T>
-): TilePlacement<T> | undefined => {
-  const validPlacements = getAllValidPlacements(
+): TilePlacement<T>[] => {
+  const validCoordinates = getAllValidPlacementCoordinates(
     tile,
     map,
     placements,
     placementRules
   );
-  const getTile = (coord: Coordinate) => map.getValue(coord);
-  validPlacements.sort((a, b) => coordinateSorter(a, b, getTile));
+  const getTileWithPreviousPlacements = getTileWithPlacements(
+    placements,
+    (coord) => map.getValue(coord)
+  );
+  const sortedValidCoordinates = validCoordinates.toSorted((a, b) =>
+    coordinateSorter(a, b, getTileWithPreviousPlacements)
+  );
 
-  if (validPlacements.length > 0) {
-    return {
-      tile,
-      coordinate: validPlacements[0]
-    };
-  }
-
-  return undefined;
+  return sortedValidCoordinates.map((coordinate) => ({ tile, coordinate }));
 };
 
 /**
@@ -191,73 +184,82 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
   placementRules: ReadonlyArray<PlacementRule<T>>,
   coordinateSorter: SorterFunction<T>
 ): TurnAction<T> => {
-  const stableMap = tilePlacementsToMap(mapState);
-  const mutableMap = tilePlacementsToMap(mapState);
-
+  const map = tilePlacementsToMap(mapState);
   const orderedPlayerTiles = getTilesOrdering(playerTiles);
 
-  return iterate(
-    [],
-    stableMap,
-    mutableMap,
-    orderedPlayerTiles,
-    remainingTilesCount,
-    placementRules,
-    coordinateSorter
-  );
+  const singleStrategy = (placements: TilePlacement<T>[], playerTiles: T[]) =>
+    strategyForSinglePlacement(
+      map,
+      placements,
+      playerTiles,
+      remainingTilesCount,
+      placementRules,
+      coordinateSorter
+    );
+
+  return iterateStrategy([], orderedPlayerTiles, singleStrategy);
 };
 
-const iterate = <T extends ShapeColorTile>(
+/**
+ * Iterates a strategy for a single placement until it returns a PASS or EXCHANGE action.
+ * @param placements The placements so far
+ * @param playerTiles The tiles the player has left
+ * @param iterableStrategy The strategy to iterate
+ * @returns The turn action to take, combining one or more iterations of the strategy
+ */
+const iterateStrategy = <T extends ShapeColorTile>(
   placements: TilePlacement<T>[],
-  stableMap: Dictionary<Coordinate, T>,
-  mutableMap: Dictionary<Coordinate, T>,
+  playerTiles: T[],
+  iterableStrategy: (
+    placements: TilePlacement<T>[],
+    playerTiles: T[]
+  ) => TurnAction<T>
+): TurnAction<T> => {
+  const turnaction = iterableStrategy(placements, playerTiles);
+  if (turnaction.ofType('PASS') || turnaction.ofType('EXCHANGE')) {
+    return handlePassOrExchange(placements, turnaction);
+  } else {
+    const potentialPlacement = turnaction.getPlacements()[0];
+    const placementSoFar = [...placements, potentialPlacement];
+    const newPlayerTiles = playerTiles.filter(
+      (tile) => tile !== potentialPlacement.tile
+    );
+    return iterateStrategy(placementSoFar, newPlayerTiles, iterableStrategy);
+  }
+};
+
+/**
+ * Determines the best turn action to take for a single tile placement given the
+ * state of the game and player, the placement rules, and the placements made so far this turn.
+ * @param map the state of the map at the start of the turn
+ * @param placements the placements made so far this turn
+ * @param playerTiles the tiles available to the player
+ * @param remainingTilesCount the number of tiles remaining in the referee's bag
+ * @param placementRules the rules that placements must adhere to
+ * @param coordinateSorter a function to sort coordinates to prioritize placements
+ * @returns the best turn action to take
+ */
+const strategyForSinglePlacement = <T extends ShapeColorTile>(
+  map: Dictionary<Coordinate, T>,
+  placements: TilePlacement<T>[],
   playerTiles: T[],
   remainingTilesCount: number,
   placementRules: ReadonlyArray<PlacementRule<T>>,
   coordinateSorter: SorterFunction<T>
 ): TurnAction<T> => {
-  const turnaction = strategyForSinglePlacement(
-    stableMap,
-    placements,
-    playerTiles,
-    remainingTilesCount,
-    placementRules,
-    coordinateSorter
-  );
-  if (turnaction.ofType('PASS') || turnaction.ofType('EXCHANGE')) {
-    return handlePassOrExchange(placements, turnaction);
-  } else {
-    const potentialPlacement = turnaction.getPlacements()[0];
-
-    const placementSoFar = [...placements, potentialPlacement];
-    const isLegal = isValidPlacement(placementSoFar, placementRules, (key) =>
-      stableMap.getValue(key)
+  for (const tile of playerTiles) {
+    const sortedValidPlacements = getSortedValidPlacementsForTile(
+      tile,
+      map,
+      placements,
+      placementRules,
+      coordinateSorter
     );
-    if (!isLegal) {
-      return handlePassOrExchange(
-        placements,
-        getPassOrExchange(remainingTilesCount, playerTiles.length)
-      );
-    } else {
-      mutableMap.setValue(
-        potentialPlacement.coordinate,
-        potentialPlacement.tile
-      );
-      const newPlayerTiles = playerTiles.filter(
-        (tile) => tile !== potentialPlacement.tile
-      );
-      const secondIteration = iterate(
-        placementSoFar,
-        stableMap,
-        mutableMap,
-        newPlayerTiles,
-        remainingTilesCount,
-        placementRules,
-        coordinateSorter
-      );
-      return secondIteration;
+    if (sortedValidPlacements.length > 0) {
+      return new BaseTurnAction('PLACE', sortedValidPlacements.slice(0, 1));
     }
   }
+  return getPassOrExchange(remainingTilesCount, playerTiles.length);
 };
 
 /**
@@ -278,29 +280,13 @@ const handlePassOrExchange = <T extends ShapeColorTile>(
   }
 };
 
-export const strategyForSinglePlacement = <T extends ShapeColorTile>(
-  mapState: Dictionary<Coordinate, T>,
-  placements: TilePlacement<T>[],
-  playerTiles: T[],
-  remainingTilesCount: number,
-  placementRules: ReadonlyArray<PlacementRule<T>>,
-  coordinateSorter: SorterFunction<T>
-): TurnAction<T> => {
-  for (const tile of playerTiles) {
-    const placement = getNewTilePlacementForSingleTile(
-      tile,
-      mapState,
-      placements,
-      placementRules,
-      coordinateSorter
-    );
-    if (placement !== undefined) {
-      return new BaseTurnAction('PLACE', [placement]);
-    }
-  }
-  return getPassOrExchange(remainingTilesCount, playerTiles.length);
-};
-
+/**
+ * Determines whether to play the PASS or EXCHANGE actions based on the number
+ * of tiles remaining in the bag and the number of tiles in the player's hand.
+ * @param remainingTilesCount The number of tiles remaining in the bag
+ * @param playerTilesCount The number of tiles in the player's hand
+ * @returns A TurnAction of type PASS or EXCHANGE
+ */
 const getPassOrExchange = <T extends ShapeColorTile>(
   remainingTilesCount: number,
   playerTilesCount: number
