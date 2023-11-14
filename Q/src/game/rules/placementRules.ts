@@ -20,19 +20,17 @@ export const coordinateMustBeEmpty: PlacementRule<QTile> = (
   const tileIsNotInMap = tilePlacements.every(
     ({ coordinate }) => getTile(coordinate) === undefined
   );
-  const tileIsNotDuplicateInTilePlacements = tilePlacements.every(
+  const coordinateIsNotDuplicateInTilePlacements = tilePlacements.every(
     (placement) => {
       return (
-        tilePlacements.filter(
-          (duplicate) =>
-            placement.tile.equals(duplicate.tile) &&
-            placement.coordinate.equals(duplicate.coordinate)
+        tilePlacements.filter((duplicate) =>
+          placement.coordinate.equals(duplicate.coordinate)
         ).length === 1
       );
     }
   );
 
-  return tileIsNotInMap && tileIsNotDuplicateInTilePlacements;
+  return tileIsNotInMap && coordinateIsNotDuplicateInTilePlacements;
 };
 
 /**
