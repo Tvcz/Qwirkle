@@ -1,4 +1,4 @@
-import { util } from "typescript-collections";
+import { util } from 'typescript-collections';
 
 /**
  * Interface representing a coordinate position
@@ -40,8 +40,8 @@ interface QCoordinate {
  * Made of an x and y coordinate.
  */
 class Coordinate implements QCoordinate {
-  private x: Readonly<number>;
-  private y: Readonly<number>;
+  private readonly x: number;
+  private readonly y: number;
 
   constructor(x: number, y: number) {
     this.x = x;
@@ -61,7 +61,7 @@ class Coordinate implements QCoordinate {
       top: new Coordinate(this.x, this.y + 1),
       right: new Coordinate(this.x + 1, this.y),
       bottom: new Coordinate(this.x, this.y - 1),
-      left: new Coordinate(this.x - 1, this.y),
+      left: new Coordinate(this.x - 1, this.y)
     };
   }
 

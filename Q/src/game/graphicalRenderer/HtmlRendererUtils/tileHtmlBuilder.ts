@@ -157,7 +157,7 @@ const starTileHtmlBuilder = (color: Color) => {
     'height: 50px;'
   ].join('');
 
-  const inner1Style = [
+  const inner1StyleConfig = [
     'position: absolute;',
     'display: block;',
     'top: 0;',
@@ -166,12 +166,14 @@ const starTileHtmlBuilder = (color: Color) => {
     'width: 25px;',
     'height: 25px;',
     'transform: translateY(50%) rotate(180deg) skewX(22.5deg) skewY(22.5deg);'
-  ].join('');
+  ];
 
   const inner2Style = [
-    ...inner1Style,
+    ...inner1StyleConfig,
     'transform: translateY(50%) rotate(90deg) skewX(22.5deg) skewY(22.5deg);'
   ].join('');
+
+  const inner1Style = inner1StyleConfig.join('');
 
   return `
         <div style="${containerStyle}">
@@ -224,7 +226,7 @@ const cloverTileHtmlBuilder = (color: Color) => {
     'height: 50px;'
   ].join('');
 
-  const inner1Style = [
+  const inner1StyleConfig = [
     'border-radius: 20px;',
     'position: absolute;',
     'display: block;',
@@ -232,12 +234,14 @@ const cloverTileHtmlBuilder = (color: Color) => {
     'width: 50px;',
     'height: 25px;',
     'transform: translateY(50%);'
-  ].join('');
+  ];
 
   const inner2Style = [
-    ...inner1Style,
+    ...inner1StyleConfig,
     'transform: translateY(50%) rotate(90deg);'
   ].join('');
+
+  const inner1Style = inner1StyleConfig.join('');
 
   return `
         <div style="${containerStyle}">

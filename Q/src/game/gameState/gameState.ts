@@ -82,8 +82,9 @@ export interface QGameState<T extends QTile> {
 
   /**
    * Get the relevant information the active player needs before their turn.
-   * Includes information about the active players tiles, the map state, current
-   * scoreboard, remaining tiles, order of players, and that game status
+   * Includes immutable information about the active players tiles, the map
+   * state, current scoreboard, remaining tiles, order of players, and that game
+   * status
    * @returns The RelevantPlayerInfo for a players turn
    */
   getActivePlayerInfo: () => RelevantPlayerInfo<T>;
@@ -194,7 +195,6 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     const playerOwnsTiles = this.playerOwnsPlacedTiles(tilePlacements);
 
     const getTile = (coord: Coordinate) => this.map.getTile(coord);
-
     const allPlacementRulesUpheld = placementRules.every((rule) =>
       rule(tilePlacements, getTile)
     );
@@ -335,7 +335,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     const player = this.playerTurnQueue.getActivePlayer();
     const playerTiles = player.getAllTiles();
     const { tilePlacements, scoreboard, remainingTilesCount, playersQueue } =
-      this.getRenderablePublicData();
+      this.getPublicData();
 
     return {
       playerTiles,
@@ -412,7 +412,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
    * This includes the map state, scoreboard, turn order queue, and number of remaining tiles.
    * @returns Publicly available data
    */
-  private getRenderablePublicData() {
+  private getPublicData() {
     const tilePlacements = this.getTilePlacementsList();
     const scoreboard = this.playerTurnQueue.getScoreboard();
     const remainingTilesCount = this.bagOfTiles.getRemainingCount();

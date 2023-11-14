@@ -4,7 +4,7 @@ import {
 } from '../rules/placementRules';
 import { type QTile, type BaseTile } from './tile';
 import { Dictionary, Set } from 'typescript-collections';
-import type Coordinate from './coordinate';
+import Coordinate from './coordinate';
 import { Dimensions } from '../types/map.types';
 import { TilePlacement } from '../types/gameState.types';
 import { PlacementRule } from '../types/rules.types';
@@ -160,12 +160,19 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
 
   public getAllPlacements() {
     const allEntries = this.board.keys().map((coordinate) => {
-      return { coordinate, tile: this.board.getValue(coordinate) };
+      return {
+        coordinate,
+        tile: this.board.getValue(coordinate)
+      };
     });
-    const filteredEntries: TilePlacement<T>[] = allEntries.filter(
-      (placement): placement is TilePlacement<T> => placement.tile !== undefined
-    );
-
+    const filteredEntries: TilePlacement<T>[] = [];
+    allEntries.forEach((placement) => {
+      const coordinate = placement.coordinate;
+      const tile = placement.tile;
+      if (tile !== undefined) {
+        filteredEntries.push({ coordinate, tile });
+      }
+    });
     return filteredEntries;
   }
 }
