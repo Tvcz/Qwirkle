@@ -1,8 +1,8 @@
-import { ShapeColorTile } from '../../map/tile';
-import { RenderableGameState } from '../../types/gameState.types';
-import { mapHtmlBuilder } from './mapHtmlBuilder';
-import { remainingTilesHtmlBuilder } from './remainingTilesHtmlBuilder';
-import { scoreboardHtmlBuilder } from './scoreboardHtmlBuilder';
+import { ShapeColorTile } from '../map/tile';
+import { RenderableGameState } from '../types/gameState.types';
+import { mapHtmlBuilder } from './HtmlRendererUtils/mapHtmlBuilder';
+import { remainingTilesHtmlBuilder } from './HtmlRendererUtils/remainingTilesHtmlBuilder';
+import { scoreboardHtmlBuilder } from './HtmlRendererUtils/scoreboardHtmlBuilder';
 
 /**
  * Build the game state view view with a header, the map, the players, including

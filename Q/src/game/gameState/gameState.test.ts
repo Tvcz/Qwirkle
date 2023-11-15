@@ -10,7 +10,6 @@ import {
   mustMatchNeighboringShapesOrColors
 } from '../rules/placementRules';
 import { BaseTile } from '../map/tile';
-import HtmlRenderer from '../graphicalRenderer/graphicalRenderer';
 import {
   pointPerTileInSequence,
   pointPerTilePlaced,
@@ -21,6 +20,7 @@ import { BasePlayer } from '../../player/player';
 import { DagStrategy } from '../../player/strategy';
 import { BaseRuleBook } from '../rules/ruleBook';
 import { BaseTurnAction } from '../../player/turnAction';
+import { gameStateHtmlBuilder } from '../graphicalRenderer/htmlBuilder';
 
 const arrangeGameState = () => {
   const map = new BaseMap([
@@ -601,11 +601,11 @@ describe('tests for gameState class', () => {
   test('getRenderableData returns the html data for a game state when passed an HTMLRenderer object', () => {
     // Arrange
     const { gameState } = arrangeGameState();
-    const htmlRenderer = new HtmlRenderer();
 
     // Act
-    const gameStateRenderableData =
-      gameState.getRenderableDataForPlayer(htmlRenderer);
+    const gameStateRenderableData = gameStateHtmlBuilder(
+      gameState.getRenderableData()
+    );
 
     // Assert
     expect(gameStateRenderableData.replace(/\s/g, '')).toBe(

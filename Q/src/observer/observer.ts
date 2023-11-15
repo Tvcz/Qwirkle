@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
-import { gameStateHtmlBuilder } from '../game/graphicalRenderer/HtmlRendererUtils/htmlBuilder';
+import { gameStateHtmlBuilder } from '../game/graphicalRenderer/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
 import { writeFile } from 'fs';
 import { toJState } from './serialize';

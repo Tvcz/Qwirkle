@@ -161,11 +161,11 @@ const getSortedValidPlacementsForTile = <T extends ShapeColorTile>(
     placements,
     (coord) => map.getValue(coord)
   );
-  const sortedValidCoordinates = validCoordinates.toSorted((a, b) =>
+  validCoordinates.sort((a, b) =>
     coordinateSorter(a, b, getTileWithPreviousPlacements)
   );
 
-  return sortedValidCoordinates.map((coordinate) => ({ tile, coordinate }));
+  return validCoordinates.map((coordinate) => ({ tile, coordinate }));
 };
 
 /**

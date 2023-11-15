@@ -44,7 +44,7 @@ describe('tests for referee function', () => {
     jest.mocked(setUpGame).mockImplementation(mockSetUpGame);
 
     // Act
-    BaseReferee(players, rulebook, gameState);
+    BaseReferee(players, [], rulebook, gameState);
 
     // Assert
     expect(mockSetUpGame).not.toBeCalledWith();
@@ -63,7 +63,7 @@ describe('tests for referee function', () => {
     jest.mocked(setUpPlayers).mockImplementation(mockSetUpPlayers);
 
     // Act
-    BaseReferee(players, rulebook);
+    BaseReferee(players, [], rulebook);
 
     // Assert
     expect(mockSetUpPlayers).toBeCalledWith(mockGameState);
@@ -82,7 +82,7 @@ describe('tests for referee function', () => {
     jest.mocked(runGame).mockImplementation(mockRunGame);
 
     // Act
-    BaseReferee(players, rulebook);
+    BaseReferee(players, [], rulebook);
 
     // Assert
     expect(mockRunGame).toBeCalledWith(gameState, rulebook);
@@ -107,7 +107,7 @@ describe('tests for referee function', () => {
     jest.mocked(endGame).mockImplementation(mockEndGame);
 
     // Act
-    BaseReferee(players, rulebook);
+    BaseReferee(players, [], rulebook);
 
     // Assert
     expect(mockEndGame).toBeCalledWith(finalGameState);
@@ -128,7 +128,7 @@ describe('tests for referee function', () => {
     jest.mocked(endGame).mockImplementation(mockEndGame);
 
     // Act
-    BaseReferee(players, rulebook);
+    BaseReferee(players, [], rulebook);
 
     // Assert
     expect(mockSetUpGame.mock.invocationCallOrder[0]).toBeLessThan(
