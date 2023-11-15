@@ -78,9 +78,6 @@ function xTestOneFile(
     expect(JSON.parse(outputData)).toStrictEqual(
       JSON.parse(expectedOutputData)
     );
-    // } catch (error) {
-    //   expect(error).toBeUndefined();
-    // }
   }, 10000);
 }
 

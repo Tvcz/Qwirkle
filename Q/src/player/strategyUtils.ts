@@ -116,11 +116,14 @@ const isValidPlacement = <T extends ShapeColorTile>(
 };
 
 /**
- * This method is a getter for a Map, but treats a tile placement as if it has already been placed on the map.
+ * This method is a getter for a Map, but treats a tile placement as if it has
+ * already been placed on the map.
  * @param tilePlacements The tiles and coordinates placed in this turn
  * @param getTile a function that takes a coordinate and returns a tile at that
  * location or undefined if it does not exist
- * @returns a getter method that takes a coordinate and gets the tile from either the map or the tile placement list, or returns undefined if the coordinate is not present in either.
+ * @returns a getter method that takes a coordinate and gets the tile from
+ * either the map or the tile placement list, or returns undefined if the
+ * coordinate is not present in either.
  */
 const getTileWithPlacements = <T extends QTile>(
   tilePlacements: TilePlacement<T>[],
@@ -138,8 +141,8 @@ const getTileWithPlacements = <T extends QTile>(
  * Given a single tile, get places where that tile can be placed on the map with the given placement rules
  * ordered according to the given coordinate sorter function.
  * @param tile The tile to attempt to place
- * @param placedTiles The tiles already placed this turn
  * @param map The map of the game
+ * @param placements The tiles already placed this turn
  * @param placementRules list of placement rules
  * @param coordinateSorter A function to sort coordinates
  * @returns The sorted list of valid placements, which is empty if there are none.
@@ -187,12 +190,7 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
   const map = tilePlacementsToMap(mapState);
   const orderedPlayerTiles = getTilesOrdering(playerTiles);
 
-  const iterableStrategy = (
-    map: Dictionary<Coordinate, T>,
-    placements: TilePlacement<T>[],
-    playerTiles: T[],
-    placementRules: ReadonlyArray<PlacementRule<T>>
-  ) =>
+  const iterableStrategy = (placements: TilePlacement<T>[], playerTiles: T[]) =>
     strategyForSinglePlacement(
       map,
       placements,
@@ -202,11 +200,15 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
       coordinateSorter
     );
 
+  const isValidPlacementAction = (placements: TilePlacement<T>[]) =>
+    isValidPlacement(placements, placementRules, (coord) =>
+      map.getValue(coord)
+    );
+
   return iterateStrategy(
-    map,
     [],
     orderedPlayerTiles,
-    placementRules,
+    isValidPlacementAction,
     iterableStrategy
   );
 };
@@ -215,27 +217,20 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
  * Iterates a strategy for a single placement until it returns a PASS or EXCHANGE action.
  * @param placements The placements so far
  * @param playerTiles The tiles the player has left
+ * @param isValidPlacementAction A function to check if a placement is valid
  * @param iterableStrategy The strategy to iterate
  * @returns The turn action to take, combining one or more iterations of the strategy
  */
 const iterateStrategy = <T extends ShapeColorTile>(
-  map: Dictionary<Coordinate, T>,
   placements: TilePlacement<T>[],
   playerTiles: T[],
-  placementRules: ReadonlyArray<PlacementRule<T>>,
+  isValidPlacementAction: (placements: TilePlacement<T>[]) => boolean,
   iterableStrategy: (
-    map: Dictionary<Coordinate, T>,
     placements: TilePlacement<T>[],
-    playerTiles: T[],
-    placementRules: ReadonlyArray<PlacementRule<T>>
+    playerTiles: T[]
   ) => TurnAction<T>
 ): TurnAction<T> => {
-  const turnaction = iterableStrategy(
-    map,
-    placements,
-    playerTiles,
-    placementRules
-  );
+  const turnaction = iterableStrategy(placements, playerTiles);
   if (turnaction.ofType('PASS') || turnaction.ofType('EXCHANGE')) {
     return handlePassOrExchange(placements, turnaction);
   } else {
@@ -244,16 +239,11 @@ const iterateStrategy = <T extends ShapeColorTile>(
     const newPlayerTiles = playerTiles.filter(
       (tile) => tile !== potentialPlacement.tile
     );
-    if (
-      isValidPlacement(placementsSoFar, placementRules, (coord) =>
-        map.getValue(coord)
-      )
-    ) {
+    if (isValidPlacementAction(placementsSoFar)) {
       return iterateStrategy(
-        map,
         placementsSoFar,
         newPlayerTiles,
-        placementRules,
+        isValidPlacementAction,
         iterableStrategy
       );
     }
