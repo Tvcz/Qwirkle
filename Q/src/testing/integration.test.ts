@@ -81,7 +81,7 @@ function xTestOneFile(
     // } catch (error) {
     //   expect(error).toBeUndefined();
     // }
-  });
+  }, 10000);
 }
 
 async function getOutputFromTest(

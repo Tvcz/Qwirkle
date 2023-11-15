@@ -88,9 +88,9 @@ const getAllValidPlacementCoordinates = <T extends ShapeColorTile>(
     .toArray()
     .filter((coordinate) => {
       return isValidPlacement(
-        [...placements, { tile, coordinate }],
+        [{ tile, coordinate }],
         placementRules,
-        getTile
+        getTileWithPlacements(placements, getTile)
       );
     });
 
@@ -187,7 +187,12 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
   const map = tilePlacementsToMap(mapState);
   const orderedPlayerTiles = getTilesOrdering(playerTiles);
 
-  const singleStrategy = (placements: TilePlacement<T>[], playerTiles: T[]) =>
+  const iterableStrategy = (
+    map: Dictionary<Coordinate, T>,
+    placements: TilePlacement<T>[],
+    playerTiles: T[],
+    placementRules: ReadonlyArray<PlacementRule<T>>
+  ) =>
     strategyForSinglePlacement(
       map,
       placements,
@@ -197,7 +202,13 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
       coordinateSorter
     );
 
-  return iterateStrategy([], orderedPlayerTiles, singleStrategy);
+  return iterateStrategy(
+    map,
+    [],
+    orderedPlayerTiles,
+    placementRules,
+    iterableStrategy
+  );
 };
 
 /**
@@ -208,23 +219,45 @@ export const suggestMoveByStrategy = <T extends ShapeColorTile>(
  * @returns The turn action to take, combining one or more iterations of the strategy
  */
 const iterateStrategy = <T extends ShapeColorTile>(
+  map: Dictionary<Coordinate, T>,
   placements: TilePlacement<T>[],
   playerTiles: T[],
+  placementRules: ReadonlyArray<PlacementRule<T>>,
   iterableStrategy: (
+    map: Dictionary<Coordinate, T>,
     placements: TilePlacement<T>[],
-    playerTiles: T[]
+    playerTiles: T[],
+    placementRules: ReadonlyArray<PlacementRule<T>>
   ) => TurnAction<T>
 ): TurnAction<T> => {
-  const turnaction = iterableStrategy(placements, playerTiles);
+  const turnaction = iterableStrategy(
+    map,
+    placements,
+    playerTiles,
+    placementRules
+  );
   if (turnaction.ofType('PASS') || turnaction.ofType('EXCHANGE')) {
     return handlePassOrExchange(placements, turnaction);
   } else {
     const potentialPlacement = turnaction.getPlacements()[0];
-    const placementSoFar = [...placements, potentialPlacement];
+    const placementsSoFar = [...placements, potentialPlacement];
     const newPlayerTiles = playerTiles.filter(
       (tile) => tile !== potentialPlacement.tile
     );
-    return iterateStrategy(placementSoFar, newPlayerTiles, iterableStrategy);
+    if (
+      isValidPlacement(placementsSoFar, placementRules, (coord) =>
+        map.getValue(coord)
+      )
+    ) {
+      return iterateStrategy(
+        map,
+        placementsSoFar,
+        newPlayerTiles,
+        placementRules,
+        iterableStrategy
+      );
+    }
+    return handlePassOrExchange(placements, turnaction);
   }
 };
 

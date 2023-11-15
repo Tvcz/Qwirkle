@@ -105,8 +105,11 @@ export const mustPlaceAtLeastOneTile: PlacementRule<ShapeColorTile> = (
 export const mustMatchNeighboringShapesOrColors: PlacementRule<
   ShapeColorTile
 > = (tilePlacements, getTile) => {
-  const getWithTilePlacements = getTileWithPlacements(tilePlacements, getTile);
-  return tilePlacements.every(({ tile, coordinate }) => {
+  return tilePlacements.every(({ tile, coordinate }, i) => {
+    const getWithTilePlacements = getTileWithPlacements(
+      tilePlacements.slice(0, i),
+      getTile
+    );
     const { top, bottom, left, right } = coordinate.getNeighbors();
 
     const matchesVerticalShapeOrColor = matchesShapeOrColor(tile, [
