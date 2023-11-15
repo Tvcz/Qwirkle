@@ -8,22 +8,21 @@ export const validateJState = (jState: JState) => {
 };
 
 const validateJMap = (jMap: JMap) => {
-  const rowIndexNumbers = new Set<Number>();
+  const rowIndexNumbers: number[] = [];
   jMap.forEach((jRow) => {
     const rowIndex = jRow[0];
-    if (rowIndexNumbers.has(rowIndex)) {
+    if (rowIndexNumbers.includes(rowIndex)) {
       throw new Error('RowIndex cannot overlap');
     }
-    rowIndexNumbers.add(rowIndex);
+    rowIndexNumbers.push(rowIndex);
     validateJRow(jRow);
   });
 
-  const checkGaps = Array.from(rowIndexNumbers).reduce((acc, num, index) => {
-    return Number(acc) + Number(num) - index;
-  }, 0);
-
-  if (checkGaps !== 0) {
-    throw new Error('RowIndex set cannot contain gaps');
+  rowIndexNumbers.sort((a, b) => a - b);
+  for (let i = 0; i < rowIndexNumbers.length - 1; i++) {
+    if (rowIndexNumbers[i] + 1 !== rowIndexNumbers[i + 1]) {
+      throw new Error('RowIndex set cannot contain gaps');
+    }
   }
 };
 
