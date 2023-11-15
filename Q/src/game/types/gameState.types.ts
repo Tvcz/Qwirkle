@@ -86,12 +86,10 @@ export type RenderablePlayer<T extends QTile> = {
  * they made that turn.
  * Could also be undefined, meaning that the player has not made a turn yet.
  */
-export type TurnState<T extends QTile> =
-  | {
-      turnAction: TurnAction<T>;
-      playerTiles: T[];
-    }
-  | undefined;
+export type TurnState<T extends QTile> = {
+  turnAction: TurnAction<T>;
+  playerTiles: T[];
+};
 
 /**
  * Type containing the information needed to set up a player.

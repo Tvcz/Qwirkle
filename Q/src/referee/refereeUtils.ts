@@ -10,10 +10,15 @@ import { QRuleBook } from '../game/rules/ruleBook';
 import {
   Scoreboard,
   PlayerEndGameInformation,
-  RenderableGameState
+  RenderableGameState,
+  TurnState
 } from '../game/types/gameState.types';
 import { colorList, shapeList } from '../game/types/map.types';
-import { PlacementRule, ScoringRule } from '../game/types/rules.types';
+import {
+  EndOfGameRule,
+  PlacementRule,
+  ScoringRule
+} from '../game/types/rules.types';
 import { TurnAction } from '../player/turnAction';
 import { Player } from '../player/player';
 import { GameResult } from './referee.types';
@@ -240,9 +245,10 @@ const doTurnAndUpdatePlayer = (
   gameState: QGameState<BaseTile>,
   rulebook: QRuleBook<BaseTile>
 ) => {
-  const newTiles = executeTurnAction(turnAction, gameState);
+  const { originalTiles, newTiles } = executeTurnAction(turnAction, gameState);
 
   const score = scoreTurnAction(
+    originalTiles,
     turnAction,
     gameState,
     rulebook.getScoringRules()
@@ -250,10 +256,34 @@ const doTurnAndUpdatePlayer = (
 
   gameState.updatePlayerScore(playerName, score);
 
-  if (
-    newTiles.length > 0 &&
-    !gameState.isGameOver(rulebook.getEndOfGameRules())
-  ) {
+  gameState.nextTurn(originalTiles, turnAction);
+
+  givePlayerNewTiles(
+    playerName,
+    playerController,
+    newTiles,
+    gameState,
+    rulebook.getEndOfGameRules()
+  );
+};
+
+/**
+ * Give the player their new tiles, if there are any to give, eliminating them
+ * if they misbehave.
+ * @param playerName the name of the player to give new tiles to
+ * @param playerController the player controller for the player
+ * @param newTiles the new tiles to give to the player
+ * @param gameState the current game state
+ * @param endOfGameRules the end of game rules for the game
+ */
+const givePlayerNewTiles = (
+  playerName: string,
+  playerController: Player<BaseTile>,
+  newTiles: BaseTile[],
+  gameState: QGameState<BaseTile>,
+  endOfGameRules: ReadonlyArray<EndOfGameRule<BaseTile>>
+): void => {
+  if (newTiles.length > 0 && !gameState.isGameOver(endOfGameRules)) {
     interactWithPlayer(
       () => playerController.newTiles(newTiles),
       () => gameState.eliminatePlayer(playerName)
@@ -339,6 +369,7 @@ const validateTurnAction = (
  * @returns void
  */
 const scoreTurnAction = (
+  originalTiles: BaseTile[],
   turnAction: TurnAction<BaseTile>,
   gameState: QGameState<BaseTile>,
   scoringRules: ReadonlyArray<ScoringRule<BaseTile>>
@@ -347,12 +378,12 @@ const scoreTurnAction = (
     return 0;
   }
 
-  const score = gameState.getPlacementScore(
-    turnAction.getPlacements(),
-    scoringRules
-  );
+  const turnState: TurnState<BaseTile> = {
+    turnAction,
+    playerTiles: originalTiles
+  };
 
-  return score;
+  return gameState.getPlacementScore(turnState, scoringRules);
 };
 
 /**
@@ -360,19 +391,19 @@ const scoreTurnAction = (
  * Invariant that the turn action has already been validated
  * @param turnAction The turn action the active player
  * @param gameState The current game state
- * @returns A list of the players new tiles after executing the turn
+ * @returns The player's tiles at the beginning of the turn and the new tiles
+ * the player received during the turn
  */
 const executeTurnAction = (
   turnAction: TurnAction<BaseTile>,
   gameState: QGameState<BaseTile>
-): BaseTile[] => {
+): { originalTiles: BaseTile[]; newTiles: BaseTile[] } => {
   if (turnAction.ofType('PLACE')) {
     return gameState.placeTurn(turnAction.getPlacements());
   } else if (turnAction.ofType('EXCHANGE')) {
     return gameState.exchangeTurn();
   } else {
-    gameState.passTurn();
-    return [];
+    return gameState.passTurn();
   }
 };
 

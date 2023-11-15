@@ -9,7 +9,8 @@ import {
   PlayerSetupInformation,
   RelevantPlayerInfo,
   Scoreboard,
-  TilePlacement
+  TilePlacement,
+  TurnState
 } from '../types/gameState.types';
 import {
   EndOfGameRule,
@@ -17,7 +18,7 @@ import {
   ScoringRule
 } from '../types/rules.types';
 import { Player } from '../../player/player';
-import { BaseTurnAction, TurnAction } from '../../player/turnAction';
+import { TurnAction } from '../../player/turnAction';
 import { RenderableGameState } from '../types/gameState.types';
 
 /**
@@ -39,24 +40,34 @@ export interface QGameState<T extends QTile> {
   ) => boolean;
 
   /**
-   * Get the score for a placement based on the given scoring rules
-   * @param tilePlacements The tile and coordinates to be placed on the map in
-   * the current turn
+   * Get the score for the given turnState based on the given scoring rules and
+   * the current map.
+   * @param turnState the state of the active player's most recent turn
    * @param scoringRules a list of the rules used for scoring a placement
    * @returns The score for the given placement
    */
   getPlacementScore: (
-    tilePlacements: TilePlacement<T>[],
+    turnState: TurnState<T>,
     scoringRules: ReadonlyArray<ScoringRule<T>>
   ) => number;
+
+  /**
+   * Progress the game to the next turn, recording the turn state of the
+   * previous turn.
+   * @param playerTiles the tiles that the player who just took a turn had at
+   * the beginning of their turn
+   * @param turnAction the action taken by the player who just took a turn
+   */
+  nextTurn(playerTiles: T[], turnAction: TurnAction<T>);
 
   /**
    * Execute a turn where the player passes.
    * The active player's most recent turn state is set to a pass turn with their current tiles.
    * Moves the active turn to the next player.
-   * @returns void
+   * @returns The player's tiles at the beginning of the turn and the new tiles
+   * the player received during the turn, which is always empty for a pass turn
    */
-  passTurn: () => void;
+  passTurn: () => { originalTiles: T[]; newTiles: T[] };
 
   /**
    * Execute a turn where the player exchanges all of their current tiles for
@@ -64,9 +75,10 @@ export interface QGameState<T extends QTile> {
    * The active player's most recent turn state is set to an exchange turn with their old tiles from before the turn.
    * When completed, moves the active turn to the next player.
    * @throws Error if there are not enough tiles in the bag to exchange.
-   * @returns A list of the player's new tiles
+   * @returns The player's tiles at the beginning of the turn and the new tiles
+   * the player received during the turn
    */
-  exchangeTurn: () => T[];
+  exchangeTurn: () => { originalTiles: T[]; newTiles: T[] };
 
   /**
    * Execute a turn where the player places tiles on the board and receives the
@@ -76,9 +88,13 @@ export interface QGameState<T extends QTile> {
    * @param tilePlacements The new placements of the tiles on the board
    * @throws error if tile placement does not follow the structural map rules as defined in the QMap interface:
    * tiles must be empty and tiles must share a side
-   * @returns A list of the player's new tiles
+   * @returns The player's tiles at the beginning of the turn and the new tiles
+   * the player received during the turn
    */
-  placeTurn: (tilePlacements: TilePlacement<T>[]) => T[];
+  placeTurn: (tilePlacements: TilePlacement<T>[]) => {
+    originalTiles: T[];
+    newTiles: T[];
+  };
 
   /**
    * Get the relevant information the active player needs before their turn.
@@ -226,24 +242,24 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
   }
 
   public getPlacementScore(
-    tilePlacements: TilePlacement<T>[],
+    turnState: TurnState<T>,
     scoringRules: ReadonlyArray<ScoringRule<T>>
   ) {
-    const activePlayerTiles = this.getActivePlayerInfo().playerTiles;
     const getTile = (coord: Coordinate) => this.map.getTile(coord);
 
     return scoringRules.reduce((score, rule) => {
-      return score + rule(tilePlacements, getTile, activePlayerTiles);
+      return score + rule(turnState, getTile);
     }, 0);
   }
 
-  private nextTurn(playerTiles: T[], turnAction: TurnAction<T>) {
+  public nextTurn(playerTiles: T[], turnAction: TurnAction<T>) {
     this.playerTurnQueue.nextTurn({ turnAction, playerTiles });
   }
 
   public passTurn() {
     const player = this.playerTurnQueue.getActivePlayer();
-    this.nextTurn(player.getAllTiles(), new BaseTurnAction('PASS'));
+    const originalTiles = player.getAllTiles();
+    return { originalTiles, newTiles: [] };
   }
 
   public exchangeTurn() {
@@ -257,8 +273,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     );
     player.setTiles(exchangedTiles);
 
-    this.nextTurn(originalTiles, new BaseTurnAction('EXCHANGE'));
-    return exchangedTiles;
+    return { originalTiles, newTiles: exchangedTiles };
   }
 
   /**
@@ -287,8 +302,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     const replacementTiles = this.getReplacementTiles(tilePlacements);
     player.setTiles(replacementTiles);
 
-    this.nextTurn(originalTiles, new BaseTurnAction('PLACE', tilePlacements));
-    return replacementTiles;
+    return { originalTiles, newTiles: replacementTiles };
   }
 
   /**

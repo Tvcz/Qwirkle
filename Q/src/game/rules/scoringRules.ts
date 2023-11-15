@@ -10,8 +10,8 @@ import { colorList, shapeList, Shape, Color } from '../types/map.types';
  * @param tilePlacements The tiles and coordinates placed in this turn.
  * @returns The number of additional points given from this rule
  */
-export const pointPerTilePlaced: ScoringRule<QTile> = (tilePlacements) => {
-  return tilePlacements.length;
+export const pointPerTilePlaced: ScoringRule<QTile> = (turnState) => {
+  return turnState.turnAction.getPlacements().length;
 };
 
 /**
@@ -42,9 +42,13 @@ export const getTileWithPlacements = <T extends QTile>(
 export const pointsForPlayingAllTiles = (
   bonusPointsAmount: number
 ): ScoringRule<QTile> => {
-  return (tilePlacements, _getTile, playerTiles) => {
+  return (turnState, _getTile) => {
+    const numPlacements = turnState.turnAction.getPlacements().length;
+    const numTilesInHand = turnState.playerTiles.length;
+
     const playerPlacedAllMoreThan0 =
-      playerTiles.length === tilePlacements.length && playerTiles.length !== 0;
+      numPlacements === numTilesInHand && numPlacements > 0;
+
     return playerPlacedAllMoreThan0 ? bonusPointsAmount : 0;
   };
 };
@@ -58,7 +62,9 @@ export const pointsForPlayingAllTiles = (
 export const pointsPerQ = (
   bonusPointsAmount: number
 ): ScoringRule<ShapeColorTile> => {
-  return (tilePlacements, getTile, _playerTiles) => {
+  return (turnState, getTile) => {
+    const tilePlacements = turnState.turnAction.getPlacements();
+
     const colorQsCount = qForSpecificAttribute(
       tilePlacements,
       (tile: ShapeColorTile) => tile.getColor(),
@@ -264,10 +270,11 @@ const qFromSequenceInOneDirection = <
  * @returns The number of additional points given from this rule
  */
 export const pointPerTileInSequence: ScoringRule<QTile> = (
-  tilePlacements,
+  turnState,
   getTile
 ) => {
   const seenTiles = new Set<Coordinate>();
+  const tilePlacements = turnState.turnAction.getPlacements();
   return tilePlacements.reduce((score, tilePlacement) => {
     const rowScore = scoreSequence(
       tilePlacement.coordinate,

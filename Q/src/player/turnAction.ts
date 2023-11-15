@@ -3,7 +3,7 @@ import { TilePlacement } from '../game/types/gameState.types';
 import { TurnActionDescription } from './strategy.types';
 
 /**
- * A TurnAction represents the aciton that a player takes on a turn.
+ * A TurnAction represents the action that a player takes on a turn.
  * It contains information about the type of the action as well as the
  * tile placements made through the action, if applicable.
  */

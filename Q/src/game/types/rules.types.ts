@@ -1,9 +1,7 @@
-import PlayerTurnQueue, {
-  QPlayerTurnQueue
-} from '../gameState/playerTurnQueue';
+import { QPlayerTurnQueue } from '../gameState/playerTurnQueue';
 import Coordinate from '../map/coordinate';
 import { QTile } from '../map/tile';
-import { TilePlacement } from './gameState.types';
+import { TilePlacement, TurnState } from './gameState.types';
 
 /**
  * Type representing a Q Game rule that may be enforced on tile placement.
@@ -28,9 +26,8 @@ type BonusScoringPoints = {
  * the map state after the tiles have been placed, and the player's tiles.
  */
 export type ScoringRule<T extends QTile> = <U extends T>(
-  tilePlacements: TilePlacement<U>[],
+  turnState: TurnState<T>,
   getTile: (coordinate: Coordinate) => U | undefined,
-  playerTiles: U[],
   bonusScoringPoints?: BonusScoringPoints
 ) => number;
 
