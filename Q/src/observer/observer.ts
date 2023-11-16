@@ -113,7 +113,10 @@ export class BaseObserver<T extends ShapeColorTile>
 
   private saveStateToImage(gameStateIndex: number) {
     const gameState = this.stateHistory[gameStateIndex];
-    this.saveHtmlToImage(this.toHtmlView(gameState), `${gameStateIndex}.png`);
+    this.saveHtmlToImage(
+      this.toHtmlView(gameState),
+      `Tmp/${gameStateIndex}.png`
+    );
   }
 
   private toHtmlView(gameState: RenderableGameState<T>): string {
