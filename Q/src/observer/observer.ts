@@ -81,7 +81,6 @@ export class BaseObserver<T extends ShapeColorTile>
     this.stateHistory = [];
     this.currenStateIndex = 0;
     this.updateViewCallback = () => {};
-    // TODO make a then for end game so it always runs if called
     this.endGameCallback = () => {};
     createWindow(this);
   }
