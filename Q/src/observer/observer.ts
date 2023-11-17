@@ -97,7 +97,12 @@ export class BaseObserver<T extends ShapeColorTile>
   }
 
   private makeGameOverCard(winners: string[], eliminated: string[]): string {
-    return '<h1> GAME OVER </h1>';
+    return `<h1> GAME OVER </h1>
+            <h2> Winners: </h2>
+            <p> ${winners.join(', ')} </p>
+            <h2> Eliminated: </h2>
+            <p> ${eliminated.join(', ')} </p>
+            <hr></hr>`;
   }
 
   public receiveState(gameState: RenderableGameState<T>) {
