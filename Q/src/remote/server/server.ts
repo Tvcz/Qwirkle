@@ -5,13 +5,13 @@ import { Player } from '../../player/player';
 import { BaseTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
-
-const WAIT_FOR_SIGNUPS_MS: number = 20000;
-const NAME_TIMEOUT_MS: number = 3000;
-const MIN_PLAYERS: number = 2;
-const MAX_PLAYERS: number = 4;
-
-const MAX_RETRY_COUNT = 1;
+import {
+  SERVER_MAX_PLAYERS,
+  SERVER_MIN_PLAYERS,
+  SERVER_PLAYER_NAME_TIMEOUT_MS,
+  SERVER_WAIT_FOR_SIGNUPS_MS,
+  SERVER_WAIT_PERIOD_RETRY_COUNT
+} from '../../constants';
 
 export async function runTCPGame() {
   const players: Player<BaseTile>[] = [];
@@ -19,7 +19,10 @@ export async function runTCPGame() {
 
   server.on('connection', (socket) => {
     const newConnection = new TCPConnection(socket);
-    signUp(new TCPPlayer(newConnection, NAME_TIMEOUT_MS), players);
+    signUp(
+      new TCPPlayer(newConnection, SERVER_PLAYER_NAME_TIMEOUT_MS),
+      players
+    );
   });
 
   const enoughPlayersToRun = await new Promise<boolean>((resolve) => {
@@ -47,11 +50,11 @@ function waitForAdditionalPlayers(
   retryCount = 0
 ): boolean {
   const start = Date.now();
-  while (players.length < MAX_PLAYERS) {
-    if (Date.now() >= start + WAIT_FOR_SIGNUPS_MS) {
-      if (players.length >= MIN_PLAYERS) {
+  while (players.length < SERVER_MAX_PLAYERS) {
+    if (Date.now() >= start + SERVER_WAIT_FOR_SIGNUPS_MS) {
+      if (players.length >= SERVER_MIN_PLAYERS) {
         return true;
-      } else if (retryCount < MAX_RETRY_COUNT) {
+      } else if (retryCount < SERVER_WAIT_PERIOD_RETRY_COUNT) {
         waitForAdditionalPlayers(players, retryCount + 1);
       } else {
         return false;

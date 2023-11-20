@@ -3,8 +3,7 @@ import { TCPConnection } from '../connection';
 import { Player } from '../../player/player';
 import { BaseTile } from '../../game/map/tile';
 import { refereeProxy } from './referee';
-
-const DEFAULT_CONNECION_OPTIONS = { host: 'localhost', port: 8080 };
+import { DEFAULT_CONNECION_OPTIONS } from '../../constants';
 
 // called once per player connection to game
 function joinGame(player: Player<BaseTile>) {

@@ -1,3 +1,7 @@
+import {
+  SERVER_PLAYER_STANDARD_TIMEOUT_MS,
+  SERVER_PLAYER_TURN_TIMEOUT_MS
+} from '../../constants';
 import { BaseTile } from '../../game/map/tile';
 import {
   TilePlacement,
@@ -15,9 +19,6 @@ import {
 } from '../jsonValidator';
 import { buildTurnAction } from '../parse';
 
-const STANDARD_TIMEOUT_MS = 3000;
-const TURN_TIMEOUT_MS = 5000;
-
 // Implements the player but converts method calls to JSON strings
 // which are sent over a connection to a remote player
 export class TCPPlayer implements Player<BaseTile> {
@@ -28,7 +29,7 @@ export class TCPPlayer implements Player<BaseTile> {
 
   constructor(
     connection: Connection,
-    nameTimeout: number = STANDARD_TIMEOUT_MS
+    nameTimeout: number = SERVER_PLAYER_STANDARD_TIMEOUT_MS
   ) {
     this.connection = connection;
     this.connection.onResponse((data: string) => (this.buffer = data));
@@ -59,7 +60,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(STANDARD_TIMEOUT_MS);
+    const res = this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isSetUpResponse(parsedRes)) {
       if (parsedRes.result !== 0) {
@@ -78,7 +79,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(TURN_TIMEOUT_MS);
+    const res = this.awaitResponse(SERVER_PLAYER_TURN_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isTakeTurnResponse(parsedRes)) {
       return buildTurnAction(parsedRes.result);
@@ -95,7 +96,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(STANDARD_TIMEOUT_MS);
+    const res = this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isNewTilesResponse(parsedRes)) {
       if (parsedRes.result !== 0) {
@@ -114,7 +115,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(STANDARD_TIMEOUT_MS);
+    const res = this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isNewTilesResponse(parsedRes)) {
       if (parsedRes.result !== 0) {
