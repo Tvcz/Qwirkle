@@ -148,28 +148,36 @@ abstract class AbstractDelayedTimeoutPlayer<
   }
 }
 
-export class DelayedSetupTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
-  public setUp(m: TilePlacement<QTile>[], st: QTile[]) {
+export class DelayedSetupTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
+  public setUp(m: TilePlacement<T>[], st: T[]) {
     this.callDelayedTimeoutMethod();
     super.setUp(m, st);
   }
 }
 
-export class DelayedTurnTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
-  public takeTurn(s: RelevantPlayerInfo<QTile>) {
+export class DelayedTurnTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
+  public takeTurn(s: RelevantPlayerInfo<T>) {
     this.callDelayedTimeoutMethod();
     return super.takeTurn(s);
   }
 }
 
-export class DelayedNewTilesTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
-  public newTiles(st: QTile[]) {
+export class DelayedNewTilesTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
+  public newTiles(st: T[]) {
     this.callDelayedTimeoutMethod();
     super.newTiles(st);
   }
 }
 
-export class DelayedWinTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
+export class DelayedWinTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
   public win(w: boolean) {
     this.callDelayedTimeoutMethod();
     super.win(w);
