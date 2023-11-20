@@ -64,7 +64,6 @@ export class BasePlayer<T extends QTile> implements Player<T> {
 
   private tiles: T[];
   private map: TilePlacement<T>[];
-  private hasWon: boolean;
 
   constructor(name: string, strategy: Strategy<T>, rulebook: QRuleBook<T>) {
     this.playerName = name;
@@ -73,7 +72,6 @@ export class BasePlayer<T extends QTile> implements Player<T> {
 
     this.tiles = [];
     this.map = [];
-    this.hasWon = false;
   }
 
   public name() {
@@ -118,7 +116,5 @@ export class BasePlayer<T extends QTile> implements Player<T> {
     this.tiles = [...this.tiles, ...st];
   }
 
-  public win(w: boolean) {
-    this.hasWon = w;
-  }
+  public win(w: boolean) {}
 }

@@ -106,7 +106,7 @@ The players for a game are collected by the following process:
     this should allow for arguments to be serialized and parsed without errors
     or the loss of any data.
   - After the `TCPReferee` receives the JSON arguments, it will parse
-    them usingz `JSON.parse()` and build the corresponding objects to pass to a
+    them using `JSON.parse()` and build the corresponding objects to pass to a
     method of the `Player` instance.
 
 #### TCPReferee -> TCPPlayer
