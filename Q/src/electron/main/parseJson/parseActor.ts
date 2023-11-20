@@ -15,14 +15,17 @@ function mustParseAsSingleActor(json: Json): JActor {
   const jName = mustParseAsJName(json[0]);
   const jStrategy = mustParseAsJStrategy(json[1]);
 
-  if (json[3]) {
-    const jCheat = mustParseAsJCheat(json[3]);
-    return [jName, jStrategy, 'a cheat', jCheat];
+  if (json[2] && isJExn(json[2])) {
+    const jExn = mustParseAsJExn(json[2]);
+    if (json[3] && typeof json[3] === 'number') {
+      return [jName, jStrategy, jExn, json[3]];
+    }
+    return [jName, jStrategy, jExn];
   }
 
-  if (json[2]) {
-    const jExn = mustParseAsJExn(json[2]);
-    return [jName, jStrategy, jExn];
+  if (json[2] === 'a cheat' && isJCheat(json[3])) {
+    const jCheat = mustParseAsJCheat(json[3]);
+    return [jName, jStrategy, 'a cheat', jCheat];
   }
 
   return [jName, jStrategy];
@@ -65,4 +68,33 @@ export function mustParseAsJStrategy(json: Json): JStrategy {
     throw new Error('invalid JStrategy');
   }
   return json;
+}
+
+/**
+ * checks if the input is of type JExn
+ *
+ * @param input the input to validate
+ */
+export function isJExn(input: unknown): input is JExn {
+  return (
+    input === 'setup' ||
+    input === 'take-turn' ||
+    input === 'new-tiles' ||
+    input === 'win'
+  );
+}
+
+/**
+ * checks if the input is of type JCheat
+ *
+ * @param input the input to validate
+ */
+function isJCheat(input: unknown): input is JCheat {
+  return (
+    input === 'non-adjacent-coordinate' ||
+    input === 'tile-not-owned' ||
+    input === 'not-a-line' ||
+    input === 'bad-ask-for-tiles' ||
+    input === 'no-fit'
+  );
 }
