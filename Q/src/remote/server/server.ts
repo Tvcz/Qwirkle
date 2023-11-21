@@ -1,5 +1,5 @@
 import net from 'net';
-import { TCPConnection } from '../connection';
+import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './player';
 import { Player } from '../../player/player';
 import { BaseTile } from '../../game/map/tile';
@@ -13,12 +13,36 @@ import {
   SERVER_WAIT_PERIOD_RETRY_COUNT
 } from '../../constants';
 
+/**
+ * Runs a game over TCP.
+ *
+ * The steps are as follows:
+ *  1) Create a TCP server and wait for players to connect
+ *  2) On connect, create a `TCPConnection` using the `Socket` and create a
+ *     `TCPPlayer` using the new `TCPConnection`
+ *  3) On the first connection, wait for additional players to connect
+ *    3.1) While there are less than the maximum number of players, keep waiting.
+ *    3.2) If the wait time has exceeded the maximum wait time, check if there
+ *         are enough players to run the game.
+ *     3.2.1) If there are enough players to run the game, jump to step (4).
+ *       3.2.2) If there are not enough players to run the game, check if the wait
+ *             period has already been restarted the maximum number of times.
+ *        3.2.2.1) If no, start an additional wait period, jumping back to step (3.1).
+ *        3.2.2.2) If yes, jump to step (4).
+ *  4) If there are enough players to run the game, start the game, passing the
+ *     referee the `TCPPlayer`s to run the game with. Otherwise, do not run the game
+ *     and return an empty result
+ *
+ * @returns the result of the game
+ */
 export async function runTCPGame() {
   const players: Player<BaseTile>[] = [];
+  const connections: Connection[] = [];
   const server = net.createServer();
 
   server.on('connection', (socket) => {
     const newConnection = new TCPConnection(socket);
+    connections.push(newConnection);
     signUp(
       new TCPPlayer(newConnection, SERVER_PLAYER_NAME_TIMEOUT_MS),
       players
@@ -34,14 +58,18 @@ export async function runTCPGame() {
   if (enoughPlayersToRun) {
     return startGame(players);
   } else {
-    sendPlayersEmptyResults(players);
+    terminateConnections(connections);
     return [[], []];
   }
 }
 
 /**
- * Attempts to await for additional players
- * @param players
+ * Attempts to wait for additional players to connect to the game.
+ *
+ * This is a synchronous operation which relies on the callbacks triggering when
+ * a client connects mutating the players array while this function is running.
+ *
+ * @param players the player list which new players are added to as they connect.
  * @param retryCount
  * @returns true if the game should be run, false otherwise
  */
@@ -64,12 +92,20 @@ function waitForAdditionalPlayers(
   return true;
 }
 
-function sendPlayersEmptyResults(players: Player<BaseTile>[]) {
-  players.forEach((player) => {
-    player.win(false);
-  });
+/**
+ * Terminates all connections.
+ *
+ * @param connections the client connections to terminate.
+ */
+function terminateConnections(connections: Connection[]) {
+  connections.forEach((connection) => connection.close());
 }
 
+/**
+ * Runs a game with the given players.
+ * @param players the players to run the game with
+ * @returns the result of the game
+ */
 function startGame(players: Player<BaseTile>[]) {
   return BaseReferee(players, [], new BaseRuleBook());
 }

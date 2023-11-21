@@ -3,12 +3,20 @@ import { TCPConnection } from '../connection';
 import { Player } from '../../player/player';
 import { BaseTile } from '../../game/map/tile';
 import { refereeProxy } from './referee';
-import { DEFAULT_CONNECION_OPTIONS } from '../../constants';
+import { DEFAULT_CONNECTION_OPTIONS } from '../../constants';
 
-// called once per player connection to game
-function joinGame(player: Player<BaseTile>) {
+/**
+ * Joins a game hosted at the specified host and port.
+ * Called once per player connecting to game.
+ * @param player The player to join the game.
+ * @param connectionOptions The host and port to connect to.
+ */
+function joinGame(
+  player: Player<BaseTile>,
+  connectionOptions = DEFAULT_CONNECTION_OPTIONS
+) {
   // send initial message to server to join game
-  const socket = createConnection(DEFAULT_CONNECION_OPTIONS);
+  const socket = createConnection(connectionOptions);
   // use server response to build connection
   const connection = new TCPConnection(socket);
   // use connection to create refereeProxy and hand off player instance

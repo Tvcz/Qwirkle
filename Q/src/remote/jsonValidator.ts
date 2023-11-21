@@ -19,14 +19,16 @@ import {
 import { Scoreboard } from '../game/types/gameState.types';
 import { TurnAction } from '../player/turnAction';
 
-// - parses string
-// - ensures it is valid json
-// - ensures it meets our spec for messages
-//  - ensures it corresponds an actual method
-//  - ensures the arguments/return value match the
-//    method signature
-// - builds the objects which corresponds to the return value or arugments
-// - returns an object of type
+/*
+ * This file consists of type guards which ensure that the parsed JSON values in
+ * messages match the corresponding types.
+ *
+ * These types are laid out in the `types.ts` file.
+ *
+ * Certain objects which are represented by classes rather than objects appear
+ * as `Parsed[ClassName]` in the type definitions. These can be converted to the
+ * corresponding class instances by the utilities in the `parse.ts` file.
+ */
 
 export function isNameCall(obj: unknown): obj is NameCall {
   return (

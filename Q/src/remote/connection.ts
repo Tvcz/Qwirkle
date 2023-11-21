@@ -1,15 +1,32 @@
-import StreamValues from 'stream-json/streamers/StreamValues';
-import extractJson from './jsonParse';
 import net from 'net';
-import { xmap } from './jmapParser';
-const host = '127.0.0.1';
-const JSONStream = require('JSONStream');
 
-// encompasses both information on how to send data (address, port, etc.)
-// and how to address data (name of player)
+/**
+ * A connection is a two-way communication channel between two endpoints.
+ *
+ * A connection can send messages to the other end of the connection, and can
+ * receive messages from the other end of the connection.
+ *
+ * One connection instance should exist on the client, and a corresponding
+ * instance should exist on the server for each connected client.
+ */
 export interface Connection {
+  /**
+   * Sends a message to the other end of the connection.
+   * @param message the message to send
+   */
   send(message: string): void;
+
+  /**
+   * Registers a callback to be called when a message is received from the other
+   * end of the connection.
+   * @param callback the function to be called with a received message
+   */
   onResponse(callback: (message: string) => void): void;
+
+  /**
+   * Closes the connection.
+   */
+  close(): void;
 }
 
 export class TCPConnection implements Connection {
@@ -28,52 +45,8 @@ export class TCPConnection implements Connection {
       callback(data.toString());
     });
   }
+
+  close(): void {
+    this.socket.end();
+  }
 }
-
-process.stdin.pipe(JSONStream.parse()).on('data', (data: string) => {});
-
-/**
- * Attaches the JSON parser and handler to the input stream.
- */
-const main = () => {
-  const portNumber = parseInt(process.argv[2], 10);
-  const server = net.createServer();
-  server.listen(portNumber, host, () => {
-    console.log('TCP Server is running on port ' + portNumber + '.');
-  });
-  server.on('connection', function (sock) {
-    const pipeline = sock.pipe(StreamValues.withParser());
-    console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
-    pipeline.on('data', function (data) {
-      // Write the data back to all the connected, the client will receive it as data from the server
-      let extractedAnswer = extractJson(data.value);
-      let joinedString = extractedAnswer.join(', ');
-      sock.write(`${JSON.stringify(joinedString)}\n`);
-    });
-  });
-};
-
-function stdinStreamJson(jsonCallBack: (json: any) => any): void {
-  const pipeline = process.stdin.pipe(StreamValues.withParser());
-  pipeline.on('data', (data) => {
-    return jsonCallBack(data.value);
-  });
-}
-
-function xmapMain(): void {
-  let jmap: any = null;
-  process.stdin.pipe(StreamValues.withParser()).on('data', (data) => {
-    data = data.value;
-    const json = data;
-    if (jmap !== null) {
-      const jtile = json;
-      const cookedValue = xmap(jmap, jtile);
-      console.log(cookedValue);
-      jmap = null;
-    } else {
-      jmap = json;
-    }
-  });
-}
-
-xmapMain();

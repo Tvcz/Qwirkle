@@ -32,4 +32,4 @@ export const SERVER_PLAYER_NAME_TIMEOUT_MS: number = 3000;
 export const SERVER_PLAYER_TURN_TIMEOUT_MS = 5000;
 
 // default client connection options
-export const DEFAULT_CONNECION_OPTIONS = { host: 'localhost', port: 7077 };
+export const DEFAULT_CONNECTION_OPTIONS = { host: 'localhost', port: 7077 };

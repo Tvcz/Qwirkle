@@ -12,8 +12,17 @@ import {
 import { NewTilesCall, SetUpCall, TakeTurnCall, WinCall } from '../types';
 import { buildTile, buildTilePlacement } from '../parse';
 
-// one exists per client player
-// each refereeProxy has its own connection
+/**
+ * A referee proxy listens for messages from the server and converts them
+ * to method calls which are made on the player.
+ *
+ * Invariants:
+ * - Each referee proxy has its own connection to the server.
+ * - The referee proxy is called once per client player.
+ *
+ * @param player - The player to make method calls on.
+ * @param connection - The connection to the server.
+ */
 export function refereeProxy(player: Player<BaseTile>, connection: Connection) {
   // listens for tcp messages from the server
   // converts them to method calls on the player
@@ -36,15 +45,25 @@ export function refereeProxy(player: Player<BaseTile>, connection: Connection) {
   });
 }
 
-// send JSON string messages to the server with the return values
-// from the method calls on the client player
-
+/**
+ * Make a call to the player's name method and send the result to the server.
+ *
+ * @param player - The player to make the call on.
+ * @param connection - The connection to the server.
+ */
 function makeNameCall(player: Player<BaseTile>, connection: Connection) {
   const result = player.name();
   const response = { method: 'name', result };
   connection.send(JSON.stringify(response));
 }
 
+/**
+ * Make a call to the player's setup method and send the result to the server.
+ *
+ * @param player - The player to make the call on.
+ * @param connection - The connection with the server.
+ * @param message - The setup call message received from the server.
+ */
 function makeSetUpCall(
   player: Player<BaseTile>,
   connection: Connection,
@@ -59,6 +78,13 @@ function makeSetUpCall(
   connection.send(JSON.stringify(response));
 }
 
+/**
+ * Make a call to the player's takeTurn method and send the result to the server.
+ *
+ * @param player - The player to make the call on.
+ * @param connection - The connection to the server.
+ * @param message - The takeTurn call message received from the server.
+ */
 function makeTakeTurnCall(
   player: Player<BaseTile>,
   connection: Connection,
@@ -78,6 +104,13 @@ function makeTakeTurnCall(
   connection.send(JSON.stringify(response));
 }
 
+/**
+ * Make a call to the player's newTiles method and send the result to the server.
+ *
+ * @param player - The player to make the call on.
+ * @param connection - The connection to the server.
+ * @param message - The newTiles call message received from the server.
+ */
 function makeNewTilesCall(
   player: Player<BaseTile>,
   connection: Connection,
@@ -88,6 +121,13 @@ function makeNewTilesCall(
   connection.send(JSON.stringify(response));
 }
 
+/**
+ * Make a call to the player's win method and send the result to the server.
+ *
+ * @param player - The player to make the call on.
+ * @param connection - The connection to the server.
+ * @param message - The win call message received from the server.
+ */
 function makeWinCall(
   player: Player<BaseTile>,
   connection: Connection,
