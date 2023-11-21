@@ -8,64 +8,53 @@ export function mustParseAsJActors(json: Json): JActor[] {
   return json.map((j) => mustParseAsSingleActor(j));
 }
 
-function mustParseAsSingleActor(json: Json): JActor {
-  if (!Array.isArray(json)) {
-    throw new Error('invalid JActor array');
+function mustParseAsSingleActor(json: unknown): JActor {
+  if (isSimpleJActor(json)) {
+    return mustParseAsSimpleJActor(json);
   }
-  const jName = mustParseAsJName(json[0]);
-  const jStrategy = mustParseAsJStrategy(json[1]);
-
-  if (json[2] && isJExn(json[2])) {
-    const jExn = mustParseAsJExn(json[2]);
-    if (json[3] && typeof json[3] === 'number') {
-      return [jName, jStrategy, jExn, json[3]];
-    }
-    return [jName, jStrategy, jExn];
+  if (isExceptionJActor(json)) {
+    return mustParseAsExceptionJActor(json);
   }
-
-  if (json[2] === 'a cheat' && isJCheat(json[3])) {
-    const jCheat = mustParseAsJCheat(json[3]);
-    return [jName, jStrategy, 'a cheat', jCheat];
+  if (isCheatJActor(json)) {
+    return mustParseAsCheatJActor(json);
   }
-
-  return [jName, jStrategy];
+  if (isDelayedInfiniteLoopJActor(json)) {
+    return mustParseAsDelayedInfiniteLoopJActor(json);
+  }
+  throw new Error('invalid JActor');
 }
 
-function mustParseAsJCheat(json: Json): JCheat {
-  if (
-    json !== 'non-adjacent-coordinate' &&
-    json !== 'tile-not-owned' &&
-    json !== 'not-a-line' &&
-    json !== 'bad-ask-for-tiles' &&
-    json !== 'no-fit'
-  ) {
-    throw new Error('invalid JCheat');
+function isSimpleJActor(json: unknown): json is [string, JStrategy] {
+  return isArrayWithLength(json, 2) && isJName(json[0]) && isJStrategy(json[1]);
+}
+
+function mustParseAsSimpleJActor(json: unknown): JActor {
+  if (!isSimpleJActor(json)) {
+    throw new Error('invalid JActor');
   }
   return json;
 }
 
-function mustParseAsJName(json: Json): string {
-  if (typeof json !== 'string') {
-    throw new Error('invalid JName');
-  }
-  return json;
+function isJName(json: unknown): json is string {
+  return typeof json === 'string';
 }
 
-function mustParseAsJExn(json: Json): JExn {
-  if (
-    json !== 'setup' &&
-    json !== 'take-turn' &&
-    json !== 'new-tiles' &&
-    json !== 'win'
-  ) {
-    throw new Error('invalid JExn');
-  }
-  return json;
+function isJStrategy(json: unknown): json is JStrategy {
+  return json === 'dag' || json === 'ldasg';
 }
 
-export function mustParseAsJStrategy(json: Json): JStrategy {
-  if (json !== 'dag' && json !== 'ldasg') {
-    throw new Error('invalid JStrategy');
+function isExceptionJActor(json: unknown): json is [string, JStrategy, JExn] {
+  return (
+    isArrayWithLength(json, 3) &&
+    isJName(json[0]) &&
+    isJStrategy(json[1]) &&
+    isJExn(json[2])
+  );
+}
+
+function mustParseAsExceptionJActor(json: unknown): JActor {
+  if (!isExceptionJActor(json)) {
+    throw new Error('invalid JActor');
   }
   return json;
 }
@@ -84,6 +73,25 @@ export function isJExn(input: unknown): input is JExn {
   );
 }
 
+function isCheatJActor(
+  json: unknown
+): json is [string, JStrategy, 'a cheat', JCheat] {
+  return (
+    isArrayWithLength(json, 4) &&
+    isJName(json[0]) &&
+    isJStrategy(json[1]) &&
+    json[2] === 'a cheat' &&
+    isJCheat(json[3])
+  );
+}
+
+function mustParseAsCheatJActor(json: unknown): JActor {
+  if (!isCheatJActor(json)) {
+    throw new Error('invalid JActor');
+  }
+  return json;
+}
+
 /**
  * checks if the input is of type JCheat
  *
@@ -97,4 +105,31 @@ function isJCheat(input: unknown): input is JCheat {
     input === 'bad-ask-for-tiles' ||
     input === 'no-fit'
   );
+}
+
+function isDelayedInfiniteLoopJActor(
+  json: unknown
+): json is [string, JStrategy, JExn, number] {
+  return (
+    isArrayWithLength(json, 4) &&
+    isJName(json[0]) &&
+    isJStrategy(json[1]) &&
+    isJExn(json[2]) &&
+    isCount(json[3])
+  );
+}
+
+function mustParseAsDelayedInfiniteLoopJActor(json: unknown): JActor {
+  if (!isDelayedInfiniteLoopJActor(json)) {
+    throw new Error('invalid JActor');
+  }
+  return json;
+}
+
+function isCount(input: unknown): input is number {
+  return typeof input === 'number';
+}
+
+function isArrayWithLength(json: unknown, length: number): json is unknown[] {
+  return Array.isArray(json) && json.length === length;
 }
