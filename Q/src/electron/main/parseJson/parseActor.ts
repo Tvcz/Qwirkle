@@ -24,7 +24,7 @@ function mustParseAsSingleActor(json: unknown): JActor {
   throw new Error('invalid JActor');
 }
 
-function isSimpleJActor(json: unknown): json is [string, JStrategy] {
+export function isSimpleJActor(json: unknown): json is [string, JStrategy] {
   return isArrayWithLength(json, 2) && isJName(json[0]) && isJStrategy(json[1]);
 }
 
@@ -43,7 +43,9 @@ function isJStrategy(json: unknown): json is JStrategy {
   return json === 'dag' || json === 'ldasg';
 }
 
-function isExceptionJActor(json: unknown): json is [string, JStrategy, JExn] {
+export function isExceptionJActor(
+  json: unknown
+): json is [string, JStrategy, JExn] {
   return (
     isArrayWithLength(json, 3) &&
     isJName(json[0]) &&
@@ -64,7 +66,7 @@ function mustParseAsExceptionJActor(json: unknown): JActor {
  *
  * @param input the input to validate
  */
-export function isJExn(input: unknown): input is JExn {
+function isJExn(input: unknown): input is JExn {
   return (
     input === 'setup' ||
     input === 'take-turn' ||
@@ -73,7 +75,7 @@ export function isJExn(input: unknown): input is JExn {
   );
 }
 
-function isCheatJActor(
+export function isCheatJActor(
   json: unknown
 ): json is [string, JStrategy, 'a cheat', JCheat] {
   return (
@@ -107,7 +109,7 @@ function isJCheat(input: unknown): input is JCheat {
   );
 }
 
-function isDelayedInfiniteLoopJActor(
+export function isDelayedInfiniteLoopJActor(
   json: unknown
 ): json is [string, JStrategy, JExn, number] {
   return (
