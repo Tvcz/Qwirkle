@@ -17,8 +17,10 @@ function joinGame(
 ) {
   // send initial message to server to join game
   const socket = createConnection(connectionOptions);
-  // use server response to build connection
-  const connection = new TCPConnection(socket);
-  // use connection to create refereeProxy and hand off player instance
-  refereeProxy(player, connection);
+  socket.on('connect', () => {
+    // use server response to build connection
+    const connection = new TCPConnection(socket);
+    // use connection to create refereeProxy and hand off player instance
+    refereeProxy(player, connection);
+  });
 }

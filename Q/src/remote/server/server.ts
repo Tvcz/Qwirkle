@@ -6,12 +6,14 @@ import { BaseTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import {
+  DEFAULT_CONNECTION_OPTIONS,
   SERVER_MAX_PLAYERS,
   SERVER_MIN_PLAYERS,
   SERVER_PLAYER_NAME_TIMEOUT_MS,
   SERVER_WAIT_FOR_SIGNUPS_MS,
   SERVER_WAIT_PERIOD_RETRY_COUNT
 } from '../../constants';
+import { GameResult } from '../../referee/referee.types';
 
 /**
  * Runs a game over TCP.
@@ -39,6 +41,7 @@ export async function runTCPGame() {
   const players: Player<BaseTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
+  server.listen(DEFAULT_CONNECTION_OPTIONS.port);
 
   server.on('connection', (socket) => {
     const newConnection = new TCPConnection(socket);
@@ -55,12 +58,13 @@ export async function runTCPGame() {
     });
   });
 
+  let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
-    return startGame(players);
-  } else {
-    terminateConnections(connections);
-    return [[], []];
+    gameResult = startGame(players);
   }
+  terminateConnections(connections);
+  server.close();
+  return gameResult;
 }
 
 /**

@@ -1,4 +1,5 @@
 import net from 'net';
+import { isValidJSON } from './jsonValidator';
 
 /**
  * A connection is a two-way communication channel between two endpoints.
@@ -18,19 +19,20 @@ export interface Connection {
 
   /**
    * Registers a callback to be called when a message is received from the other
-   * end of the connection.
+   * end of the connection. The callback is called with each discrete JSON chunk.
    * @param callback the function to be called with a received message
    */
   onResponse(callback: (message: string) => void): void;
 
   /**
-   * Closes the connection.
+   * Closes the connection. If the connection is already closed, does nothing.
    */
   close(): void;
 }
 
 export class TCPConnection implements Connection {
   private socket: net.Socket;
+  private buffer: string = '';
 
   constructor(socket: net.Socket) {
     this.socket = socket;
@@ -42,11 +44,19 @@ export class TCPConnection implements Connection {
 
   onResponse(callback: (message: string) => void): void {
     this.socket.on('data', (data) => {
-      callback(data.toString());
+      for (const char of data.toString()) {
+        this.buffer += char;
+        if (isValidJSON(this.buffer)) {
+          callback(this.buffer);
+          this.buffer = '';
+        }
+      }
     });
   }
 
   close(): void {
-    this.socket.end();
+    if (!this.socket.closed) {
+      this.socket.end();
+    }
   }
 }
