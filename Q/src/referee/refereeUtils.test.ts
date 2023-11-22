@@ -457,7 +457,6 @@ describe('tests for referee util methods', () => {
       runGame(gameState, rulebook, []);
 
       // Assert
-
       expect(mockUpdatePlayerScore).toHaveBeenCalledWith('joe', 0);
     });
     test('if turn action is EXCHANGE, updatePlayerScore is called with 0', () => {
@@ -486,7 +485,6 @@ describe('tests for referee util methods', () => {
       runGame(gameState, rulebook, []);
 
       // Assert
-
       expect(mockUpdatePlayerScore).toHaveBeenCalledWith('joe', 0);
     });
     test('if turn action is a placement, updatePlayerScore is called with the result of getPlacementScore', () => {

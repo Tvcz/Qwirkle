@@ -20,9 +20,9 @@ import {
   ScoringRule
 } from '../game/types/rules.types';
 import { TurnAction } from '../player/turnAction';
-import { Player } from '../player/player';
-import { GameResult } from './referee.types';
+import { GameResult, Result } from './referee.types';
 import { Observer } from '../observer/observer';
+import { SafePlayer } from './safePlayer';
 
 /**
  * Set up a game of Q by creating the initial game state and communicating to each of the players the initial state.
@@ -30,7 +30,7 @@ import { Observer } from '../observer/observer';
  * @param players list of the players in the game, as passed to the referee. Invariant that this is a copy of the original list, and the ordering of the players will never change.
  * @returns The initial game state
  */
-export const setUpGame = (players: Player<BaseTile>[]) => {
+export const setUpGame = (players: SafePlayer<BaseTile>[]) => {
   const bagOfTiles = createBagOfTiles(NUMBER_OF_EACH_TILE);
 
   const map = createMap(bagOfTiles);
@@ -92,7 +92,7 @@ const createMap = (bagOfTiles: QBagOfTiles<BaseTile>) => {
  */
 const createPlayerTurnQueue = (
   bagOfTiles: QBagOfTiles<BaseTile>,
-  players: Player<BaseTile>[]
+  players: SafePlayer<BaseTile>[]
 ): PlayerTurnQueue<BaseTile> => {
   const playerStates = createPlayerStates(bagOfTiles, players);
 
@@ -109,7 +109,7 @@ const createPlayerTurnQueue = (
  */
 const createPlayerStates = (
   bagOfTiles: QBagOfTiles<BaseTile>,
-  players: Player<BaseTile>[]
+  players: SafePlayer<BaseTile>[]
 ) => {
   return players
     .map((player) => {
@@ -118,17 +118,12 @@ const createPlayerStates = (
         playerTiles.push(bagOfTiles.drawTile());
       }
 
-      const playerState = interactWithPlayer(
-        () => new PlayerState<BaseTile>(player)
-      );
-
-      if (playerState === undefined) {
+      const playerName = player.name();
+      if (!playerName.success || playerName.value === undefined) {
         return undefined;
       }
 
-      playerState.setTiles(playerTiles);
-
-      return playerState;
+      return new PlayerState<BaseTile>(player, playerName.value);
     })
     .filter(
       (playerState): playerState is PlayerState<BaseTile> =>
@@ -147,11 +142,11 @@ export const setUpPlayers = (gameState: QGameState<BaseTile>) => {
   const initialTilePlacements = gameState.getActivePlayerInfo().mapState;
   const eliminatePlayer = (name: string) => gameState.eliminatePlayer(name);
 
-  playerSetupInformation.forEach(({ name, tiles, setUp: setUp }) => {
-    interactWithPlayer(
-      () => setUp(initialTilePlacements, tiles),
-      () => eliminatePlayer(name)
-    );
+  playerSetupInformation.forEach(({ name, tiles, setUp }) => {
+    const setUpResult = setUp(initialTilePlacements, tiles);
+    if (setUpResult.success === false) {
+      eliminatePlayer(name);
+    }
   });
 };
 
@@ -220,28 +215,26 @@ const manageTurn = (
 
   const turnAction = getAndValidateTurnAction(
     activePlayerName,
-    () => activePlayerController.takeTurn(publicState),
+    activePlayerController.takeTurn(publicState),
     gameState,
     rulebook.getPlacementRules()
   );
 
-  if (turnAction === undefined) {
-    return;
+  if (turnAction !== undefined) {
+    doTurnAndUpdatePlayer(
+      turnAction,
+      activePlayerName,
+      activePlayerController,
+      gameState,
+      rulebook
+    );
   }
-
-  doTurnAndUpdatePlayer(
-    turnAction,
-    activePlayerName,
-    activePlayerController,
-    gameState,
-    rulebook
-  );
 };
 
 const doTurnAndUpdatePlayer = (
   turnAction: TurnAction<BaseTile>,
   playerName: string,
-  playerController: Player<BaseTile>,
+  playerController: SafePlayer<BaseTile>,
   gameState: QGameState<BaseTile>,
   rulebook: QRuleBook<BaseTile>
 ) => {
@@ -278,16 +271,16 @@ const doTurnAndUpdatePlayer = (
  */
 const givePlayerNewTiles = (
   playerName: string,
-  playerController: Player<BaseTile>,
+  playerController: SafePlayer<BaseTile>,
   newTiles: BaseTile[],
   gameState: QGameState<BaseTile>,
   endOfGameRules: ReadonlyArray<EndOfGameRule<BaseTile>>
 ): void => {
   if (newTiles.length > 0 && !gameState.isGameOver(endOfGameRules)) {
-    interactWithPlayer(
-      () => playerController.newTiles(newTiles),
-      () => gameState.eliminatePlayer(playerName)
-    );
+    const resultNewTilesCall = playerController.newTiles(newTiles);
+    if (resultNewTilesCall.success === false) {
+      gameState.eliminatePlayer(playerName);
+    }
   }
 };
 
@@ -302,31 +295,27 @@ const givePlayerNewTiles = (
  */
 const getAndValidateTurnAction = (
   activePlayerName: string,
-  takeTurn: () => TurnAction<BaseTile> | undefined,
+  turnAction: Result<TurnAction<BaseTile>>,
   gameState: QGameState<BaseTile>,
   placementRules: ReadonlyArray<PlacementRule<BaseTile>>
 ): TurnAction<BaseTile> | undefined => {
-  const turnAction = interactWithPlayer(
-    () => takeTurn(),
-    () => gameState.eliminatePlayer(activePlayerName)
-  );
-
-  if (turnAction === undefined) {
+  if (turnAction.success === false || turnAction.value === undefined) {
+    gameState.eliminatePlayer(activePlayerName);
     return undefined;
   }
 
   const isValidTurnAction = validateTurnAction(
-    turnAction,
+    turnAction.value,
     gameState,
     placementRules
   );
 
   if (!isValidTurnAction) {
-    gameState.eliminatePlayer(activePlayerName, turnAction);
+    gameState.eliminatePlayer(activePlayerName, turnAction.value);
     return undefined;
   }
 
-  return turnAction;
+  return turnAction.value;
 };
 
 /**
@@ -481,37 +470,17 @@ const communicateWinWithPlayers = (
   playersEndGameInformation.forEach(({ name, win }) => {
     const playerWon = winners.includes(name);
 
-    interactWithPlayer(
-      () => win(playerWon),
-      () => {
-        if (playerWon) {
-          winners.splice(
-            winners.findIndex((winnerName) => winnerName === name),
-            1
-          );
-        }
-        eliminated.push(name);
+    const resultWinCall = win(playerWon);
+    if (resultWinCall.success === false) {
+      if (playerWon) {
+        winners.splice(
+          winners.findIndex((winnerName) => winnerName === name),
+          1
+        );
       }
-    );
+      eliminated.push(name);
+    }
   });
 
   return [winners, eliminated];
-};
-
-/**
- * Method to interact with a player. Attempts to execute an _interaction_ method, if it fails the error is caught and the player is eliminated.
- * @param interaction Function to interact with the player
- * @param eliminatePlayer Function to eliminate the player from the game
- * @returns Either the result of the interaction method, or undefined if the player was eliminated
- */
-const interactWithPlayer = <R>(
-  interaction: () => R,
-  eliminatePlayer?: () => void
-): R | undefined => {
-  try {
-    return interaction();
-  } catch (error) {
-    eliminatePlayer?.();
-    return undefined;
-  }
 };
