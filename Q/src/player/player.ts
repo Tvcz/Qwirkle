@@ -123,6 +123,42 @@ export class BasePlayer<T extends QTile> implements Player<T> {
   }
 }
 
+export class SetupExceptionPlayer<T extends QTile> extends BasePlayer<T> {
+  public setUp(m: TilePlacement<T>[], st: T[]) {
+    const mapString = JSON.stringify(m);
+    const startingTileString = JSON.stringify(st);
+    throw new Error(
+      `Setup exception for player ${this.name()} when called with map: ${mapString}, and starting tile ${startingTileString}`
+    );
+  }
+}
+
+export class TurnExceptionPlayer<T extends QTile> extends BasePlayer<T> {
+  public takeTurn(s: RelevantPlayerInfo<T>): TurnAction<T> {
+    const stateString = JSON.stringify(s);
+    throw new Error(
+      `Turn exception for player ${this.name()} when called with state: ${stateString}`
+    );
+  }
+}
+
+export class NewTilesExceptionPlayer<T extends QTile> extends BasePlayer<T> {
+  public newTiles(st: T[]) {
+    const tilesString = JSON.stringify(st);
+    throw new Error(
+      `New tiles exception for player ${this.name()} when called with tiles: ${tilesString}`
+    );
+  }
+}
+
+export class WinExceptionPlayer<T extends QTile> extends BasePlayer<T> {
+  public win(w: boolean) {
+    throw new Error(
+      `Win exception for player ${this.name()} when called with win: ${w}`
+    );
+  }
+}
+
 abstract class AbstractDelayedTimeoutPlayer<
   T extends QTile
 > extends BasePlayer<T> {
@@ -148,28 +184,36 @@ abstract class AbstractDelayedTimeoutPlayer<
   }
 }
 
-export class DelayedSetupTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
-  public setUp(m: TilePlacement<QTile>[], st: QTile[]) {
+export class DelayedSetupTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
+  public setUp(m: TilePlacement<T>[], st: T[]) {
     this.callDelayedTimeoutMethod();
     super.setUp(m, st);
   }
 }
 
-export class DelayedTurnTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
-  public takeTurn(s: RelevantPlayerInfo<QTile>) {
+export class DelayedTurnTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
+  public takeTurn(s: RelevantPlayerInfo<T>) {
     this.callDelayedTimeoutMethod();
     return super.takeTurn(s);
   }
 }
 
-export class DelayedNewTilesTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
-  public newTiles(st: QTile[]) {
+export class DelayedNewTilesTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
+  public newTiles(st: T[]) {
     this.callDelayedTimeoutMethod();
     super.newTiles(st);
   }
 }
 
-export class DelayedWinTimeoutPlayer extends AbstractDelayedTimeoutPlayer<QTile> {
+export class DelayedWinTimeoutPlayer<
+  T extends QTile
+> extends AbstractDelayedTimeoutPlayer<T> {
   public win(w: boolean) {
     this.callDelayedTimeoutMethod();
     super.win(w);
