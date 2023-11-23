@@ -1,4 +1,7 @@
-import { TCP_PLAYER_BUFFER_INTERVAL_MS } from '../../constants';
+import {
+  REFEREE_PLAYER_TIMEOUT_MS,
+  TCP_PLAYER_BUFFER_INTERVAL_MS
+} from '../../constants';
 import { BaseTile } from '../../game/map/tile';
 import {
   TilePlacement,
@@ -23,22 +26,11 @@ import { MethodResponse } from '../types';
  * functionality directly it sends messages across a network to a client Player
  * who returns the expected values from the calls and sends them back.
  *
- * Since the TCPPlayer has to synchronously wait for responses in order to match
- * the expected behavior in the Player interface, the TCPPlayer will throw a
- * timeout error in the case that the client takes too long to respond.
- *
- * This timeout is configured via:
- *  - `SERVER_PLAYER_STANDARD_TIMEOUT_MS` constant, which is the default timeout
- *    for all non-`takeTurn` methods, and
- *  - `SERVER_PLAYER_TURN_TIMEOUT_MS`, which is the timeout for the `takeTurn`
- *    method. This case is handled differently because since it could require
- *    significant computational work on the user end and so might be allowed a
- *    longer timeout.
- *
- * In addition, a custom timeout can be passed in during construction which is
- * specific to calls to the `name` method, which allows the server to decide how
- * long it is willing to wait for a player to finish signing up after joining a
- * game.
+ * It waits on a response from the client before returning from each method call.
+ * However, if the wait time exceeds a certain threshold, it will stop waiting
+ * to avoid a hanging async process. This threshold is defined by
+ * `REFEREE_PLAYER_TIMEOUT_MS`, in order to align with the timeout in the
+ * referee.
  */
 export class TCPPlayer implements Player<BaseTile> {
   private readonly connection: Connection;
@@ -169,12 +161,17 @@ export class TCPPlayer implements Player<BaseTile> {
    * @returns the response from the client
    */
   private awaitResponse(): Promise<string> {
+    const start = Date.now();
     return new Promise((resolve) => {
       const interval = setInterval(() => {
         if (this.buffer !== '') {
           clearInterval(interval);
           resolve(this.buffer);
           this.buffer = '';
+        } else if (start + REFEREE_PLAYER_TIMEOUT_MS > Date.now()) {
+          // stops waiting to avoid a hanging async process
+          clearInterval(interval);
+          resolve('');
         }
       }, TCP_PLAYER_BUFFER_INTERVAL_MS);
     });
