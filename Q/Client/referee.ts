@@ -1,1 +1,1 @@
-../src/remote/client/referee.ts
+../src/remote/client/refereeProxy.ts
