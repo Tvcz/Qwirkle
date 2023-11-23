@@ -506,6 +506,15 @@ const communicateWinWithPlayers = async (
   playersEndGameInformation: PlayerEndGameInformation[],
   [winners, eliminated]: GameResult
 ): Promise<GameResult> => {
+  const winnerInfos = playersEndGameInformation.filter(({ name }) =>
+    winners.includes(name)
+  );
+  const loserInfos = playersEndGameInformation.filter(
+    ({ name }) => !winners.includes(name)
+  );
+  const eliminatedInfos = playersEndGameInformation.filter(({ name }) =>
+    eliminated.includes(name)
+  );
   for (const { name, win } of playersEndGameInformation) {
     const playerWon = winners.includes(name);
 

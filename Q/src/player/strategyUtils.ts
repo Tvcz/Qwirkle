@@ -71,7 +71,7 @@ export const tilePlacementsToMap = <T extends QTile>(
  * @param placementRules Placement rules a valid placement needs to adhere to
  * @returns a list of the coordinates where the given tile could be placed
  */
-const getAllValidPlacementCoordinates = <T extends ShapeColorTile>(
+export const getAllValidPlacementCoordinates = <T extends ShapeColorTile>(
   tile: T,
   map: Dictionary<Coordinate, T>,
   placements: TilePlacement<T>[],

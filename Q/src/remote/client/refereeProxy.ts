@@ -98,9 +98,7 @@ async function makeTakeTurnCall(
     remainingTilesCount: parsedPublicState.remainingTilesCount,
     playersQueue: parsedPublicState.playersQueue
   };
-  console.log(player.takeTurn({} as any));
   const result = await player.takeTurn(publicState);
-  console.log(result);
   const response = { method: 'takeTurn', result };
   connection.send(JSON.stringify(response));
 }

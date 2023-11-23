@@ -1,6 +1,10 @@
 import { BaseTile, QTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
-import { suggestMoveByStrategy, tilePlacementsToMap } from './strategyUtils';
+import {
+  getAllValidPlacementCoordinates,
+  suggestMoveByStrategy,
+  tilePlacementsToMap
+} from './strategyUtils';
 import { PlacementRule } from '../game/types/rules.types';
 import {
   sortCoordinatesByMostNeighbors,
@@ -10,6 +14,12 @@ import { BaseTurnAction, TurnAction } from './turnAction';
 import { colorList, shapeList } from '../game/types/map.types';
 import Coordinate from '../game/map/coordinate';
 import { Dictionary } from 'typescript-collections';
+import {
+  coordinateMustBeEmpty,
+  coordinateMustShareASide,
+  mustMatchNeighboringShapesOrColors,
+  tilesPlacedMustShareRowOrColumn
+} from '../game/rules/placementRules';
 
 /**
  * Interface representing an implementation of a strategy for taking a turn in a Q game.
@@ -99,8 +109,9 @@ export class NonAdjacentCoordinateStrategy implements Strategy<BaseTile> {
     const maxRight = Math.max(
       ...mapState.map((tp) => tp.coordinate.getCoordinate().x)
     );
+    // places a tile 2 spaces to the right of the rightmost tile (therfore not adjacent)
     return new BaseTurnAction('PLACE', [
-      { tile: playerTiles[0], coordinate: new Coordinate(maxRight + 1, 0) }
+      { tile: playerTiles[0], coordinate: new Coordinate(maxRight + 2, 0) }
     ]);
   }
 }
@@ -121,16 +132,28 @@ export class TileNotOwnedStrategy implements Strategy<BaseTile> {
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<BaseTile>>
   ) {
+    const tilesNotInHand: BaseTile[] = [];
     for (const shape of shapeList) {
       for (const color of colorList) {
         const tile = new BaseTile(shape, color);
         const tileNotInHand = playerTiles.every((t) => !t.equals(tile));
         if (tileNotInHand) {
-          const coordinate = new Coordinate(0, 0);
-          return new BaseTurnAction('PLACE', [{ tile, coordinate }]);
+          tilesNotInHand.push(tile);
         }
       }
     }
+    if (tilesNotInHand.length > 0) {
+      const cheatTurn = this.backupStrategy.suggestMove(
+        mapState,
+        tilesNotInHand,
+        remainingTilesCount,
+        placementRules
+      );
+      if (cheatTurn.ofType('PLACE')) {
+        return cheatTurn;
+      }
+    }
+
     return this.backupStrategy.suggestMove(
       mapState,
       playerTiles,
@@ -140,6 +163,7 @@ export class TileNotOwnedStrategy implements Strategy<BaseTile> {
   }
 }
 
+// TODO
 /**
  * Denotes a player that in response to being granted a turn, requests
  * placements that are not in one line (row, column).
@@ -217,12 +241,16 @@ export class NoFitStrategy implements Strategy<BaseTile> {
   ) {
     const map = tilePlacementsToMap(mapState);
     for (const tile of playerTiles) {
-      //const validPlacements = getAllValidPlacements(tile, map, placementRules);
-      const validPlacements = [];
-      for (const placement of validPlacements) {
+      const validPlacements = getAllValidPlacementCoordinates(
+        tile,
+        map,
+        [],
+        placementRules
+      );
+      for (const coordinate of validPlacements) {
         const turnAction = this.getUnmatchingNeighborIfExists(
           tile,
-          placement,
+          coordinate,
           map
         );
         if (turnAction?.ofType('PLACE')) {
@@ -243,15 +271,19 @@ export class NoFitStrategy implements Strategy<BaseTile> {
     placement: Coordinate,
     map: Dictionary<Coordinate, BaseTile>
   ) {
-    for (const neighbor of Object.values(placement.getNeighbors()).map((c) => ({
-      tile: map.getValue(c) as BaseTile,
-      coordinate: c
-    }))) {
-      if (!neighbor.tile.sameColor(tile) && !neighbor.tile.sameShape(tile)) {
-        return new BaseTurnAction<BaseTile>('PLACE', [
-          { tile, coordinate: placement }
-        ]);
-      }
+    const rulesToFollow = [
+      tilesPlacedMustShareRowOrColumn,
+      coordinateMustShareASide,
+      coordinateMustBeEmpty
+    ];
+    const ruleNotToFollow = mustMatchNeighboringShapesOrColors;
+    const tilePlacements = [{ tile, coordinate: placement }];
+    const getTile = (c: Coordinate) => map.getValue(c);
+    if (
+      rulesToFollow.every((rule) => rule(tilePlacements, getTile)) &&
+      !ruleNotToFollow(tilePlacements, getTile)
+    ) {
+      return new BaseTurnAction('PLACE', tilePlacements);
     }
     return new BaseTurnAction<BaseTile>('PASS');
   }
