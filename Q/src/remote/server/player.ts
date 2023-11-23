@@ -42,7 +42,7 @@ import { buildTurnAction } from '../parse';
  * long it is willing to wait for a player to finish signing up after joining a
  * game.
  */
-export class TCPPlayer implements Player<BaseTile> {
+export class TCPPlayer /*implements Player<BaseTile>*/ {
   private readonly connection: Connection;
   private buffer: string = '';
   private cachedName: string = '';
@@ -70,12 +70,12 @@ export class TCPPlayer implements Player<BaseTile> {
    *
    * @returns the name of the player
    */
-  name(): string {
+  async name(): Promise<string> {
     if (this.cachedName !== '') {
       return this.cachedName;
     }
     this.connection.send(this.buildMessage('name', []));
-    const res = this.awaitResponse(this.nameTimeout);
+    const res = await this.awaitResponse(this.nameTimeout);
     const parsedRes = validateJSON(res);
     if (isNameResponse(parsedRes)) {
       this.cachedName = parsedRes.result;
@@ -85,7 +85,7 @@ export class TCPPlayer implements Player<BaseTile> {
     }
   }
 
-  setUp(m: TilePlacement<BaseTile>[], st: BaseTile[]): void {
+  async setUp(m: TilePlacement<BaseTile>[], st: BaseTile[]): Promise<void> {
     this.connection.send(
       this.buildMessage('setUp', [
         {
@@ -94,7 +94,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
+    const res = await this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isSetUpResponse(parsedRes)) {
       if (parsedRes.result !== 0) {
@@ -105,7 +105,9 @@ export class TCPPlayer implements Player<BaseTile> {
     }
   }
 
-  takeTurn(s: RelevantPlayerInfo<BaseTile>): TurnAction<BaseTile> {
+  async takeTurn(
+    s: RelevantPlayerInfo<BaseTile>
+  ): Promise<TurnAction<BaseTile>> {
     this.connection.send(
       this.buildMessage('takeTurn', [
         {
@@ -113,7 +115,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(SERVER_PLAYER_TURN_TIMEOUT_MS);
+    const res = await this.awaitResponse(SERVER_PLAYER_TURN_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isTakeTurnResponse(parsedRes)) {
       return buildTurnAction(parsedRes.result);
@@ -122,7 +124,7 @@ export class TCPPlayer implements Player<BaseTile> {
     }
   }
 
-  newTiles(st: BaseTile[]): void {
+  async newTiles(st: BaseTile[]): Promise<void> {
     this.connection.send(
       this.buildMessage('newTiles', [
         {
@@ -130,7 +132,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
+    const res = await this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isNewTilesResponse(parsedRes)) {
       if (parsedRes.result !== 0) {
@@ -141,7 +143,7 @@ export class TCPPlayer implements Player<BaseTile> {
     }
   }
 
-  win(w: boolean): void {
+  async win(w: boolean): Promise<void> {
     this.connection.send(
       this.buildMessage('win', [
         {
@@ -149,7 +151,7 @@ export class TCPPlayer implements Player<BaseTile> {
         }
       ])
     );
-    const res = this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
+    const res = await this.awaitResponse(SERVER_PLAYER_STANDARD_TIMEOUT_MS);
     const parsedRes = validateJSON(res);
     if (isWinResponse(parsedRes)) {
       if (parsedRes.result !== 0) {
@@ -177,15 +179,22 @@ export class TCPPlayer implements Player<BaseTile> {
    * @returns the response from the client
    * @throws an error if the timeout is exceeded
    */
-  private awaitResponse(timeout: number): string {
-    const start = Date.now();
-    while (Date.now() - start < timeout) {
+  private async awaitResponse(timeout: number): Promise<string> {
+    // const start = Date.now();
+    // while (Date.now() - start < timeout) {
+    //   if (this.buffer.length > 0) {
+    //     const response = this.buffer;
+    //     this.buffer = '';
+    //     return response;
+    //   }
+    // }
+    let response = '';
+    setInterval(() => {
       if (this.buffer.length > 0) {
-        const response = this.buffer;
+        response = this.buffer;
         this.buffer = '';
-        return response;
       }
-    }
+    });
     throw new Error('timeout');
   }
 }
