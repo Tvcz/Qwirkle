@@ -10,6 +10,16 @@ export type Json =
   | boolean
   | null;
 
+export type MethodResponse = {
+  method: string;
+  result: Json;
+};
+
+export type MethodCall = {
+  method: string;
+  args: Json[];
+};
+
 export type NameCall = {
   method: 'name';
   args: [];
@@ -94,5 +104,5 @@ export type ParsedRelevantPlayerInfo = {
 
 export type ParsedTurnAction = {
   type: TurnActionDescription;
-  placements: ParsedTilePlacement[] | undefined;
+  placements?: ParsedTilePlacement[];
 };

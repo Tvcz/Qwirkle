@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import { createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
-import { TCPPlayer } from './player';
+import { TCPPlayer } from './tcpPlayer';
 import { SERVER_PLAYER_NAME_TIMEOUT_MS } from '../../constants';
 import { isNameCall, validateJSON } from '../jsonValidator';
 

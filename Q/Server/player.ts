@@ -1,1 +1,1 @@
-../src/remote/server/player.ts
+../src/remote/server/tcpPlayer.ts
