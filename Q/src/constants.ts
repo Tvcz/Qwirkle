@@ -17,4 +17,4 @@ export const VIEW_ID = 'game-state-view';
 export const TILE_SCALE = 50;
 
 // The timeout in the referee for a method call on a player
-export const REFEREE_PLAYER_TIMEOUT_MS = 10000;
+export const REFEREE_PLAYER_TIMEOUT_MS = 2000;
