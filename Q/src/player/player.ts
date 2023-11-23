@@ -186,7 +186,7 @@ export class DelayedSetupTimeoutPlayer<
   T extends QTile
 > extends AbstractDelayedTimeoutPlayer<T> {
   public async setUp(m: TilePlacement<T>[], st: T[]) {
-    this.callDelayedTimeoutMethod();
+    await this.callDelayedTimeoutMethod();
     super.setUp(m, st);
   }
 }
@@ -195,7 +195,7 @@ export class DelayedTurnTimeoutPlayer<
   T extends QTile
 > extends AbstractDelayedTimeoutPlayer<T> {
   public async takeTurn(s: RelevantPlayerInfo<T>) {
-    this.callDelayedTimeoutMethod();
+    await this.callDelayedTimeoutMethod();
     return super.takeTurn(s);
   }
 }
@@ -204,7 +204,7 @@ export class DelayedNewTilesTimeoutPlayer<
   T extends QTile
 > extends AbstractDelayedTimeoutPlayer<T> {
   public async newTiles(st: T[]) {
-    this.callDelayedTimeoutMethod();
+    await this.callDelayedTimeoutMethod();
     super.newTiles(st);
   }
 }
@@ -213,7 +213,7 @@ export class DelayedWinTimeoutPlayer<
   T extends QTile
 > extends AbstractDelayedTimeoutPlayer<T> {
   public async win(w: boolean) {
-    this.callDelayedTimeoutMethod();
+    await this.callDelayedTimeoutMethod();
     super.win(w);
   }
 }
