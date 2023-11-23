@@ -33,3 +33,6 @@ export const SERVER_PLAYER_TURN_TIMEOUT_MS = 10000;
 
 // default client connection options
 export const DEFAULT_CONNECTION_OPTIONS = { host: 'localhost', port: 7077 };
+
+// The timeout in the referee for a method call on a player
+export const REFEREE_PLAYER_TIMEOUT_MS = 2000;
