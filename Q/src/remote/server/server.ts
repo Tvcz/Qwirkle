@@ -1,6 +1,6 @@
 import net from 'net';
 import { Connection, TCPConnection } from '../connection';
-import { TCPPlayer } from './tcpPlayer';
+import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
 import { BaseTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';

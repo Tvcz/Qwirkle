@@ -2,7 +2,7 @@ import { createConnection } from 'net';
 import { TCPConnection } from '../connection';
 import { Player } from '../../player/player';
 import { BaseTile } from '../../game/map/tile';
-import { refereeProxy } from './referee';
+import { refereeProxy } from './refereeProxy';
 import { DEFAULT_CONNECTION_OPTIONS } from '../../constants';
 
 /**

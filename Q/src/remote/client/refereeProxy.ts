@@ -26,19 +26,19 @@ import { buildTile, buildTilePlacement } from '../parse';
 export function refereeProxy(player: Player<BaseTile>, connection: Connection) {
   // listens for tcp messages from the server
   // converts them to method calls on the player
-  connection.onResponse((data) => {
+  connection.onResponse(async (data) => {
     // json validator
     const parsedMessage = validateJSON(data);
     if (isNameCall(parsedMessage)) {
-      makeNameCall(player, connection);
+      await makeNameCall(player, connection);
     } else if (isSetUpCall(parsedMessage)) {
-      makeSetUpCall(player, connection, parsedMessage);
+      await makeSetUpCall(player, connection, parsedMessage);
     } else if (isTakeTurnCall(parsedMessage)) {
-      makeTakeTurnCall(player, connection, parsedMessage);
+      await makeTakeTurnCall(player, connection, parsedMessage);
     } else if (isNewTilesCall(parsedMessage)) {
-      makeNewTilesCall(player, connection, parsedMessage);
+      await makeNewTilesCall(player, connection, parsedMessage);
     } else if (isWinCall(parsedMessage)) {
-      makeWinCall(player, connection, parsedMessage);
+      await makeWinCall(player, connection, parsedMessage);
     } else {
       throw new Error('invalid method received in message');
     }
@@ -51,8 +51,8 @@ export function refereeProxy(player: Player<BaseTile>, connection: Connection) {
  * @param player - The player to make the call on.
  * @param connection - The connection to the server.
  */
-function makeNameCall(player: Player<BaseTile>, connection: Connection) {
-  const result = player.name();
+async function makeNameCall(player: Player<BaseTile>, connection: Connection) {
+  const result = await player.name();
   const response = { method: 'name', result };
   connection.send(JSON.stringify(response));
 }
@@ -64,13 +64,13 @@ function makeNameCall(player: Player<BaseTile>, connection: Connection) {
  * @param connection - The connection with the server.
  * @param message - The setup call message received from the server.
  */
-function makeSetUpCall(
+async function makeSetUpCall(
   player: Player<BaseTile>,
   connection: Connection,
   message: SetUpCall
 ) {
   const args = message.args;
-  player.setUp(
+  await player.setUp(
     args.mapState.map(buildTilePlacement),
     args.startingTiles.map(buildTile)
   );
@@ -85,7 +85,7 @@ function makeSetUpCall(
  * @param connection - The connection to the server.
  * @param message - The takeTurn call message received from the server.
  */
-function makeTakeTurnCall(
+async function makeTakeTurnCall(
   player: Player<BaseTile>,
   connection: Connection,
   message: TakeTurnCall
@@ -98,8 +98,9 @@ function makeTakeTurnCall(
     remainingTilesCount: parsedPublicState.remainingTilesCount,
     playersQueue: parsedPublicState.playersQueue
   };
-
-  const result = player.takeTurn(publicState);
+  console.log(player.takeTurn({} as any));
+  const result = await player.takeTurn(publicState);
+  console.log(result);
   const response = { method: 'takeTurn', result };
   connection.send(JSON.stringify(response));
 }
@@ -111,12 +112,12 @@ function makeTakeTurnCall(
  * @param connection - The connection to the server.
  * @param message - The newTiles call message received from the server.
  */
-function makeNewTilesCall(
+async function makeNewTilesCall(
   player: Player<BaseTile>,
   connection: Connection,
   message: NewTilesCall
 ) {
-  player.newTiles(message.args.newTiles.map(buildTile));
+  await player.newTiles(message.args.newTiles.map(buildTile));
   const response = { method: 'newTiles', result: 0 };
   connection.send(JSON.stringify(response));
 }
@@ -128,12 +129,12 @@ function makeNewTilesCall(
  * @param connection - The connection to the server.
  * @param message - The win call message received from the server.
  */
-function makeWinCall(
+async function makeWinCall(
   player: Player<BaseTile>,
   connection: Connection,
   message: WinCall
 ) {
-  player.win(message.args.win);
+  await player.win(message.args.win);
   const response = { method: 'win', result: 0 };
   connection.send(JSON.stringify(response));
 }

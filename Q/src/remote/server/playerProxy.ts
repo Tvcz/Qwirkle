@@ -167,7 +167,6 @@ export class TCPPlayer implements Player<BaseTile> {
    * the result.
    *
    * @returns the response from the client
-   * @throws an error if the timeout is exceeded
    */
   private awaitResponse(): Promise<string> {
     return new Promise((resolve) => {

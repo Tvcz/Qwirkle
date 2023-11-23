@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import { createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
-import { TCPPlayer } from './tcpPlayer';
+import { TCPPlayer } from './playerProxy';
 import {
   isNameCall,
   isSetUpCall,
@@ -13,7 +13,7 @@ import Coordinate from '../../game/map/coordinate';
 import { MethodCall, SetUpCall } from '../types';
 import { BaseTurnAction } from '../../player/turnAction';
 
-describe('tests for tcp player', () => {
+describe('tests for tcp player proxy', () => {
   let server: Server;
   let clientConnection: Connection;
   let serverConnection: Connection;

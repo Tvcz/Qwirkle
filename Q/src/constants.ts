@@ -25,7 +25,7 @@ export const SERVER_MAX_PLAYERS: number = 4;
 export const SERVER_WAIT_PERIOD_RETRY_COUNT = 1;
 
 // default timeout on remote player method calls for name
-export const SERVER_PLAYER_NAME_TIMEOUT_MS: number = 6000;
+export const SERVER_PLAYER_NAME_TIMEOUT_MS: number = 3000;
 
 // default client connection options
 export const DEFAULT_CONNECTION_OPTIONS = { host: 'localhost', port: 7077 };
