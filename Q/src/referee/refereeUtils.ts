@@ -29,7 +29,7 @@ import { SafePlayer } from './safePlayer';
  * each of the players the initial state. Game state is created with a bag of
  * tiles, an initial map, and the player turn queue.
  * @param players list of the players in the game, as passed to the referee.
- * Invariant that this is a copy of the original list, and the ordering of the
+ * INVARIANT: this is a copy of the original list, and the ordering of the
  * players will never change.
  * @returns The initial game state
  */
@@ -415,7 +415,7 @@ const scoreTurnAction = (
 
 /**
  * Execute the turn action on behalf of the active player and get the player's new tiles, if applicable
- * Invariant that the turn action has already been validated
+ * INVARIANT: the turn action has already been validated
  * @param turnAction The turn action the active player
  * @param gameState The current game state
  * @returns The player's tiles at the beginning of the turn and the new tiles

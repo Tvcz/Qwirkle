@@ -61,7 +61,6 @@ export class BasePlayer<T extends QTile> implements Player<T> {
   private playerName: string;
   private strategy: Strategy<T>;
   private rulebook: QRuleBook<T>;
-
   private tiles: T[];
   private map: TilePlacement<T>[];
   private hasWon: boolean;
@@ -70,7 +69,6 @@ export class BasePlayer<T extends QTile> implements Player<T> {
     this.playerName = name;
     this.strategy = strategy;
     this.rulebook = rulebook;
-
     this.tiles = [];
     this.map = [];
     this.hasWon = false;

@@ -1,0 +1,2 @@
+#!/bin/sh
+(cd ../Q && tsc ./src/electron/main/main.ts -o "$@")
