@@ -37,8 +37,10 @@ export function isNameCall(obj: unknown): obj is NameCall {
     'method' in obj &&
     obj.method === 'name' &&
     'args' in obj &&
-    Array.isArray(obj.args) &&
-    obj.args.length === 0
+    typeof obj.args === 'object' &&
+    !Array.isArray(obj.args) &&
+    obj.args !== null &&
+    Object.keys(obj.args).length === 0
   );
 }
 

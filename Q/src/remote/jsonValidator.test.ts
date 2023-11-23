@@ -16,15 +16,16 @@ import {
 describe('tests for json type guards', () => {
   describe('name method types', () => {
     test('isNameCall returns true for valid NameCall', () => {
-      expect(isNameCall({ method: 'name', args: [] })).toBe(true);
+      expect(isNameCall({ method: 'name', args: {} })).toBe(true);
     });
     test('isNameCall returns false for invalid NameCall', () => {
       expect(isNameCall({ method: 'name', args: 'foo' })).toBe(false);
-      expect(isNameCall({ method: 'setUp', args: [] })).toBe(false);
+      expect(isNameCall({ method: 'name', args: [] })).toBe(false);
+      expect(isNameCall({ method: 'setUp', args: {} })).toBe(false);
       expect(isNameCall({ method: 'win', args: [true] })).toBe(false);
-      expect(isNameCall({ method: 'foo', args: [] })).toBe(false);
+      expect(isNameCall({ method: 'foo', args: {} })).toBe(false);
       expect(isNameCall({ method: 'name' })).toBe(false);
-      expect(isNameCall({ nonsense: 'name', args: ['this'] })).toBe(false);
+      expect(isNameCall({ nonsense: 'name', args: { this: 0 } })).toBe(false);
     });
     test('isNameResponse returns true for valid NameResponse', () => {
       expect(isNameResponse({ method: 'name', result: 'name' })).toBe(true);

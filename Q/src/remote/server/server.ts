@@ -46,10 +46,7 @@ export async function runTCPGame() {
   server.on('connection', (socket) => {
     const newConnection = new TCPConnection(socket);
     connections.push(newConnection);
-    signUp(
-      new TCPPlayer(newConnection, SERVER_PLAYER_NAME_TIMEOUT_MS),
-      players
-    );
+    signUp(new TCPPlayer(newConnection), players);
   });
 
   const enoughPlayersToRun = await new Promise<boolean>((resolve) => {
@@ -60,7 +57,7 @@ export async function runTCPGame() {
 
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
-    gameResult = startGame(players);
+    gameResult = await startGame(players);
   }
   terminateConnections(connections);
   server.close();
@@ -110,8 +107,8 @@ function terminateConnections(connections: Connection[]) {
  * @param players the players to run the game with
  * @returns the result of the game
  */
-function startGame(players: Player<BaseTile>[]) {
-  return BaseReferee(players, [], new BaseRuleBook());
+async function startGame(players: Player<BaseTile>[]): Promise<GameResult> {
+  return await BaseReferee(players, [], new BaseRuleBook());
 }
 
 /**
@@ -121,11 +118,14 @@ function startGame(players: Player<BaseTile>[]) {
  * @param players the list of players to add the player to if they respond in
  * time
  */
-function signUp(player: Player<BaseTile>, players: Player<BaseTile>[]): void {
-  try {
-    player.name();
-    players.push(player);
-  } catch (e) {
-    return;
-  }
+async function signUp(
+  player: Player<BaseTile>,
+  players: Player<BaseTile>[]
+): Promise<void> {
+  await Promise.race([
+    player.name().then((_name) => players.push(player)),
+    new Promise((_, reject) => {
+      setTimeout(reject, SERVER_PLAYER_NAME_TIMEOUT_MS);
+    })
+  ]);
 }

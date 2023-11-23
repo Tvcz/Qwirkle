@@ -1,4 +1,4 @@
-import { SERVER_PLAYER_STANDARD_TIMEOUT_MS } from '../../constants';
+import { TCP_PLAYER_BUFFER_INTERVAL_MS } from '../../constants';
 import { BaseTile } from '../../game/map/tile';
 import {
   TilePlacement,
@@ -43,26 +43,18 @@ import { MethodResponse } from '../types';
 export class TCPPlayer implements Player<BaseTile> {
   private readonly connection: Connection;
   private cachedName: string = '';
-  private readonly nameTimeout: number;
-  private messageHandler: (message: string) => void;
+  private buffer: string = '';
 
   /**
    * Constructs a TCPPlayer that communicates with a a client over the given connection.
    * @param connection the connection with the client player
    * @param nameTimeout the time to wait for a response
    */
-  constructor(
-    connection: Connection,
-    nameTimeout: number = SERVER_PLAYER_STANDARD_TIMEOUT_MS
-  ) {
+  constructor(connection: Connection) {
     this.connection = connection;
-    this.nameTimeout = nameTimeout;
-    this.messageHandler = (message: string) => {
-      throw new Error(
-        'no message handler set, but message received: ' + message
-      );
-    };
-    this.connection.onResponse(this.messageHandler);
+    this.connection.onResponse((message: string) => {
+      this.buffer += message;
+    });
   }
 
   /**
@@ -77,30 +69,26 @@ export class TCPPlayer implements Player<BaseTile> {
     if (this.cachedName !== '') {
       return this.cachedName;
     }
-    const parsedRes = this.sentMessageAndGetParsedResponse('name', []);
+    const parsedRes = await this.sendMessageAndGetParsedResponse('name', {});
     const validName = this.validateResponse(parsedRes, isNameResponse, 'name');
     this.cachedName = validName.result;
     return validName.result;
   }
 
   async setUp(m: TilePlacement<BaseTile>[], st: BaseTile[]): Promise<void> {
-    const parsedRes = this.sentMessageAndGetParsedResponse('setUp', [
-      {
-        mapState: m,
-        startingTiles: st
-      }
-    ]);
+    const parsedRes = await this.sendMessageAndGetParsedResponse('setUp', {
+      mapState: m,
+      startingTiles: st
+    });
     this.validateResponse(parsedRes, isSetUpResponse, 'setUp', true);
   }
 
   async takeTurn(
     s: RelevantPlayerInfo<BaseTile>
   ): Promise<TurnAction<BaseTile>> {
-    const parsedRes = this.sentMessageAndGetParsedResponse('takeTurn', [
-      {
-        publicState: s
-      }
-    ]);
+    const parsedRes = await this.sendMessageAndGetParsedResponse('takeTurn', {
+      publicState: s
+    });
     const validTakeTurn = this.validateResponse(
       parsedRes,
       isTakeTurnResponse,
@@ -110,20 +98,16 @@ export class TCPPlayer implements Player<BaseTile> {
   }
 
   async newTiles(st: BaseTile[]): Promise<void> {
-    const parsedRes = this.sentMessageAndGetParsedResponse('newTiles', [
-      {
-        newTiles: st
-      }
-    ]);
+    const parsedRes = await this.sendMessageAndGetParsedResponse('newTiles', {
+      newTiles: st
+    });
     this.validateResponse(parsedRes, isNewTilesResponse, 'newTiles', true);
   }
 
   async win(w: boolean): Promise<void> {
-    const parsedRes = this.sentMessageAndGetParsedResponse('win', [
-      {
-        win: w
-      }
-    ]);
+    const parsedRes = await this.sendMessageAndGetParsedResponse('win', {
+      win: w
+    });
 
     this.validateResponse(parsedRes, isWinResponse, 'win', true);
     this.connection.close();
@@ -159,9 +143,9 @@ export class TCPPlayer implements Player<BaseTile> {
    * @param args the arguments to pass to the method
    * @returns the parsed response from the client
    */
-  private async sentMessageAndGetParsedResponse(
+  private async sendMessageAndGetParsedResponse(
     methodName: string,
-    args: unknown[]
+    args: unknown
   ): Promise<unknown> {
     const res = this.awaitResponse();
     this.connection.send(this.buildMessage(methodName, args));
@@ -174,7 +158,7 @@ export class TCPPlayer implements Player<BaseTile> {
    * @param args the arguments to pass to the method
    * @returns the JSON message to send to the client
    */
-  private buildMessage(methodName: string, args: unknown[]): string {
+  private buildMessage(methodName: string, args: unknown): string {
     return JSON.stringify({ method: methodName, args });
   }
 
@@ -182,17 +166,18 @@ export class TCPPlayer implements Player<BaseTile> {
    * Waits for a response from the client and creates a promise which contains
    * the result.
    *
-   * INVARIANT: this method must be called before the message is expected to be
-   * received, so that the message handler can be set up in time.
-   *
    * @returns the response from the client
    * @throws an error if the timeout is exceeded
    */
   private awaitResponse(): Promise<string> {
     return new Promise((resolve) => {
-      this.messageHandler = (message: string) => {
-        resolve(message);
-      };
+      const interval = setInterval(() => {
+        if (this.buffer !== '') {
+          clearInterval(interval);
+          resolve(this.buffer);
+          this.buffer = '';
+        }
+      }, TCP_PLAYER_BUFFER_INTERVAL_MS);
     });
   }
 }
