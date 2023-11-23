@@ -16,7 +16,7 @@ import { buildTile, buildTilePlacement } from '../parse';
  * A referee proxy listens for messages from the server and converts them
  * to method calls which are made on the player.
  *
- * Invariants:
+ * INVARIANTS:
  * - Each referee proxy has its own connection to the server.
  * - The referee proxy is called once per client player.
  *

@@ -20,7 +20,7 @@ import { TurnAction } from '../../player/turnAction';
  * line, removing a player from the game, getting a scoreboard of all players
  * scores, and getting the names of all players.
  *
- * There is an invariant here that all player names in the queue are unique,
+ * INVARIANT: all player names in the queue are unique,
  * and that a queue cannot be created with 0 players.
  */
 export interface QPlayerTurnQueue<T extends QTile> {

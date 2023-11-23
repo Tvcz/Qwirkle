@@ -12,7 +12,8 @@ import { PlacementRule } from '../types/rules.types';
 /**
  * Interface representing the map of a Q Game.
  * Contains functionality to add new tiles and get the valid placements of tiles.
- * The map contains the invariant that tiles can only be placed next to one another.
+ *
+ * INVARIANT: tiles can only be placed next to one another.
  * This means that there are two rules baked into the constructor of the abstract map,
  * that tiles must share a side and that tiles cannot be placed on top of an existing tile.
  * This is to uphold the integrity of the map and is enforced on every validity check and tile placement.
