@@ -96,7 +96,7 @@ export interface QPlayerTurnQueue<T extends QTile> {
    * This includes the most recent turns of both the current players, as well as the players who were eliminated while attempting an invalid move during the current round.
    * @returns a list of the turn states of the players
    */
-  getAllMostRecentTurns: () => TurnState<T>[];
+  getAllMostRecentTurns: () => (TurnState<T> | undefined)[];
 
   /**
    * Gets the information needed to setup each Player controller
@@ -241,16 +241,16 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     );
   }
 
-  public getAllMostRecentTurns(): TurnState<T>[] {
-    const activePlayersTurns = this.playerQueue.map((player) =>
-      player.getMostRecentTurn()
-    );
-    const eliminatedPlayersTurn =
-      this.playersEliminatedAttemptingTurnThisRound.map((player) =>
-        player.getMostRecentTurn()
-      );
-
-    return [...activePlayersTurns, ...eliminatedPlayersTurn];
+  public getAllMostRecentTurns(): (TurnState<T> | undefined)[] {
+    const allTurns: (TurnState<T> | undefined)[] = [];
+    const addTurnsFromPlayers = (players: PlayerState<T>[]) => {
+      players.forEach((player) => {
+        allTurns.push(player.getMostRecentTurn());
+      });
+    };
+    addTurnsFromPlayers(this.playerQueue);
+    addTurnsFromPlayers(this.playersEliminatedAttemptingTurnThisRound);
+    return allTurns;
   }
 
   public getAllPlayersSetupInformation() {

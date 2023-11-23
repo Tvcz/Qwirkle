@@ -1,6 +1,8 @@
+import { REFEREE_PLAYER_TIMEOUT_MS } from '../constants';
 import { BaseTile } from '../game/map/tile';
 import { RefereeFunction } from './referee.types';
 import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
+import { SafePlayer } from './safePlayer';
 
 /**
  * Function representing a referee to carry out a single game of Q.
@@ -49,7 +51,7 @@ import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
  * @param existingGameState optional QGameState type. When passed in, the referee resumes the game from that game state.
  * @returns GameResult type: pair of a list of the winners and a list of the eliminated players
  */
-export const BaseReferee: RefereeFunction<BaseTile> = (
+export const BaseReferee: RefereeFunction<BaseTile> = async (
   players,
   observers,
   ruleBook,
@@ -57,11 +59,15 @@ export const BaseReferee: RefereeFunction<BaseTile> = (
 ) => {
   const playersCopy = [...players];
 
-  const gameState = existingGameState ?? setUpGame(playersCopy);
+  const safePlayers = playersCopy.map(
+    (player) => new SafePlayer(player, REFEREE_PLAYER_TIMEOUT_MS)
+  );
 
-  setUpPlayers(gameState);
+  const gameState = await (existingGameState ?? setUpGame(safePlayers));
 
-  const finalGameState = runGame(gameState, ruleBook, observers);
+  await setUpPlayers(gameState);
+
+  const finalGameState = await runGame(gameState, ruleBook, observers);
 
   return endGame(finalGameState, observers);
 };
