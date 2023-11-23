@@ -2,7 +2,7 @@
   {
     "testScript": "8/xgames-with-observer",
     "directories": [
-      "8/OldTests/staff-tests"
+      "8/OldTests/*"
     ]
   }
 ]

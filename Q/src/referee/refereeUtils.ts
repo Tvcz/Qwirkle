@@ -244,7 +244,13 @@ const doTurnAndUpdatePlayer = async (
   gameState: QGameState<BaseTile>,
   rulebook: QRuleBook<BaseTile>
 ) => {
-  const { originalTiles, newTiles } = executeTurnAction(turnAction, gameState);
+  const replacementTiles = getReplacementTiles(turnAction, gameState);
+
+  const originalTiles = executeTurnAction(
+    turnAction,
+    gameState,
+    replacementTiles
+  );
 
   const score = scoreTurnAction(
     originalTiles,
@@ -260,10 +266,30 @@ const doTurnAndUpdatePlayer = async (
   await givePlayerNewTiles(
     playerName,
     playerController,
-    newTiles,
+    replacementTiles,
     gameState,
-    rulebook.getEndOfGameRules()
+    rulebook.getEndOfGameRules(),
+    turnAction
   );
+};
+
+/**
+ * Get the replacement tiles for the given turn action.
+ * @param turnAction the turn action to get replacement tiles for
+ * @param gameState the current game state
+ * @returns the replacement tiles for the given turn action
+ */
+const getReplacementTiles = (
+  turnAction: TurnAction<BaseTile>,
+  gameState: QGameState<BaseTile>
+): BaseTile[] => {
+  if (turnAction.ofType('PLACE')) {
+    return gameState.getReplacementTilesPlace(turnAction.getPlacements());
+  } else if (turnAction.ofType('EXCHANGE')) {
+    return gameState.getReplacementTilesExchange();
+  } else {
+    return [];
+  }
 };
 
 /**
@@ -274,15 +300,21 @@ const doTurnAndUpdatePlayer = async (
  * @param newTiles the new tiles to give to the player
  * @param gameState the current game state
  * @param endOfGameRules the end of game rules for the game
+ * @param turnAction the turn action the player took
+ * @returns a Result indicating whether the player successfully received their new tiles
  */
 const givePlayerNewTiles = async (
   playerName: string,
   playerController: SafePlayer<BaseTile>,
   newTiles: BaseTile[],
   gameState: QGameState<BaseTile>,
-  endOfGameRules: ReadonlyArray<EndOfGameRule<BaseTile>>
+  endOfGameRules: ReadonlyArray<EndOfGameRule<BaseTile>>,
+  turnAction: TurnAction<BaseTile>
 ): Promise<void> => {
-  if (newTiles.length > 0 && !gameState.isGameOver(endOfGameRules)) {
+  if (
+    newTiles.length > 0 &&
+    (!gameState.isGameOver(endOfGameRules) || turnAction.ofType('EXCHANGE'))
+  ) {
     const resultNewTilesCall = await playerController.newTiles(newTiles);
     if (resultNewTilesCall.success === false) {
       gameState.eliminatePlayer(playerName);
@@ -391,12 +423,13 @@ const scoreTurnAction = (
  */
 const executeTurnAction = (
   turnAction: TurnAction<BaseTile>,
-  gameState: QGameState<BaseTile>
-): { originalTiles: BaseTile[]; newTiles: BaseTile[] } => {
+  gameState: QGameState<BaseTile>,
+  replacementTiles: BaseTile[]
+): BaseTile[] => {
   if (turnAction.ofType('PLACE')) {
-    return gameState.placeTurn(turnAction.getPlacements());
+    return gameState.placeTurn(turnAction.getPlacements(), replacementTiles);
   } else if (turnAction.ofType('EXCHANGE')) {
-    return gameState.exchangeTurn();
+    return gameState.exchangeTurn(replacementTiles);
   } else {
     return gameState.passTurn();
   }

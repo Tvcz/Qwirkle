@@ -64,21 +64,20 @@ export interface QGameState<T extends QTile> {
    * Execute a turn where the player passes.
    * The active player's most recent turn state is set to a pass turn with their current tiles.
    * Moves the active turn to the next player.
-   * @returns The player's tiles at the beginning of the turn and the new tiles
-   * the player received during the turn, which is always empty for a pass turn
+   * @returns The player's tiles at the beginning of the turn
    */
-  passTurn: () => { originalTiles: T[]; newTiles: T[] };
+  passTurn: () => T[];
 
   /**
    * Execute a turn where the player exchanges all of their current tiles for
    * new tiles from the bag.
    * The active player's most recent turn state is set to an exchange turn with their old tiles from before the turn.
    * When completed, moves the active turn to the next player.
+   * @param replacementTiles The tiles to replace the ones the player is exchanging
    * @throws Error if there are not enough tiles in the bag to exchange.
-   * @returns The player's tiles at the beginning of the turn and the new tiles
-   * the player received during the turn
+   * @returns The player's tiles at the beginning of the turn
    */
-  exchangeTurn: () => { originalTiles: T[]; newTiles: T[] };
+  exchangeTurn: (replacementTiles: T[]) => T[];
 
   /**
    * Execute a turn where the player places tiles on the board and receives the
@@ -86,15 +85,26 @@ export interface QGameState<T extends QTile> {
    * The active players most recent turn state is set to their tile placement with their old tiles from before the turn.
    * When completed, moves the active turn to the next player.
    * @param tilePlacements The new placements of the tiles on the board
+   * @param replacementTiles The tiles to replace the ones placed
    * @throws error if tile placement does not follow the structural map rules as defined in the QMap interface:
    * tiles must be empty and tiles must share a side
-   * @returns The player's tiles at the beginning of the turn and the new tiles
-   * the player received during the turn
+   * @returns The player's tiles at the beginning of the turn
    */
-  placeTurn: (tilePlacements: TilePlacement<T>[]) => {
-    originalTiles: T[];
-    newTiles: T[];
-  };
+  placeTurn: (tilePlacements: TilePlacement<T>[], replacementTiles: T[]) => T[];
+
+  /**
+   * Draws tile from the bag to replace all those being exhanged.
+   * @returns The tiles to replace with
+   */
+  getReplacementTilesExchange: () => T[];
+
+  /**
+   * Draws tile from the bag to replace the ones placed in a turn.
+   * Replaces the minimum between the number of tiles drawn and the number left in the bag.
+   * @param tilePlacements Placements the player is attempting to place
+   * @returns The tiles to replace with
+   */
+  getReplacementTilesPlace: (tilePlacements: TilePlacement<T>[]) => T[];
 
   /**
    * Get the relevant information the active player needs before their turn.
@@ -259,21 +269,20 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
   public passTurn() {
     const player = this.playerTurnQueue.getActivePlayer();
     const originalTiles = player.getAllTiles();
-    return { originalTiles, newTiles: [] };
+    return originalTiles;
   }
 
-  public exchangeTurn() {
+  public exchangeTurn(replacementTiles: T[]) {
     const player = this.playerTurnQueue.getActivePlayer();
-
     const originalTiles = player.getAllTiles();
+    player.setTiles(replacementTiles);
+    return originalTiles;
+  }
 
+  public getReplacementTilesExchange() {
+    const player = this.playerTurnQueue.getActivePlayer();
     const tilesToExchange = this.getTilesToExchange(player);
-    const exchangedTiles = tilesToExchange.map((tile) =>
-      this.bagOfTiles.exchangeTile(tile)
-    );
-    player.setTiles(exchangedTiles);
-
-    return { originalTiles, newTiles: exchangedTiles };
+    return tilesToExchange.map((tile) => this.bagOfTiles.exchangeTile(tile));
   }
 
   /**
@@ -290,7 +299,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     return playerTiles;
   }
 
-  public placeTurn(tilePlacements: TilePlacement<T>[]) {
+  public placeTurn(tilePlacements: TilePlacement<T>[], replacementTiles: T[]) {
     const player = this.playerTurnQueue.getActivePlayer();
 
     const originalTiles = player.getAllTiles();
@@ -299,10 +308,9 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
       this.map.placeTile(tile, coordinate);
     });
 
-    const replacementTiles = this.getReplacementTiles(tilePlacements);
     player.setTiles(replacementTiles);
 
-    return { originalTiles, newTiles: replacementTiles };
+    return originalTiles;
   }
 
   /**
@@ -311,7 +319,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
    * @param tilePlacements Placcements the player is attempting to place
    * @returns The tiles to replace with
    */
-  private getReplacementTiles(tilePlacements: TilePlacement<T>[]) {
+  public getReplacementTilesPlace(tilePlacements: TilePlacement<T>[]) {
     const replacementTiles: T[] = [];
     tilePlacements.forEach(() => {
       try {
