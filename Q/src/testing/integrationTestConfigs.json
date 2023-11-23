@@ -1,6 +1,17 @@
 [
   {
     "testScript": "8/xgames-with-observer",
-    "directories": ["8/OldTests/staff-tests"]
+    "directories": [
+      "8/OldTests/11",
+      "8/OldTests/12",
+      "8/OldTests/14",
+      "8/OldTests/15",
+      "8/OldTests/21",
+      "8/OldTests/32",
+      "8/OldTests/36",
+      "8/OldTests/40",
+      "8/OldTests/7",
+      "8/OldTests/9"
+    ]
   }
 ]
