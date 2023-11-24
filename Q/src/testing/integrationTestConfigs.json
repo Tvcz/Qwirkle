@@ -1,8 +1,8 @@
 [
   {
-    "testScript": "9/xbaddies",
+    "testScript": "8/xgames-with-observer",
     "directories": [
-      "9/ForStudents"
+      "8/grade/*"
     ]
   }
 ]

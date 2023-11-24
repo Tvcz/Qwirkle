@@ -3,7 +3,7 @@ import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
 import { gameStateHtmlBuilder } from '../game/graphicalRenderer/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
-import { writeFile } from 'fs';
+import { writeFile, existsSync, mkdirSync } from 'fs';
 import { toJState } from './serialize';
 
 /**
@@ -120,9 +120,15 @@ export class BaseObserver<T extends ShapeColorTile>
 
   private saveStateToImage(gameStateIndex: number) {
     const gameState = this.stateHistory[gameStateIndex];
+
+    const tmpFolderPath = 'Tmp';
+    if (!existsSync(tmpFolderPath)) {
+      mkdirSync(tmpFolderPath);
+    }
+
     this.saveHtmlToImage(
       this.toHtmlView(gameState),
-      `Tmp/${gameStateIndex}.png`
+      `${tmpFolderPath}/${gameStateIndex}.png`
     );
   }
 

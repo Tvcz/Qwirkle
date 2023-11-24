@@ -65,9 +65,13 @@ export const BaseReferee: RefereeFunction<BaseTile> = async (
 
   const gameState = await (existingGameState ?? setUpGame(safePlayers));
 
+  const playerNamesOrder = gameState
+    .getAllPlayersSetupInformation()
+    .map((p) => p.name);
+
   await setUpPlayers(gameState);
 
   const finalGameState = await runGame(gameState, ruleBook, observers);
 
-  return endGame(finalGameState, observers);
+  return endGame(finalGameState, observers, playerNamesOrder);
 };

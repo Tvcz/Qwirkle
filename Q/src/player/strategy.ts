@@ -1,6 +1,10 @@
-import { BaseTile, QTile } from '../game/map/tile';
+import { BaseTile, QTile, ShapeColorTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
-import { suggestMoveByStrategy, tilePlacementsToMap } from './strategyUtils';
+import {
+  getAllValidPlacementCoordinates,
+  suggestMoveByStrategy,
+  tilePlacementsToMap
+} from './strategyUtils';
 import { PlacementRule } from '../game/types/rules.types';
 import {
   sortCoordinatesByMostNeighbors,
@@ -9,6 +13,13 @@ import {
 import { BaseTurnAction, TurnAction } from './turnAction';
 import { colorList, shapeList } from '../game/types/map.types';
 import Coordinate from '../game/map/coordinate';
+import {
+  coordinateMustBeEmpty,
+  coordinateMustShareASide,
+  mustMatchNeighboringShapesOrColors,
+  mustPlaceAtLeastOneTile,
+  tilesPlacedMustShareRowOrColumn
+} from '../game/rules/placementRules';
 import { Dictionary } from 'typescript-collections';
 
 /**
@@ -99,8 +110,9 @@ export class NonAdjacentCoordinateStrategy implements Strategy<BaseTile> {
     const maxRight = Math.max(
       ...mapState.map((tp) => tp.coordinate.getCoordinate().x)
     );
+    // places a tile 2 spaces to the right of the rightmost tile (therfore not adjacent)
     return new BaseTurnAction('PLACE', [
-      { tile: playerTiles[0], coordinate: new Coordinate(maxRight + 1, 0) }
+      { tile: playerTiles[0], coordinate: new Coordinate(maxRight + 2, 0) }
     ]);
   }
 }
@@ -121,16 +133,28 @@ export class TileNotOwnedStrategy implements Strategy<BaseTile> {
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<BaseTile>>
   ) {
+    const tilesNotInHand: BaseTile[] = [];
     for (const shape of shapeList) {
       for (const color of colorList) {
         const tile = new BaseTile(shape, color);
         const tileNotInHand = playerTiles.every((t) => !t.equals(tile));
         if (tileNotInHand) {
-          const coordinate = new Coordinate(0, 0);
-          return new BaseTurnAction('PLACE', [{ tile, coordinate }]);
+          tilesNotInHand.push(tile);
         }
       }
     }
+    if (tilesNotInHand.length > 0) {
+      const cheatTurn = this.backupStrategy.suggestMove(
+        mapState,
+        tilesNotInHand,
+        remainingTilesCount,
+        placementRules
+      );
+      if (cheatTurn.ofType('PLACE')) {
+        return cheatTurn;
+      }
+    }
+
     return this.backupStrategy.suggestMove(
       mapState,
       playerTiles,
@@ -150,18 +174,134 @@ export class NotALineStrategy implements Strategy<BaseTile> {
     this.backupStrategy = backupStrategy;
   }
 
+  /**
+   *
+   * @param parentTile
+   * @param hand
+   * @param map
+   * @param placements
+   * @param placementRules
+   * @returns a list of lists of placements that are valid for the given tile
+   */
+  private findCheatingPlacement(
+    parentTile: BaseTile,
+    hand: BaseTile[],
+    map: Dictionary<Coordinate, BaseTile>,
+    placements: TilePlacement<BaseTile>[],
+    placementRules: ReadonlyArray<PlacementRule<BaseTile>>
+  ): TilePlacement<BaseTile>[] {
+    const allValidPlacements = getAllValidPlacementCoordinates(
+      parentTile,
+      map,
+      placements,
+      placementRules
+    );
+    for (const coordinate of allValidPlacements) {
+      const parentTilePlacement: TilePlacement<BaseTile> = {
+        tile: parentTile,
+        coordinate
+      };
+      const placementsWithParentTile = [...placements, parentTilePlacement];
+      if (this.isCheating(placementsWithParentTile)) {
+        return placementsWithParentTile;
+      }
+      for (const childTile of hand) {
+        const remainingHand = [...hand];
+        remainingHand.splice(hand.indexOf(childTile), 1);
+
+        const cheatingChildPlacement = this.findCheatingPlacement(
+          childTile,
+          remainingHand,
+          map,
+          placementsWithParentTile,
+          placementRules
+        );
+
+        if (cheatingChildPlacement.length > 0) {
+          return cheatingChildPlacement;
+        }
+      }
+    }
+    return [];
+  }
+
+  private isCheating(tilePlacements: TilePlacement<QTile>[]): boolean {
+    if (tilePlacements.length === 0) {
+      return false;
+    }
+
+    const { x: firstTileX, y: firstTileY } =
+      tilePlacements[0].coordinate.getCoordinate();
+
+    const someNotPlacedInSameRow = tilePlacements.some(
+      ({ coordinate }) => coordinate.getCoordinate().x !== firstTileX
+    );
+
+    const somePlacedInSameColumn = tilePlacements.some(
+      ({ coordinate }) => coordinate.getCoordinate().y !== firstTileY
+    );
+
+    return someNotPlacedInSameRow && somePlacedInSameColumn;
+  }
+
+  private attemptToCheat(
+    mapState: TilePlacement<BaseTile>[],
+    playerTiles: BaseTile[],
+    _remainingTilesCount: number,
+    _placementRules: ReadonlyArray<PlacementRule<BaseTile>>
+  ): TurnAction<BaseTile> {
+    for (const tile of playerTiles) {
+      const remainingHand = [...playerTiles];
+      remainingHand.splice(remainingHand.indexOf(tile), 1);
+
+      const cheatingPlacement = this.findCheatingPlacement(
+        tile,
+        remainingHand,
+        tilePlacementsToMap(mapState),
+        [],
+        [
+          coordinateMustBeEmpty,
+          coordinateMustShareASide,
+          mustMatchNeighboringShapesOrColors,
+          mustPlaceAtLeastOneTile
+        ]
+      );
+      if (cheatingPlacement.length > 0) {
+        return new BaseTurnAction('PLACE', cheatingPlacement);
+      }
+    }
+    return new BaseTurnAction('PASS');
+  }
+
   public suggestMove(
     mapState: TilePlacement<BaseTile>[],
     playerTiles: BaseTile[],
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<BaseTile>>
   ) {
-    if (playerTiles.length >= 2) {
-      return new BaseTurnAction('PLACE', [
-        { tile: playerTiles[0], coordinate: new Coordinate(1, 1) },
-        { tile: playerTiles[1], coordinate: new Coordinate(2, 2) }
-      ]);
+    const cheatTurn = this.attemptToCheat(
+      mapState,
+      playerTiles,
+      remainingTilesCount,
+      placementRules
+    );
+    // const cheatTurn = this.backupStrategy.suggestMove(
+    //   mapState,
+    //   playerTiles,
+    //   remainingTilesCount,
+    //   [
+    //     coordinateMustBeEmpty,
+    //     coordinateMustShareASide,
+    //     mustMatchNeighboringShapesOrColors,
+    //     this.someTilesMustNotShareRowOrColumn.bind(this),
+    //     mustPlaceAtLeastOneTile
+    //   ]
+    // );
+
+    if (cheatTurn.ofType('PLACE')) {
+      return cheatTurn;
     }
+
     return this.backupStrategy.suggestMove(
       mapState,
       playerTiles,
@@ -215,44 +355,33 @@ export class NoFitStrategy implements Strategy<BaseTile> {
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<BaseTile>>
   ) {
-    const map = tilePlacementsToMap(mapState);
-    for (const tile of playerTiles) {
-      //const validPlacements = getAllValidPlacements(tile, map, placementRules);
-      const validPlacements = [];
-      for (const placement of validPlacements) {
-        const turnAction = this.getUnmatchingNeighborIfExists(
-          tile,
-          placement,
-          map
-        );
-        if (turnAction?.ofType('PLACE')) {
-          return turnAction;
-        }
-      }
+    const invertNeighborMatch = (
+      tilePlacements: TilePlacement<ShapeColorTile>[],
+      getTile: (coordinate: Coordinate) => ShapeColorTile | undefined
+    ) => !mustMatchNeighboringShapesOrColors(tilePlacements, getTile);
+
+    const cheatTurn = this.backupStrategy.suggestMove(
+      mapState,
+      playerTiles,
+      remainingTilesCount,
+      [
+        coordinateMustBeEmpty,
+        coordinateMustShareASide,
+        invertNeighborMatch,
+        tilesPlacedMustShareRowOrColumn,
+        mustPlaceAtLeastOneTile
+      ]
+    );
+
+    if (cheatTurn.ofType('PLACE')) {
+      return cheatTurn;
     }
+
     return this.backupStrategy.suggestMove(
       mapState,
       playerTiles,
       remainingTilesCount,
       placementRules
     );
-  }
-
-  private getUnmatchingNeighborIfExists(
-    tile: BaseTile,
-    placement: Coordinate,
-    map: Dictionary<Coordinate, BaseTile>
-  ) {
-    for (const neighbor of Object.values(placement.getNeighbors()).map((c) => ({
-      tile: map.getValue(c) as BaseTile,
-      coordinate: c
-    }))) {
-      if (!neighbor.tile.sameColor(tile) && !neighbor.tile.sameShape(tile)) {
-        return new BaseTurnAction<BaseTile>('PLACE', [
-          { tile, coordinate: placement }
-        ]);
-      }
-    }
-    return new BaseTurnAction<BaseTile>('PASS');
   }
 }
