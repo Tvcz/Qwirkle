@@ -1,2 +1,2 @@
 #!/bin/sh
-(cd ../Q && xvfb-run npx electron . "$@")
+(cd ../Q && ts-node ./src/electron/main/main.ts)

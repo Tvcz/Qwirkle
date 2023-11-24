@@ -12,7 +12,7 @@ import { toQState } from './parseQ/qState';
 import { JState, JActor, Json } from './types';
 import { validateJActors } from './validate/validateJActors';
 import { validateJState } from './validate/validateJState';
-import JSONStream from 'JSONStream';
+import { parse } from 'JSONStream';
 
 let inputState: JState | undefined = undefined;
 let inputActors: JActor[] | undefined = undefined;
@@ -23,7 +23,7 @@ export function processInputAndRunGame(observers: BaseObserver<BaseTile>[]) {
 }
 
 function processInput() {
-  process.stdin.pipe(JSONStream.parse()).on('data', (data: Json) => {
+  process.stdin.pipe(parse()).on('data', (data: Json) => {
     if (!inputState) {
       inputState = mustParseAsJState(data);
       return;

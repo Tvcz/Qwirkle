@@ -1,5 +1,5 @@
 import { BrowserWindow, app, ipcMain } from 'electron';
-import path from 'path';
+import { join } from 'path';
 import { ObserverAPI } from '../../observer/observer';
 import { dialog } from 'electron';
 
@@ -14,7 +14,7 @@ export const createWindow = (observer: ObserverAPI) => {
         sandbox: false,
         nodeIntegration: true,
         contextIsolation: true,
-        preload: path.join(__dirname, '..', 'preload', 'preload.js')
+        preload: join(__dirname, '..', 'preload', 'preload.js')
       }
     };
     const window = new BrowserWindow(windowOptions);
