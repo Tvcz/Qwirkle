@@ -75,7 +75,7 @@ For `Q/Client/referee`,
   The `refereeProxy` sets an `onResponse` callback on the `TCPConnection` to validate and call methods when a message is received from the server. 
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/e6158c3cb2f8843c7c55b38a1e6e49c6c65d866d/Q/src/remote/client/refereeProxy.ts#L27-L45
   
-  For each method, when the method has been called on the player, the `refereeProxy` sends the result or a acknowledgement back to the server using the `send` method on the `TCPConnection`. For the win method, the connection is also terminated.
+  For each method, when the method has been called on the player, the `refereeProxy` sends the result or a acknowledgement back to the server using the `send` method on the `TCPConnection`. For the `win` method, the connection is also terminated.
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/e6158c3cb2f8843c7c55b38a1e6e49c6c65d866d/Q/src/remote/client/refereeProxy.ts#L57
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/e6158c3cb2f8843c7c55b38a1e6e49c6c65d866d/Q/src/remote/client/refereeProxy.ts#L78
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/e6158c3cb2f8843c7c55b38a1e6e49c6c65d866d/Q/src/remote/client/refereeProxy.ts#L103
