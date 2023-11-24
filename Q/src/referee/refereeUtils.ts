@@ -550,11 +550,13 @@ const getOrderedPlayerInfos = (
     a: PlayerEndGameInformation,
     b: PlayerEndGameInformation
   ) => playerNames.indexOf(a.name) - playerNames.indexOf(b.name);
-  const winnerInfos = playersEndGameInformation
-    .filter(({ name }) => winners.includes(name))
-    .toSorted(playerSortOrder);
-  const loserInfos = playersEndGameInformation
-    .filter(({ name }) => !winners.includes(name))
-    .toSorted(playerSortOrder);
+  const winnerInfos = playersEndGameInformation.filter(({ name }) =>
+    winners.includes(name)
+  );
+  winnerInfos.sort(playerSortOrder);
+  const loserInfos = playersEndGameInformation.filter(
+    ({ name }) => !winners.includes(name)
+  );
+  loserInfos.sort(playerSortOrder);
   return [...winnerInfos, ...loserInfos];
 };
