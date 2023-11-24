@@ -1,2 +1,2 @@
 #!/bin/sh
-(cd ../Q && ts-node ./src/electron/main/main.ts)
+(cd ../Q && npx ts-node ./src/electron/main/main.ts)
