@@ -41,7 +41,6 @@ export async function runTCPGame() {
   const players: Player<BaseTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
-  server.listen(DEFAULT_CONNECTION_OPTIONS.port);
 
   server.on('connection', (socket) => {
     const newConnection = new TCPConnection(socket);
@@ -54,6 +53,8 @@ export async function runTCPGame() {
       resolve(waitForAdditionalPlayers(players));
     });
   });
+
+  server.listen(DEFAULT_CONNECTION_OPTIONS.port);
 
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
