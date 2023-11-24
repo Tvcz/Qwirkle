@@ -21,7 +21,7 @@ describe('tests for tcp player proxy', () => {
 
   beforeEach((done) => {
     server = new Server();
-    server.listen(3000);
+    server.listen(3333);
     let clientReady = false;
     let serverReady = false;
     server.once('connection', (socket) => {
@@ -29,7 +29,7 @@ describe('tests for tcp player proxy', () => {
       player = new TCPPlayer(serverConnection);
       serverReady = true;
     });
-    const clientSocket = createConnection({ port: 3000 });
+    const clientSocket = createConnection({ port: 3333 });
     clientSocket.once('connect', () => {
       clientConnection = new TCPConnection(clientSocket);
       clientReady = true;

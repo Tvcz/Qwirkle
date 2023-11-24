@@ -23,14 +23,14 @@ describe('tests for tcp referee proxy', () => {
 
   beforeEach((done) => {
     server = new Server();
-    server.listen(3000);
+    server.listen(4444);
     let clientReady = false;
     let serverReady = false;
     server.once('connection', (socket) => {
       serverConnection = new TCPConnection(socket);
       serverReady = true;
     });
-    const clientSocket = createConnection({ port: 3000 });
+    const clientSocket = createConnection({ port: 4444 });
     clientSocket.once('connect', () => {
       clientConnection = new TCPConnection(clientSocket);
       refereeProxy(mockPlayer, clientConnection);
