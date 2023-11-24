@@ -125,7 +125,7 @@ const isValidPlacement = <T extends ShapeColorTile>(
  * either the map or the tile placement list, or returns undefined if the
  * coordinate is not present in either.
  */
-const getTileWithPlacements = <T extends QTile>(
+export const getTileWithPlacements = <T extends QTile>(
   tilePlacements: TilePlacement<T>[],
   getTile: CoordinateGetter<T>
 ) => {

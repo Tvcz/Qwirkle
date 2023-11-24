@@ -1,6 +1,10 @@
 import { BaseTile, QTile, ShapeColorTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
-import { suggestMoveByStrategy } from './strategyUtils';
+import {
+  getAllValidPlacementCoordinates,
+  suggestMoveByStrategy,
+  tilePlacementsToMap
+} from './strategyUtils';
 import { PlacementRule } from '../game/types/rules.types';
 import {
   sortCoordinatesByMostNeighbors,
@@ -16,6 +20,7 @@ import {
   mustPlaceAtLeastOneTile,
   tilesPlacedMustShareRowOrColumn
 } from '../game/rules/placementRules';
+import { Dictionary } from 'typescript-collections';
 
 /**
  * Interface representing an implementation of a strategy for taking a turn in a Q game.
@@ -169,29 +174,129 @@ export class NotALineStrategy implements Strategy<BaseTile> {
     this.backupStrategy = backupStrategy;
   }
 
+  /**
+   *
+   * @param parentTile
+   * @param hand
+   * @param map
+   * @param placements
+   * @param placementRules
+   * @returns a list of lists of placements that are valid for the given tile
+   */
+  private findCheatingPlacement(
+    parentTile: BaseTile,
+    hand: BaseTile[],
+    map: Dictionary<Coordinate, BaseTile>,
+    placements: TilePlacement<BaseTile>[],
+    placementRules: ReadonlyArray<PlacementRule<BaseTile>>
+  ): TilePlacement<BaseTile>[] {
+    const allValidPlacements = getAllValidPlacementCoordinates(
+      parentTile,
+      map,
+      placements,
+      placementRules
+    );
+    for (const coordinate of allValidPlacements) {
+      const parentTilePlacement: TilePlacement<BaseTile> = {
+        tile: parentTile,
+        coordinate
+      };
+      const placementsWithParentTile = [...placements, parentTilePlacement];
+      if (this.isCheating(placementsWithParentTile)) {
+        return placementsWithParentTile;
+      }
+      for (const childTile of hand) {
+        const remainingHand = [...hand];
+        remainingHand.splice(hand.indexOf(childTile), 1);
+
+        const cheatingChildPlacement = this.findCheatingPlacement(
+          childTile,
+          remainingHand,
+          map,
+          placementsWithParentTile,
+          placementRules
+        );
+
+        if (cheatingChildPlacement.length > 0) {
+          return cheatingChildPlacement;
+        }
+      }
+    }
+    return [];
+  }
+
+  private isCheating(tilePlacements: TilePlacement<QTile>[]): boolean {
+    if (tilePlacements.length === 0) {
+      return false;
+    }
+
+    const { x: firstTileX, y: firstTileY } =
+      tilePlacements[0].coordinate.getCoordinate();
+
+    const someNotPlacedInSameRow = tilePlacements.some(
+      ({ coordinate }) => coordinate.getCoordinate().x !== firstTileX
+    );
+
+    const somePlacedInSameColumn = tilePlacements.some(
+      ({ coordinate }) => coordinate.getCoordinate().y !== firstTileY
+    );
+
+    return someNotPlacedInSameRow && somePlacedInSameColumn;
+  }
+
+  private attemptToCheat(
+    mapState: TilePlacement<BaseTile>[],
+    playerTiles: BaseTile[],
+    _remainingTilesCount: number,
+    _placementRules: ReadonlyArray<PlacementRule<BaseTile>>
+  ): TurnAction<BaseTile> {
+    for (const tile of playerTiles) {
+      const remainingHand = [...playerTiles];
+      remainingHand.splice(remainingHand.indexOf(tile), 1);
+
+      const cheatingPlacement = this.findCheatingPlacement(
+        tile,
+        remainingHand,
+        tilePlacementsToMap(mapState),
+        [],
+        [
+          coordinateMustBeEmpty,
+          coordinateMustShareASide,
+          mustMatchNeighboringShapesOrColors,
+          mustPlaceAtLeastOneTile
+        ]
+      );
+      if (cheatingPlacement.length > 0) {
+        return new BaseTurnAction('PLACE', cheatingPlacement);
+      }
+    }
+    return new BaseTurnAction('PASS');
+  }
+
   public suggestMove(
     mapState: TilePlacement<BaseTile>[],
     playerTiles: BaseTile[],
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<BaseTile>>
   ) {
-    const invertLineRule = (
-      tilePlacements: TilePlacement<QTile>[],
-      getTile: (coordinate: Coordinate) => QTile | undefined
-    ) => !tilesPlacedMustShareRowOrColumn(tilePlacements, getTile);
-
-    const cheatTurn = this.backupStrategy.suggestMove(
+    const cheatTurn = this.attemptToCheat(
       mapState,
       playerTiles,
       remainingTilesCount,
-      [
-        coordinateMustBeEmpty,
-        coordinateMustShareASide,
-        mustMatchNeighboringShapesOrColors,
-        invertLineRule,
-        mustPlaceAtLeastOneTile
-      ]
+      placementRules
     );
+    // const cheatTurn = this.backupStrategy.suggestMove(
+    //   mapState,
+    //   playerTiles,
+    //   remainingTilesCount,
+    //   [
+    //     coordinateMustBeEmpty,
+    //     coordinateMustShareASide,
+    //     mustMatchNeighboringShapesOrColors,
+    //     this.someTilesMustNotShareRowOrColumn.bind(this),
+    //     mustPlaceAtLeastOneTile
+    //   ]
+    // );
 
     if (cheatTurn.ofType('PLACE')) {
       return cheatTurn;
