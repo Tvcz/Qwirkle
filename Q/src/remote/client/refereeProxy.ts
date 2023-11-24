@@ -135,4 +135,5 @@ async function makeWinCall(
   await player.win(message.args.win);
   const response = { method: 'win', result: 0 };
   connection.send(JSON.stringify(response));
+  connection.close();
 }
