@@ -1,1 +1,9 @@
-[[], ["playerOne", "playerTwo", "playerThree", "playerFour"]]
+[
+  [],
+  [
+    "playerThree",
+    "playerOne",
+    "playerTwo",
+    "playerFour"
+  ]
+]
