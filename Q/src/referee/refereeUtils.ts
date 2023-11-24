@@ -439,11 +439,14 @@ const executeTurnAction = (
  * Creates a list with two elements, the names of the winners of the game and the names of the eliminated players.
  * Also, communicates to each non eliminated player whether they won or lost.
  * @param finalGameState The final game state for the game
+ * @param observers The observers of the game
+ * @param playerOrder The order of the players in the game
  * @returns A GameResult of the winners and eliminated players
  */
 export async function endGame(
   finalGameState: QGameState<BaseTile>,
-  observers: Observer<BaseTile>[]
+  observers: Observer<BaseTile>[],
+  playerOrder: string[]
 ): Promise<GameResult> {
   const scoreboard = finalGameState.getScoreboard();
 
@@ -452,7 +455,8 @@ export async function endGame(
 
   const finalResult = await communicateWinWithPlayers(
     finalGameState.getAllPlayersEndGameInformation(),
-    [winners, eliminated]
+    [winners, eliminated],
+    playerOrder
   );
 
   informObserversOfEndGame(
@@ -504,18 +508,15 @@ const getWinnersNames = (scoreboard: Scoreboard): string[] => {
  */
 const communicateWinWithPlayers = async (
   playersEndGameInformation: PlayerEndGameInformation[],
-  [winners, eliminated]: GameResult
+  [winners, eliminated]: GameResult,
+  playerNames: string[]
 ): Promise<GameResult> => {
-  const winnerInfos = playersEndGameInformation.filter(({ name }) =>
-    winners.includes(name)
+  const orderedPlayerInfos = getOrderedPlayerInfos(
+    winners,
+    playerNames,
+    playersEndGameInformation
   );
-  const loserInfos = playersEndGameInformation.filter(
-    ({ name }) => !winners.includes(name)
-  );
-  const eliminatedInfos = playersEndGameInformation.filter(({ name }) =>
-    eliminated.includes(name)
-  );
-  for (const { name, win } of playersEndGameInformation) {
+  for (const { name, win } of orderedPlayerInfos) {
     const playerWon = winners.includes(name);
 
     const resultWinCall = await win(playerWon);
@@ -531,4 +532,29 @@ const communicateWinWithPlayers = async (
   }
 
   return [winners, eliminated];
+};
+
+/**
+ * Sort the player end game informations
+ * @param winners the names of the winners
+ * @param playerNames the names of all players in order
+ * @param playersEndGameInformation the end game information for all players
+ * @returns the player end game information sorted by the order of the players
+ */
+const getOrderedPlayerInfos = (
+  winners: string[],
+  playerNames: string[],
+  playersEndGameInformation: PlayerEndGameInformation[]
+) => {
+  const playerSortOrder = (
+    a: PlayerEndGameInformation,
+    b: PlayerEndGameInformation
+  ) => playerNames.indexOf(a.name) - playerNames.indexOf(b.name);
+  const winnerInfos = playersEndGameInformation
+    .filter(({ name }) => winners.includes(name))
+    .toSorted(playerSortOrder);
+  const loserInfos = playersEndGameInformation
+    .filter(({ name }) => !winners.includes(name))
+    .toSorted(playerSortOrder);
+  return [...winnerInfos, ...loserInfos];
 };
