@@ -95,7 +95,7 @@ export const BaseReferee: RefereeFunction<BaseTile> = async (
     (player) => new SafePlayer(player, perTurnTimeoutMS)
   );
 
-  const gameState = existingGameState ?? (await setUpGame(safePlayers));
+  const gameState = await (existingGameState ?? setUpGame(safePlayers));
 
   const playerNamesOrder = gameState
     .getAllPlayersSetupInformation()
