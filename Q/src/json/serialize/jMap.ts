@@ -1,45 +1,9 @@
+import { ShapeColorTile } from '../../game/map/tile';
 import {
-  JCell,
-  JMap,
-  JPlayer,
-  JRow,
-  JState,
-  JTile
-} from '../game/types/json.types';
-import {
-  RenderableGameState,
   RenderableMapState,
-  RenderablePlayer,
   TilePlacement
-} from '../game/types/gameState.types';
-import { ShapeColorTile } from '../game/map/tile';
-
-export function toJState(
-  gameState: RenderableGameState<ShapeColorTile>
-): JState {
-  const map = toJMap(gameState.mapState);
-  const refsTiles = gameState.remainingTiles.map(toJTile);
-
-  if (gameState.players.length === 0) {
-    throw new Error('A player');
-  }
-  const jPlayers = gameState.players.map(toJPlayer);
-  const players: [JPlayer, ...JPlayer[]] = [jPlayers[0], ...jPlayers.slice(1)];
-  return {
-    map,
-    'tile*': refsTiles,
-    players
-  };
-}
-
-export function toJPlayer(player: RenderablePlayer<ShapeColorTile>) {
-  const jPlayer: JPlayer = {
-    name: player.name,
-    score: player.score,
-    'tile*': player.tiles.map(toJTile)
-  };
-  return jPlayer;
-}
+} from '../../game/types/gameState.types';
+import { JCell, JMap, JRow, JTile } from '../data.types';
 
 export function toJMap(mapState: RenderableMapState<ShapeColorTile>): JMap {
   const mapData = mapState.tilePlacements;

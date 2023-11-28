@@ -2,7 +2,7 @@ import {
   REFEREE_PLAYER_TIMEOUT_MS,
   TCP_PLAYER_BUFFER_INTERVAL_MS
 } from '../../constants';
-import { BaseTile } from '../../game/map/tile';
+import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import {
   TilePlacement,
   RelevantPlayerInfo
@@ -32,7 +32,7 @@ import { MethodResponse } from '../types';
  * `REFEREE_PLAYER_TIMEOUT_MS`, in order to align with the timeout in the
  * referee.
  */
-export class TCPPlayer implements Player<BaseTile> {
+export class TCPPlayer implements Player<ShapeColorTile> {
   private readonly connection: Connection;
   private cachedName: string = '';
   private buffer: string = '';
@@ -67,7 +67,10 @@ export class TCPPlayer implements Player<BaseTile> {
     return validName.result;
   }
 
-  async setUp(m: TilePlacement<BaseTile>[], st: BaseTile[]): Promise<void> {
+  async setUp(
+    m: TilePlacement<ShapeColorTile>[],
+    st: ShapeColorTile[]
+  ): Promise<void> {
     const parsedRes = await this.sendMessageAndGetParsedResponse('setUp', {
       mapState: m,
       startingTiles: st
@@ -76,8 +79,8 @@ export class TCPPlayer implements Player<BaseTile> {
   }
 
   async takeTurn(
-    s: RelevantPlayerInfo<BaseTile>
-  ): Promise<TurnAction<BaseTile>> {
+    s: RelevantPlayerInfo<ShapeColorTile>
+  ): Promise<TurnAction<ShapeColorTile>> {
     const parsedRes = await this.sendMessageAndGetParsedResponse('takeTurn', {
       publicState: s
     });
@@ -89,7 +92,7 @@ export class TCPPlayer implements Player<BaseTile> {
     return buildTurnAction(validTakeTurn.result);
   }
 
-  async newTiles(st: BaseTile[]): Promise<void> {
+  async newTiles(st: ShapeColorTile[]): Promise<void> {
     const parsedRes = await this.sendMessageAndGetParsedResponse('newTiles', {
       newTiles: st
     });

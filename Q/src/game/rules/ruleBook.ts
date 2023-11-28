@@ -5,7 +5,7 @@ import {
   tilesPlacedMustShareRowOrColumn,
   mustPlaceAtLeastOneTile
 } from './placementRules';
-import { type BaseTile, type QTile } from '../map/tile';
+import { ShapeColorTile, type BaseTile, type QTile } from '../map/tile';
 import {
   pointPerTileInSequence,
   pointPerTilePlaced,
@@ -114,7 +114,7 @@ abstract class AbstractRuleBook<T extends QTile> implements QRuleBook<T> {
  * and about how tiles can be placed in the same turn.
  * Contains scoring rules about BaseTiles.
  */
-export class BaseRuleBook extends AbstractRuleBook<BaseTile> {
+export class BaseRuleBook extends AbstractRuleBook<ShapeColorTile> {
   constructor() {
     super(
       [

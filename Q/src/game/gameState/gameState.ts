@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import { BaseTile, QTile } from '../map/tile';
+import { BaseTile, QTile, ShapeColorTile } from '../map/tile';
 import { QMap } from '../map/map';
 import { QPlayerTurnQueue } from './playerTurnQueue';
 import { QBagOfTiles } from './bagOfTiles';
@@ -459,11 +459,11 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
 /**
  * A class representing the game state for a game of Q using BaseTiles.
  */
-export class BaseGameState extends AbstractGameState<BaseTile> {
+export class BaseGameState extends AbstractGameState<ShapeColorTile> {
   constructor(
-    map: QMap<BaseTile>,
-    playerTurnQueue: QPlayerTurnQueue<BaseTile>,
-    bagOfTiles: QBagOfTiles<BaseTile>
+    map: QMap<ShapeColorTile>,
+    playerTurnQueue: QPlayerTurnQueue<ShapeColorTile>,
+    bagOfTiles: QBagOfTiles<ShapeColorTile>
   ) {
     super(map, playerTurnQueue, bagOfTiles);
   }

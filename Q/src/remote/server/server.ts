@@ -2,7 +2,7 @@ import net from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
-import { BaseTile } from '../../game/map/tile';
+import { ShapeColorTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import {
@@ -38,7 +38,7 @@ import { GameResult } from '../../referee/referee.types';
  * @returns the result of the game
  */
 export async function runTCPGame() {
-  const players: Player<BaseTile>[] = [];
+  const players: Player<ShapeColorTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
 
@@ -59,6 +59,8 @@ export async function runTCPGame() {
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
     gameResult = await startGame(players);
+  } else {
+    informPlayersOfNoGame(players);
   }
   terminateConnections(connections);
   server.close();
@@ -76,7 +78,7 @@ export async function runTCPGame() {
  * @returns true if the game should be run, false otherwise
  */
 function waitForAdditionalPlayers(
-  players: Player<BaseTile>[],
+  players: Player<ShapeColorTile>[],
   retryCount = 0
 ): boolean {
   const start = Date.now();
@@ -95,6 +97,20 @@ function waitForAdditionalPlayers(
 }
 
 /**
+ * Attempts to inform all players that the game will not be run.
+ * @param players the players to inform
+ */
+function informPlayersOfNoGame(players: Player<ShapeColorTile>[]) {
+  players.forEach((player) => {
+    try {
+      player.win(false);
+    } catch (e) {
+      // ignore
+    }
+  });
+}
+
+/**
  * Terminates all connections.
  *
  * @param connections the client connections to terminate.
@@ -108,7 +124,9 @@ function terminateConnections(connections: Connection[]) {
  * @param players the players to run the game with
  * @returns the result of the game
  */
-async function startGame(players: Player<BaseTile>[]): Promise<GameResult> {
+async function startGame(
+  players: Player<ShapeColorTile>[]
+): Promise<GameResult> {
   return await BaseReferee(players, [], new BaseRuleBook());
 }
 
@@ -120,8 +138,8 @@ async function startGame(players: Player<BaseTile>[]): Promise<GameResult> {
  * time
  */
 async function signUp(
-  player: Player<BaseTile>,
-  players: Player<BaseTile>[]
+  player: Player<ShapeColorTile>,
+  players: Player<ShapeColorTile>[]
 ): Promise<void> {
   await Promise.race([
     player.name().then((_name) => players.push(player)),

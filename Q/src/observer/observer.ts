@@ -4,7 +4,7 @@ import { RenderableGameState } from '../game/types/gameState.types';
 import { gameStateHtmlBuilder } from '../game/graphicalRenderer/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
 import { writeFile, existsSync, mkdirSync } from 'fs';
-import { toJState } from './serialize';
+import { toJState } from '../json/serialize/jState';
 
 /**
  * Interface for observing a game.
