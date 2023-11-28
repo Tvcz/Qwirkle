@@ -132,10 +132,10 @@ export function isJTile(obj: unknown): obj is JTile {
     obj !== null &&
     'color' in obj &&
     typeof obj.color === 'string' &&
-    obj.color in colorList &&
+    colorList.find((color) => color === obj.color) !== undefined &&
     'shape' in obj &&
     typeof obj.shape === 'string' &&
-    obj.shape in shapeList
+    shapeList.find((shape) => shape === obj.shape) !== undefined
   );
 }
 
