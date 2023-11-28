@@ -104,6 +104,7 @@
     "players": [
         {
             "score": 0,
+            "name": "playerOne",
             "tile*": [
                 {
                     "color": "purple",
@@ -133,6 +134,7 @@
         },
         {
             "score": 0,
+            "name": "playerTwo",
             "tile*": [
                 {
                     "color": "purple",
@@ -163,6 +165,14 @@
     ]
 }
 [
-    ["playerOne", "ldasg", "take-turn", 4],
-    ["playerTwo", "ldasg"]
+    [
+        "playerOne",
+        "ldasg",
+        "take-turn",
+        4
+    ],
+    [
+        "playerTwo",
+        "ldasg"
+    ]
 ]
