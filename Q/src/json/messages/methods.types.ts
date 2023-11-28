@@ -1,4 +1,4 @@
-import { JChoice, JPub, JTile } from './data.types';
+import { JChoice, JPub, JTile } from '../data/data.types';
 
 export type MethodCall = [string, unknown[]];
 

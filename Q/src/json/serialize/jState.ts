@@ -1,6 +1,6 @@
 import { RenderableGameState } from '../../game/types/gameState.types';
 import { ShapeColorTile } from '../../game/map/tile';
-import { JPlayer, JState } from '../data.types';
+import { JPlayer, JState } from '../data/data.types';
 import { toJMap, toJTile } from './jMap';
 import { toJPlayer } from './jPlayer';
 

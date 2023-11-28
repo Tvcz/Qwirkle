@@ -3,7 +3,7 @@ import {
   RenderableMapState,
   TilePlacement
 } from '../../game/types/gameState.types';
-import { JCell, JMap, JRow, JTile } from '../data.types';
+import { JCell, JMap, JRow, JTile } from '../data/data.types';
 
 export function toJMap(mapState: RenderableMapState<ShapeColorTile>): JMap {
   const mapData = mapState.tilePlacements;

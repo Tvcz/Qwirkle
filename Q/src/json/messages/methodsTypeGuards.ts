@@ -1,4 +1,4 @@
-import { isJChoice, isJPub, isJTile } from './dataTypeGuards';
+import { isJChoice, isJPub, isJTile } from '../data/dataTypeGuards';
 import {
   MethodCall,
   NameCall,

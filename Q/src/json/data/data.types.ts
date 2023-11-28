@@ -1,4 +1,4 @@
-import { Color, Shape } from '../game/types/map.types';
+import { Color, Shape } from '../../game/types/map.types';
 
 export type Json =
   | string

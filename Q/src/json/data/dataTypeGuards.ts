@@ -1,4 +1,4 @@
-import { colorList, shapeList } from '../game/types/map.types';
+import { colorList, shapeList } from '../../game/types/map.types';
 import {
   CheatJActor,
   ExceptionJActor,

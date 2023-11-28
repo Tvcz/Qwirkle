@@ -2,7 +2,7 @@ import { REFEREE_PLAYER_TIMEOUT_MS } from '../../constants';
 import PlayerState from '../../game/gameState/playerState';
 import { QMap } from '../../game/map/map';
 import { ShapeColorTile } from '../../game/map/tile';
-import { JState } from '../data.types';
+import { JState } from '../data/data.types';
 import { toQMap, toQTile } from './qMap';
 import { Player } from '../../player/player';
 import { SafePlayer } from '../../referee/safePlayer';

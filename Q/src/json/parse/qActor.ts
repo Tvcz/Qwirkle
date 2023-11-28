@@ -1,12 +1,12 @@
 import { ShapeColorTile } from '../../game/map/tile';
 import { QRuleBook } from '../../game/rules/ruleBook';
-import { JActorsB, JCheat, JExn, JStrategy } from '../data.types';
+import { JActorsB, JCheat, JExn, JStrategy } from '../data/data.types';
 import {
   isCheatJActor,
   isExceptionJActor,
   isLoopJActor,
   isSimpleJActor
-} from '../dataTypeGuards';
+} from '../data/dataTypeGuards';
 import {
   Player,
   BasePlayer,

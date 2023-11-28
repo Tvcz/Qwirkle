@@ -2,7 +2,7 @@ import Coordinate from '../../game/map/coordinate';
 import BaseMap, { QMap } from '../../game/map/map';
 import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import { TilePlacement } from '../../game/types/gameState.types';
-import { JCell, JMap, JTile } from '../data.types';
+import { JCell, JMap, JTile } from '../data/data.types';
 
 export function toQMap(jMap: JMap): QMap<ShapeColorTile> {
   const tilePlacements: TilePlacement<ShapeColorTile>[] = [];

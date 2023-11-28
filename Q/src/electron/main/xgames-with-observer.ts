@@ -3,13 +3,13 @@ import { BaseGameState } from '../../game/gameState/gameState';
 import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
 import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
-import { JActorsB, JState } from '../../json/data.types';
+import { JActorsB, JState } from '../../json/data/data.types';
 import { BaseObserver } from '../../observer/observer';
 import { BaseReferee } from '../../referee/referee';
 import { toQPlayers } from '../../json/parse/qActor';
 import { toQState } from '../../json/parse/qState';
 import { parse } from 'JSONStream';
-import { isJActorsB, isJState } from '../../json/dataTypeGuards';
+import { isJActorsB, isJState } from '../../json/data/dataTypeGuards';
 
 let inputState: JState | undefined = undefined;
 let inputActors: JActorsB | undefined = undefined;
