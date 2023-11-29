@@ -8,10 +8,16 @@ export type Json =
   | boolean
   | null;
 
+export type JState = {
+  map: JMap;
+  'tile*': JTile[];
+  players: JPlayer[];
+};
+
 export type JPub = {
   map: JMap;
-  'tile*': number;
-  players: [JPlayer, ...number[]];
+  'tile*': TileNumber;
+  players: [JPlayer, ...TileNumber[]];
 };
 
 // row index integers form a set without gaps and overlap
@@ -27,17 +33,13 @@ export type JTile = { color: Color; shape: Shape };
 
 export type JCoordinate = { row: number; column: number };
 
-export type JState = {
-  map: JMap;
-  'tile*': JTile[];
-  players: JPlayer[];
-};
-
 export type JPlayer = {
-  score: number;
+  score: TileNumber;
   name: string;
   'tile*': JTile[];
 };
+
+type TileNumber = number;
 
 export type JChoice = 'pass' | 'replace' | JPlacements;
 

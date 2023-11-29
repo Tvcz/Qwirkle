@@ -5,6 +5,8 @@ import {
   isJChoice,
   isJMap,
   isJPlacements,
+  isJPub,
+  isJState,
   isJTile,
   isLoopJActor,
   isSimpleJActor
@@ -12,11 +14,733 @@ import {
 
 describe('tests for the json data defintions type guards', () => {
   test('isJState', () => {
-    expect(true).toBe(true);
+    // Arrange
+    const goodJState = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const goodVariantJState = {
+      map: [],
+      'tile*': [],
+      players: [
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badMapJState1 = {
+      map: 'mymap',
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badMapJState2 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [{ color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badMapJState3 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [3, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badMapJState4 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [[0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badMapJState5 = {
+      map: [
+        [0, { color: 'red', shape: 'circle' }],
+        [0, { color: 'blue', shape: 'square' }],
+        [0, { color: 'green', shape: 'diamond' }]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badTilesJState1 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badTilesJState2 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badTilesJState3 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': 'tilesss',
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 22,
+          name: 'player2',
+          'tile*': [
+            { color: 'purple', shape: 'circle' },
+            { color: 'green', shape: 'square' },
+            { color: 'orange', shape: 'diamond' }
+          ]
+        },
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badPlayersJState1 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        233,
+        {
+          score: 19,
+          name: 'player3',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'red', shape: 'star' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        }
+      ]
+    };
+    const badPlayersJState2 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]],
+        [2, [0, { color: 'green', shape: 'diamond' }]]
+      ],
+      'tile*': [
+        { color: 'red', shape: 'circle' },
+        { color: 'blue', shape: 'square' },
+        { color: 'green', shape: 'diamond' }
+      ],
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'green', shape: 'diamond' }
+          ]
+        },
+        233,
+        19
+      ]
+    };
+
+    // Act & Assert
+    expect(isJState(goodJState)).toBe(true);
+    expect(isJState(goodVariantJState)).toBe(true);
+    expect(isJState(badMapJState1)).toBe(false);
+    expect(isJState(badMapJState2)).toBe(false);
+    expect(isJState(badMapJState3)).toBe(false);
+    expect(isJState(badMapJState4)).toBe(false);
+    expect(isJState(badMapJState5)).toBe(false);
+    expect(isJState(badTilesJState1)).toBe(false);
+    expect(isJState(badTilesJState2)).toBe(false);
+    expect(isJState(badTilesJState3)).toBe(false);
+    expect(isJState(badPlayersJState1)).toBe(false);
+    expect(isJState(badPlayersJState2)).toBe(false);
   });
 
   test('isJPub', () => {
-    expect(true).toBe(true);
+    // Arrange
+    const goodJPub = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const goodVariantTilesJPub1 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' },
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const goodVariantTilesJPub2 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': []
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badTileCount1JPub = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': -223,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badTileCount2JPub = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 123123123121212,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badScoresJPub1 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: -2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badScoresJPub2 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        -3,
+        0
+      ]
+    };
+    const badScoresJPub3 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 2,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        21000000,
+        0
+      ]
+    };
+    const badScoresJPub4 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 132123123123,
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        230,
+        0
+      ]
+    };
+    const badPlayerNameJPub = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 0,
+          name: 123,
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badPlayerScoreJPub = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: '0',
+          name: 'player1',
+          'tile*': [
+            { color: 'red', shape: 'circle' },
+            { color: 'blue', shape: 'square' }
+          ]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badPlayerTilesJPub1 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': [{ color: 'red' }, { color: 'blue', shape: 'square' }]
+        },
+        0,
+        0,
+        0
+      ]
+    };
+    const badPlayerTilesJPub2 = {
+      map: [
+        [0, [0, { color: 'red', shape: 'circle' }]],
+        [1, [0, { color: 'blue', shape: 'square' }]]
+      ],
+      'tile*': 23,
+      players: [
+        {
+          score: 0,
+          name: 'player1',
+          'tile*': '[{"color":"red"},{"color":"blue","shape":"square"}]'
+        },
+        0,
+        0,
+        0
+      ]
+    };
+
+    // Act & Assert
+    expect(isJPub(goodJPub)).toBe(true);
+    expect(isJPub(goodVariantTilesJPub1)).toBe(true);
+    expect(isJPub(goodVariantTilesJPub2)).toBe(true);
+    expect(isJPub(badTileCount1JPub)).toBe(false);
+    expect(isJPub(badTileCount2JPub)).toBe(false);
+    expect(isJPub(badScoresJPub1)).toBe(false);
+    expect(isJPub(badScoresJPub2)).toBe(false);
+    expect(isJPub(badScoresJPub3)).toBe(false);
+    expect(isJPub(badScoresJPub4)).toBe(false);
+    expect(isJPub(badPlayerNameJPub)).toBe(false);
+    expect(isJPub(badPlayerScoreJPub)).toBe(false);
+    expect(isJPub(badPlayerTilesJPub1)).toBe(false);
+    expect(isJPub(badPlayerTilesJPub2)).toBe(false);
   });
 
   test('isJMap', () => {
@@ -99,7 +823,7 @@ describe('tests for the json data defintions type guards', () => {
       isJMap([
         [0, [0, { color: 'red', shape: 'circle' }]],
         [0, [0, { color: 'blue', shape: 'square' }]],
-        [1, [0, { color: 'green', shape: 'triangle' }]]
+        [1, [0, { color: 'green', shape: 'diamond' }]]
       ])
     ).toBe(false);
 
@@ -108,7 +832,7 @@ describe('tests for the json data defintions type guards', () => {
       isJMap([
         [0, [0, { color: 'red', shape: 'circle' }]],
         [2, [0, { color: 'blue', shape: 'square' }]],
-        [3, [0, { color: 'green', shape: 'triangle' }]]
+        [3, [0, { color: 'green', shape: 'diamond' }]]
       ])
     ).toBe(false);
 
@@ -121,7 +845,7 @@ describe('tests for the json data defintions type guards', () => {
           [0, { color: 'yellow', shape: 'circle' }]
         ],
         [2, [0, { color: 'blue', shape: 'square' }]],
-        [3, [0, { color: 'green', shape: 'triangle' }]]
+        [3, [0, { color: 'green', shape: 'diamond' }]]
       ])
     ).toBe(false);
 

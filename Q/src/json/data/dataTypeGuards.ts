@@ -46,12 +46,12 @@ export function isJPub(obj: unknown): obj is JPub {
     'map' in obj &&
     isJMap(obj.map) &&
     'tile*' in obj &&
-    typeof obj['tile*'] === 'number' &&
+    isTileNumber(obj['tile*']) &&
     'players' in obj &&
     Array.isArray(obj.players) &&
     obj.players.length >= 1 &&
     isJPlayer(obj.players[0]) &&
-    obj.players.slice(1).every(isNumber)
+    obj.players.slice(1).every(isTileNumber)
   );
 }
 
@@ -60,7 +60,7 @@ function isJPlayer(obj: unknown): obj is JPlayer {
     typeof obj === 'object' &&
     obj !== null &&
     'score' in obj &&
-    typeof obj.score === 'number' &&
+    isTileNumber(obj.score) &&
     'name' in obj &&
     typeof obj.name === 'string' &&
     'tile*' in obj &&
@@ -235,8 +235,10 @@ function isJStrategy(obj: unknown): obj is JStrategy {
   return obj === 'dag' || obj === 'ldasg';
 }
 
-function isNumber(obj: unknown): obj is number {
-  return typeof obj === 'number';
+function isTileNumber(obj: unknown): obj is number {
+  return (
+    typeof obj === 'number' && Number.isInteger(obj) && obj >= 0 && obj <= 10000
+  );
 }
 
 /**
