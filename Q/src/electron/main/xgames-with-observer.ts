@@ -6,8 +6,8 @@ import { BaseRuleBook } from '../../game/rules/ruleBook';
 import { JActorsB, JState } from '../../json/data/data.types';
 import { BaseObserver } from '../../observer/observer';
 import { BaseReferee } from '../../referee/referee';
-import { toQPlayers } from '../../json/parse/qActor';
-import { toQState } from '../../json/parse/qState';
+import { toQPlayers } from '../../json/deserialize/qActor';
+import { toQState } from '../../json/deserialize/qState';
 import { parse } from 'JSONStream';
 import { isJActorsB, isJState } from '../../json/data/dataTypeGuards';
 
