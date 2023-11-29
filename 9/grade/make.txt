@@ -1,0 +1,8 @@
+(cd ../Q && npm install)
+
+added 962 packages, and audited 963 packages in 23s
+
+175 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
