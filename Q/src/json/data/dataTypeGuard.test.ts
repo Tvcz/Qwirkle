@@ -12,7 +12,7 @@ import {
   isSimpleJActor
 } from './dataTypeGuards';
 
-describe('tests for the json data defintions type guards', () => {
+describe('tests for the json data definitions type guards', () => {
   test('isJState', () => {
     // Arrange
     const goodJState = {

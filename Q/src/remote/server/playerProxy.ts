@@ -2,11 +2,12 @@ import {
   REFEREE_PLAYER_TIMEOUT_MS,
   TCP_PLAYER_BUFFER_INTERVAL_MS
 } from '../../constants';
-import { BaseTile, ShapeColorTile } from '../../game/map/tile';
+import { ShapeColorTile } from '../../game/map/tile';
 import {
   TilePlacement,
   RelevantPlayerInfo
 } from '../../game/types/gameState.types';
+import { validateJSON } from '../../json/validator';
 import { Player } from '../../player/player';
 import { TurnAction } from '../../player/turnAction';
 import { Connection } from '../connection';
@@ -15,8 +16,7 @@ import {
   isNewTilesResponse,
   isSetUpResponse,
   isTakeTurnResponse,
-  isWinResponse,
-  validateJSON
+  isWinResponse
 } from '../jsonValidator';
 import { buildTurnAction } from '../parse';
 import { MethodResponse } from '../types';

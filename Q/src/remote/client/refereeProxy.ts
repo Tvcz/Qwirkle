@@ -6,11 +6,11 @@ import {
   isNewTilesCall,
   isSetUpCall,
   isTakeTurnCall,
-  isWinCall,
-  validateJSON
+  isWinCall
 } from '../jsonValidator';
 import { NewTilesCall, SetUpCall, TakeTurnCall, WinCall } from '../types';
 import { buildTile, buildTilePlacement } from '../parse';
+import { validateJSON } from '../../json/validator';
 
 /**
  * A referee proxy listens for messages from the server and converts them

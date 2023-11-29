@@ -11,7 +11,7 @@ import {
   TakeTurnResponse,
   WinCall,
   WinResponse
-} from './methods.types';
+} from './messages.types';
 
 function isMethodCall(obj: unknown): obj is MethodCall {
   return (

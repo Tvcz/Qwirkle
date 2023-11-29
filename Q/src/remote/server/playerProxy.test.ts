@@ -2,16 +2,12 @@ import { Server } from 'http';
 import { createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
-import {
-  isNameCall,
-  isSetUpCall,
-  isTakeTurnCall,
-  validateJSON
-} from '../jsonValidator';
+import { isNameCall, isSetUpCall, isTakeTurnCall } from '../jsonValidator';
 import { BaseTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
 import { MethodCall, SetUpCall } from '../types';
 import { BaseTurnAction } from '../../player/turnAction';
+import { validateJSON } from '../../json/validator';
 
 describe('tests for tcp player proxy', () => {
   let server: Server;

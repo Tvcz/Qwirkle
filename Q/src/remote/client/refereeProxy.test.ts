@@ -6,7 +6,6 @@ import Coordinate from '../../game/map/coordinate';
 import { Player } from '../../player/player';
 import { refereeProxy } from './refereeProxy';
 import { RelevantPlayerInfo } from '../../game/types/gameState.types';
-import { mock } from 'node:test';
 
 const mockPlayer: Player<BaseTile> = {
   name: jest.fn().mockResolvedValue('Mock Player'),
