@@ -44,9 +44,11 @@ function processInput() {
   process.stdin.pipe(parse()).on('data', (data: unknown) => {
     if (!inputState) {
       inputState = ensureIsType(data, isJState, 'JState');
+      return;
     }
     if (!inputActors) {
       inputActors = ensureIsType(data, isJActorsB, 'JActors array');
+      return;
     }
     throw new Error('invalid JSON input, JPub and JStrategy already specified');
   });
