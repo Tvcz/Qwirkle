@@ -247,12 +247,14 @@ describe('tests for the json data defintions type guards', () => {
     ).toBe(true);
 
     // Valid JActorsB object - 4 actors
-    expect([
-      ['simpleJActor', 'dag'],
-      ['exceptionJactor', 'ldasg', 'new-tiles'],
-      ['cheatJactor', 'dag', 'a cheat', 'tile-not-owned'],
-      ['loopJactor', 'ldasg', 'win', 2]
-    ]).toBe(true);
+    expect(
+      isJActorsB([
+        ['simpleJActor', 'dag'],
+        ['exceptionJactor', 'ldasg', 'new-tiles'],
+        ['cheatJactor', 'dag', 'a cheat', 'tile-not-owned'],
+        ['loopJactor', 'ldasg', 'win', 2]
+      ])
+    ).toBe(true);
 
     // Invalid JActorsB object - 1 actor
     expect(isJActorsB([['simpleJActor', 'dag']])).toBe(false);
@@ -565,7 +567,7 @@ describe('tests for the json data defintions type guards', () => {
     expect(isLoopJActor(['loopJactor', 1, 'win', 2])).toBe(false);
 
     // Invalid LoopJActor object - wrong JExn value
-    expect(isLoopJActor(['loopJactor', 'ldasg', 'setup', 3])).toBe(false);
+    expect(isLoopJActor(['loopJactor', 'ldasg', 'new tiles', '2'])).toBe(false); // missing "-"
 
     // Invalid LoopJActor object - JExn not a string
     expect(isLoopJActor(['loopJactor', 'ldasg', 1, 3])).toBe(false);
