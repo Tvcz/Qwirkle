@@ -1,6 +1,41 @@
 import { validateJSON, isValidJSON } from './validator';
 
 describe('tests for json validator', () => {
+  const turnActionMessage = {
+    method: 'takeTurn',
+    args: {
+      publicState: {
+        playerTiles: [
+          { shape: 'circle', color: 'red' },
+          { shape: 'circle', color: 'red' },
+          { shape: 'circle', color: 'red' }
+        ],
+        mapState: [
+          {
+            tile: { shape: 'circle', color: 'red' },
+            coordinate: { x: 0, y: 0 }
+          },
+          {
+            tile: { shape: 'circle', color: 'red' },
+            coordinate: { x: 0, y: 1 }
+          },
+          {
+            tile: { shape: 'circle', color: 'red' },
+            coordinate: { x: 0, y: 2 }
+          }
+        ],
+        scoreboard: [
+          { name: '1', score: 0 },
+          { name: '2', score: 0 },
+          { name: '3', score: 0 },
+          { name: '4', score: 0 }
+        ],
+        remainingTilesCount: 0,
+        playersQueue: ['1', '2', '3', '4']
+      }
+    }
+  };
+
   test('validateJson returns an object for valid json', () => {
     expect(validateJSON('{ "method": "name", "args": [] }')).toStrictEqual({
       method: 'name',

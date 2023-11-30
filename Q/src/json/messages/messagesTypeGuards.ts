@@ -56,7 +56,7 @@ export function isTakeTurnCall(obj: unknown): obj is TakeTurnCall {
 }
 
 export function isTakeTurnResponse(obj: unknown): obj is TakeTurnResponse {
-  return typeof obj === 'string' && isJChoice(obj);
+  return isJChoice(obj);
 }
 
 export function isNewTilesCall(obj: unknown): obj is NewTilesCall {
