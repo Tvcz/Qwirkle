@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import { BaseTile, QTile, ShapeColorTile } from '../map/tile';
+import { QTile, ShapeColorTile } from '../map/tile';
 import { QMap } from '../map/map';
 import { QPlayerTurnQueue } from './playerTurnQueue';
 import { QBagOfTiles } from './bagOfTiles';

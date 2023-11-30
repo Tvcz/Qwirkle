@@ -22,7 +22,7 @@ function toOnePlacement(
     '1tile': toJTile(placement.tile),
     coordinate: {
       column: coordinate.x,
-      row: coordinate.y * -1 // row uses graphical coordinates and Coordinate uses cartesian coordinates
+      row: coordinate.y
     }
   };
 }
