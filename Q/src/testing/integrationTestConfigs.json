@@ -4,5 +4,11 @@
     "directories": [
       "9/ForStudents"
     ]
+  },
+  {
+    "testScript": "9/xbaddies",
+    "directories": [
+      "9/Tests"
+    ]
   }
 ]
