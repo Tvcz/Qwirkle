@@ -14,10 +14,12 @@ export type JState = {
   players: JPlayer[];
 };
 
+export type JPubPlayers = [JPlayer, ...TileNumber[]];
+
 export type JPub = {
   map: JMap;
   'tile*': TileNumber;
-  players: [JPlayer, ...TileNumber[]];
+  players: JPubPlayers;
 };
 
 // row index integers form a set without gaps and overlap
