@@ -1,5 +1,5 @@
 import { REFEREE_PLAYER_TIMEOUT_MS } from '../constants';
-import { BaseTile, ShapeColorTile } from '../game/map/tile';
+import { ShapeColorTile } from '../game/map/tile';
 import { RefereeFunction } from './referee.types';
 import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
 import { SafePlayer } from './safePlayer';

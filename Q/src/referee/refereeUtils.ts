@@ -148,7 +148,7 @@ export const setUpPlayers = async (gameState: QGameState<ShapeColorTile>) => {
   const playerSetupInformation = gameState.getAllPlayersSetupInformation();
   const initialTilePlacements = gameState.getActivePlayerInfo().mapState;
 
-  for (let { name, tiles, setUp } of playerSetupInformation) {
+  for (const { name, tiles, setUp } of playerSetupInformation) {
     const setUpResult = await setUp(initialTilePlacements, tiles);
     if (setUpResult.success === false) {
       gameState.eliminatePlayer(name);

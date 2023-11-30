@@ -32,7 +32,7 @@ export type MethodCall = {
 
 export type NameCall = {
   method: 'name';
-  args: {};
+  args: object;
 };
 
 export type NameResponse = {
