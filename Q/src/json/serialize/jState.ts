@@ -7,13 +7,15 @@ import { toJPlayer } from './jPlayer';
 export function toJState(
   gameState: RenderableGameState<ShapeColorTile>
 ): JState {
-  const map = toJMap(gameState.mapState);
+  const map = toJMap(gameState.mapState.tilePlacements);
   const refsTiles = gameState.remainingTiles.map(toJTile);
 
   if (gameState.players.length === 0) {
     throw new Error('A player');
   }
-  const jPlayers = gameState.players.map(toJPlayer);
+  const jPlayers = gameState.players.map((player) =>
+    toJPlayer(player.name, player.score, player.tiles)
+  );
   const players: [JPlayer, ...JPlayer[]] = [jPlayers[0], ...jPlayers.slice(1)];
   return {
     map,

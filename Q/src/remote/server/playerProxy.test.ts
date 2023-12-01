@@ -2,12 +2,16 @@ import { Server } from 'http';
 import { createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
-import { isNameCall, isSetUpCall, isTakeTurnCall } from '../jsonValidator';
 import { BaseTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
-import { MethodCall, SetUpCall } from '../types';
 import { BaseTurnAction } from '../../player/turnAction';
 import { validateJSON } from '../../json/validator';
+import { SetUpCall, MethodCall } from '../../json/messages/messages.types';
+import {
+  isNameCall,
+  isSetUpCall,
+  isTakeTurnCall
+} from '../../json/messages/messagesTypeGuards';
 
 describe('tests for tcp player proxy', () => {
   let server: Server;
@@ -71,12 +75,7 @@ describe('tests for tcp player proxy', () => {
         coordinate: new Coordinate(0, 0)
       }
     ];
-    const mapStateParsed = [
-      {
-        tile: { shape: 'circle', color: 'red' },
-        coordinate: { x: 0, y: 0 }
-      }
-    ];
+    const mapStateParsed = [[0, [0, { shape: 'circle', color: 'red' }]]];
     const startingTiles = [
       new BaseTile('circle', 'red'),
       new BaseTile('circle', 'red')
@@ -92,10 +91,7 @@ describe('tests for tcp player proxy', () => {
       expect(isSetUpCall(json)).toBe(true);
       const setUpCall = json as SetUpCall;
       clientConnection.send('{"method": "setUp", "result": 0}');
-      expect(setUpCall.args).toStrictEqual({
-        mapState: mapStateParsed,
-        startingTiles: startingTilesParsed
-      });
+      expect(setUpCall).toStrictEqual([mapStateParsed, startingTilesParsed]);
     });
     await expect(player.setUp(mapState, startingTiles)).resolves.not.toThrow();
   });
