@@ -35,3 +35,5 @@ export const REFEREE_PLAYER_TIMEOUT_MS = 6000;
 
 // The frequency at which the TCPPlayer checks for new messages
 export const TCP_PLAYER_BUFFER_INTERVAL_MS = 10;
+
+export const VOID_METHOD_RESPONSE = 'void';

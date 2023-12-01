@@ -3,9 +3,9 @@ import { QTile } from '../map/tile';
 import {
   PlayerEndGameInformation,
   PlayerSetupInformation,
+  RelevantPlayerInfo,
   RenderablePlayer,
   Scoreboard,
-  TilePlacement,
   TurnState
 } from '../types/gameState.types';
 import PlayerState from './playerState';
@@ -257,8 +257,8 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     return this.playerQueue.map((playerState) => ({
       name: playerState.getName(),
       tiles: playerState.getAllTiles(),
-      setUp: (m: TilePlacement<T>[], st: T[]) =>
-        playerState.getPlayerController().setUp(m, st)
+      setUp: (s: RelevantPlayerInfo<T>, st: T[]) =>
+        playerState.getPlayerController().setUp(s, st)
     }));
   }
 

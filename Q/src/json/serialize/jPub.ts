@@ -1,19 +1,23 @@
 import { ShapeColorTile } from '../../game/map/tile';
 import {
-  RenderableGameState,
-  RenderablePlayer
+  RelevantPlayerInfo,
+  Scoreboard
 } from '../../game/types/gameState.types';
 import { JPub, JPubPlayers } from '../data/data.types';
 import { toJMap } from './jMap';
 import { toJPlayer } from './jPlayer';
 
 export function toJPub(
-  gameState: RenderableGameState<ShapeColorTile>,
+  gameState: RelevantPlayerInfo<ShapeColorTile>,
   playerName: string
 ): JPub {
   const map = toJMap(gameState.mapState);
-  const refsTilesCount = gameState.remainingTiles.length;
-  const players = toJPubPlayers(gameState.players, playerName);
+  const refsTilesCount = gameState.remainingTilesCount;
+  const players = toJPubPlayers(
+    gameState.scoreboard,
+    gameState.playerTiles,
+    playerName
+  );
   return {
     map,
     'tile*': refsTilesCount,
@@ -22,15 +26,18 @@ export function toJPub(
 }
 
 function toJPubPlayers(
-  players: RenderablePlayer<ShapeColorTile>[],
+  scoreboard: Scoreboard,
+  playerTiles: ShapeColorTile[],
   playerName: string
 ): JPubPlayers {
-  const player = players.find((player) => player.name === playerName);
-  if (player === undefined) {
-    throw new Error(`Player ${playerName} not found`);
+  const score = scoreboard.find((player) => player.name === playerName)?.score;
+  if (score === undefined) {
+    throw new Error(`Player ${playerName} not found in scoreboard`);
   }
-  const jPlayer = toJPlayer(player);
-  const otherPlayers = players.filter((player) => player.name !== playerName);
+  const jPlayer = toJPlayer(playerName, score, playerTiles);
+  const otherPlayers = scoreboard.filter(
+    (player) => player.name !== playerName
+  );
   const otherPlayersScores = otherPlayers.map((player) => player.score);
   return [jPlayer, ...otherPlayersScores];
 }

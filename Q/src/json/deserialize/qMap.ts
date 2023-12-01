@@ -21,6 +21,6 @@ function toTilePlacement(jCell: JCell): TilePlacement<ShapeColorTile> {
   };
 }
 
-export function toQTile(jTile: JTile): BaseTile {
+export function toQTile(jTile: JTile): ShapeColorTile {
   return new BaseTile(jTile.shape, jTile.color);
 }

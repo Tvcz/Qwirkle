@@ -1,10 +1,10 @@
 import { ShapeColorTile } from '../../game/map/tile';
 import { TilePlacement } from '../../game/types/gameState.types';
-import { BaseTurnAction } from '../../player/turnAction';
+import { TurnAction } from '../../player/turnAction';
 import { JChoice, OnePlacement } from '../data/data.types';
 import { toJTile } from './jMap';
 
-export function toJChoice(turnAction: BaseTurnAction<ShapeColorTile>): JChoice {
+export function toJChoice(turnAction: TurnAction<ShapeColorTile>): JChoice {
   if (turnAction.ofType('PASS')) {
     return 'pass';
   }

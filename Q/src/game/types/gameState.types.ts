@@ -100,7 +100,7 @@ export type TurnState<T extends QTile> = {
 export type PlayerSetupInformation<T extends QTile> = {
   name: string;
   tiles: T[];
-  setUp: (m: TilePlacement<T>[], st: T[]) => Promise<Result<void>>;
+  setUp: (s: RelevantPlayerInfo<T>, st: T[]) => Promise<Result<void>>;
 };
 
 /**

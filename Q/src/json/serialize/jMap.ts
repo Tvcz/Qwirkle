@@ -1,14 +1,10 @@
 import { ShapeColorTile } from '../../game/map/tile';
-import {
-  RenderableMapState,
-  TilePlacement
-} from '../../game/types/gameState.types';
+import { TilePlacement } from '../../game/types/gameState.types';
 import { JCell, JMap, JRow, JTile } from '../data/data.types';
 
-export function toJMap(mapState: RenderableMapState<ShapeColorTile>): JMap {
-  const mapData = mapState.tilePlacements;
+export function toJMap(mapState: TilePlacement<ShapeColorTile>[]): JMap {
   const rowBuckets = new Map<number, TilePlacement<ShapeColorTile>[]>();
-  mapData.forEach((element) => {
+  mapState.forEach((element) => {
     const y = element.coordinate.getCoordinate().y;
     if (rowBuckets.has(y)) {
       rowBuckets.get(y)?.push(element);

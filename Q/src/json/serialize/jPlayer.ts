@@ -3,11 +3,14 @@ import { RenderablePlayer } from '../../game/types/gameState.types';
 import { JPlayer } from '../data/data.types';
 import { toJTile } from './jMap';
 
-export function toJPlayer(player: RenderablePlayer<ShapeColorTile>) {
-  const jPlayer: JPlayer = {
-    name: player.name,
-    score: player.score,
-    'tile*': player.tiles.map(toJTile)
+export function toJPlayer(
+  name: string,
+  score: number,
+  tiles: ShapeColorTile[]
+): JPlayer {
+  return {
+    name,
+    score,
+    'tile*': tiles.map(toJTile)
   };
-  return jPlayer;
 }

@@ -21,11 +21,11 @@ export interface Player<T extends QTile> {
 
   /**
    * Set up the player with the initial map and their starting tiles.
-   * @param m The initial map of the game
+   * @param s The public state of the game
    * @param st The player's starting tiles
    * @returns void
    */
-  setUp: (m: TilePlacement<T>[], st: T[]) => Promise<void>;
+  setUp: (s: RelevantPlayerInfo<T>, st: T[]) => Promise<void>;
 
   /**
    * Given the current public game state, which includes the current map, the number of remaining tiles, and the player's tiles, make a move based on the player's strategy.
@@ -78,8 +78,8 @@ export class BasePlayer<T extends QTile> implements Player<T> {
     return this.playerName;
   }
 
-  public async setUp(m: TilePlacement<T>[], st: T[]) {
-    this.map = m;
+  public async setUp(s: RelevantPlayerInfo<T>, st: T[]) {
+    this.map = s.mapState;
     this.tiles = st;
   }
 
@@ -122,8 +122,8 @@ export class BasePlayer<T extends QTile> implements Player<T> {
 }
 
 export class SetupExceptionPlayer<T extends QTile> extends BasePlayer<T> {
-  public async setUp(m: TilePlacement<T>[], st: T[]) {
-    const mapString = JSON.stringify(m);
+  public async setUp(s: RelevantPlayerInfo<T>, st: T[]) {
+    const mapString = JSON.stringify(s.mapState);
     const startingTileString = JSON.stringify(st);
     throw new Error(
       `Setup exception for player ${this.name()} when called with map: ${mapString}, and starting tile ${startingTileString}`
@@ -183,9 +183,9 @@ abstract class AbstractDelayedTimeoutPlayer<
 export class DelayedSetupTimeoutPlayer<
   T extends QTile
 > extends AbstractDelayedTimeoutPlayer<T> {
-  public async setUp(m: TilePlacement<T>[], st: T[]) {
+  public async setUp(s: RelevantPlayerInfo<T>, st: T[]) {
     await this.callDelayedTimeoutMethod();
-    super.setUp(m, st);
+    super.setUp(s, st);
   }
 }
 
