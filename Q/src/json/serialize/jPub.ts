@@ -7,6 +7,13 @@ import { JPub, JPubPlayers } from '../data/data.types';
 import { toJMap } from './jMap';
 import { toJPlayer } from './jPlayer';
 
+/**
+ * Serialize a game state to a JPub object for a given player
+ *
+ * @param gameState the game state to serialize
+ * @param playerName the name of the player who's turn it is
+ * @returns a JPub object
+ */
 export function toJPub(
   gameState: RelevantPlayerInfo<ShapeColorTile>,
   playerName: string
@@ -25,6 +32,13 @@ export function toJPub(
   };
 }
 
+/**
+ * Serialize a list of players to a JPubPlayers object for a given player
+ *
+ * @param players the players to serialize
+ * @param playerName the name of the player who's turn it is
+ * @returns a JPubPlayers object
+ */
 function toJPubPlayers(
   scoreboard: Scoreboard,
   playerTiles: ShapeColorTile[],

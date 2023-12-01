@@ -2,7 +2,7 @@ import {
   coordinateMustBeEmpty,
   coordinateMustShareASide
 } from '../rules/placementRules';
-import { type QTile, type BaseTile, ShapeColorTile } from './tile';
+import { type QTile, ShapeColorTile } from './tile';
 import { Dictionary, Set } from 'typescript-collections';
 import Coordinate from './coordinate';
 import { Dimensions } from '../types/map.types';

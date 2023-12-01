@@ -246,9 +246,7 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
 
   private attemptToCheat(
     mapState: TilePlacement<ShapeColorTile>[],
-    playerTiles: ShapeColorTile[],
-    _remainingTilesCount: number,
-    _placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    playerTiles: ShapeColorTile[]
   ): TurnAction<ShapeColorTile> {
     for (const tile of playerTiles) {
       const remainingHand = [...playerTiles];
@@ -279,12 +277,7 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
     remainingTilesCount: number,
     placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
   ) {
-    const cheatTurn = this.attemptToCheat(
-      mapState,
-      playerTiles,
-      remainingTilesCount,
-      placementRules
-    );
+    const cheatTurn = this.attemptToCheat(mapState, playerTiles);
 
     if (cheatTurn.ofType('PLACE')) {
       return cheatTurn;

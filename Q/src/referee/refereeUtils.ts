@@ -148,7 +148,7 @@ export const setUpPlayers = async (gameState: QGameState<ShapeColorTile>) => {
   const playerSetupInformation = gameState.getAllPlayersSetupInformation();
   const initialGameState = gameState.getActivePlayerInfo();
 
-  for (let { name, tiles, setUp } of playerSetupInformation) {
+  for (const { name, tiles, setUp } of playerSetupInformation) {
     const setUpResult = await setUp(
       {
         ...initialGameState,
