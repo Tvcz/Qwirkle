@@ -120,7 +120,7 @@ describe('tests for the config definitions type guards', () => {
       60001,
       localhost,
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badUpperLimitPortConfig)).toBe(false);
@@ -129,7 +129,7 @@ describe('tests for the config definitions type guards', () => {
       9999,
       localhost,
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badLowerLimitPortConfig)).toBe(false);
@@ -138,7 +138,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       '127.0.1',
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badHostIpConfig)).toBe(false);
@@ -147,7 +147,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       'localhost',
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badHostIpConfig2)).toBe(false);
@@ -156,7 +156,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       'https://google.com',
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badHostIpConfig3)).toBe(false);
@@ -165,7 +165,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       10,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badUpperLimitWaitConfig)).toBe(false);
@@ -174,7 +174,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       -1,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badLowerLimitWaitConfig)).toBe(false);
@@ -192,7 +192,7 @@ describe('tests for the config definitions type guards', () => {
       '18080',
       localhost,
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badWrongPortTypeConfig)).toBe(false);
@@ -201,7 +201,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       '5',
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badWrongWaitTypeConfig)).toBe(false);
@@ -210,7 +210,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       5,
-      false,
+      true,
       'fourPlayers'
     );
     expect(isClientConfig(badWrongPlayersTypeConfig)).toBe(false);
@@ -219,7 +219,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       127.0,
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badWrongHostTypeConfig)).toBe(false);
@@ -228,7 +228,7 @@ describe('tests for the config definitions type guards', () => {
       undefined,
       localhost,
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badMissingPortConfig)).toBe(false);
@@ -237,7 +237,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       undefined,
       5,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badMissingHostConfig)).toBe(false);
@@ -246,7 +246,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       undefined,
-      false,
+      true,
       fourPlayers
     );
     expect(isClientConfig(badMissingWaitConfig)).toBe(false);
@@ -264,7 +264,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       5,
-      false,
+      true,
       undefined
     );
     expect(isClientConfig(badMissingPlayersConfig)).toBe(false);
@@ -273,7 +273,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       5,
-      false,
+      true,
       fourPlayers,
       'extra'
     );
@@ -283,7 +283,7 @@ describe('tests for the config definitions type guards', () => {
       18080,
       localhost,
       undefined,
-      false,
+      true,
       fourPlayers,
       5
     );
@@ -317,7 +317,7 @@ describe('tests for the config definitions type guards', () => {
 
     const goodPerTurnLowerLimitConfig = generateRefereeConfig(
       undefined,
-      false,
+      true,
       undefined,
       0
     );
@@ -342,7 +342,7 @@ describe('tests for the config definitions type guards', () => {
 
     const badPerTurnLowerLimitConfig = generateRefereeConfig(
       undefined,
-      false,
+      true,
       undefined,
       -1
     );
@@ -350,7 +350,7 @@ describe('tests for the config definitions type guards', () => {
 
     const badPerTurnUpperLimitConfig = generateRefereeConfig(
       undefined,
-      false,
+      true,
       undefined,
       7
     );
@@ -358,10 +358,10 @@ describe('tests for the config definitions type guards', () => {
 
     const badWrongState0TypeConfig = generateUnknownRefereeConfig(
       'state0',
-      false,
+      true,
       stateConfig,
       4,
-      false
+      true
     );
     expect(isRefereeConfig(badWrongState0TypeConfig)).toBe(false);
 
@@ -370,31 +370,31 @@ describe('tests for the config definitions type guards', () => {
       1,
       stateConfig,
       4,
-      false
+      true
     );
     expect(isRefereeConfig(badWrongQuietTypeConfig)).toBe(false);
 
     const badWrongConfigSTypeConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       'stateConfig',
       4,
-      false
+      true
     );
     expect(isRefereeConfig(badWrongConfigSTypeConfig)).toBe(false);
 
     const badWrongPerTurnTypeConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       stateConfig,
       '4',
-      false
+      true
     );
     expect(isRefereeConfig(badWrongPerTurnTypeConfig)).toBe(false);
 
     const badWrongObserveTypeConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       stateConfig,
       4,
       'false'
@@ -403,10 +403,10 @@ describe('tests for the config definitions type guards', () => {
 
     const badMissingState0Config = generateUnknownRefereeConfig(
       undefined,
-      false,
+      true,
       stateConfig,
       4,
-      false
+      true
     );
     expect(isRefereeConfig(badMissingState0Config)).toBe(false);
 
@@ -415,31 +415,31 @@ describe('tests for the config definitions type guards', () => {
       undefined,
       stateConfig,
       4,
-      false
+      true
     );
     expect(isRefereeConfig(badMissingQuietConfig)).toBe(false);
 
     const badMissingConfigSConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       undefined,
       4,
-      false
+      true
     );
     expect(isRefereeConfig(badMissingConfigSConfig)).toBe(false);
 
     const badMissingPerTurnConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       stateConfig,
       undefined,
-      false
+      true
     );
     expect(isRefereeConfig(badMissingPerTurnConfig)).toBe(false);
 
     const badMissingObserveConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       stateConfig,
       4,
       undefined
@@ -448,20 +448,20 @@ describe('tests for the config definitions type guards', () => {
 
     const badExtraConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       stateConfig,
       4,
-      false,
+      true,
       'extra'
     );
     expect(isRefereeConfig(badExtraConfig)).toBe(false);
 
     const badWrongExtraTypeConfig = generateUnknownRefereeConfig(
       state0,
-      false,
+      true,
       stateConfig,
       undefined,
-      false,
+      true,
       4
     );
     expect(isRefereeConfig(badWrongExtraTypeConfig)).toBe(false);
@@ -698,7 +698,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       4,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badWrongPortTypeConfig)).toBe(false);
@@ -708,7 +708,7 @@ describe('tests for the config definitions type guards', () => {
       '3',
       20,
       4,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badWrongServerTriesTypeConfig)).toBe(false);
@@ -718,7 +718,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       '20',
       4,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badWrongServerWaitTypeConfig)).toBe(false);
@@ -728,7 +728,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       '4',
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badWrongWaitForSignupTypeConfig)).toBe(false);
@@ -748,7 +748,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       4,
-      false,
+      true,
       'refereeConfig'
     );
     expect(isServerConfig(badWrongRefSpecTypeConfig)).toBe(false);
@@ -758,7 +758,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       4,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badMissingPortConfig)).toBe(false);
@@ -768,7 +768,7 @@ describe('tests for the config definitions type guards', () => {
       undefined,
       20,
       4,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badMissingServerTriesConfig)).toBe(false);
@@ -778,7 +778,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       undefined,
       4,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badMissingServerWaitConfig)).toBe(false);
@@ -788,7 +788,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       undefined,
-      false,
+      true,
       refereeConfig
     );
     expect(isServerConfig(badMissingWaitForSignupConfig)).toBe(false);
@@ -808,7 +808,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       4,
-      false,
+      true,
       undefined
     );
     expect(isServerConfig(badMissingRefSpecConfig)).toBe(false);
@@ -818,7 +818,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       4,
-      false,
+      true,
       refereeConfig,
       'extra'
     );
@@ -829,7 +829,7 @@ describe('tests for the config definitions type guards', () => {
       3,
       20,
       undefined,
-      false,
+      true,
       refereeConfig,
       4
     );
