@@ -29,7 +29,7 @@ const DEFAULT_STATE: JState = {
   ]
 };
 const DEFAULT_QUIET = false;
-const DEFAULT_PER_TURN = REFEREE_PLAYER_TIMEOUT_MS;
+const DEFAULT_PER_TURN = REFEREE_PLAYER_TIMEOUT_MS / 1000;
 const DEFAULT_OBSERVE = false;
 
 export const DEFAULT_REFEREE_CONFIG: RefereeConfig = {
