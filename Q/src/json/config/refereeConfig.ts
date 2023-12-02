@@ -7,6 +7,10 @@ import { JState } from '../data/data.types';
 
 const DEFAULT_QBO = Q_BONUS_POINT_AMOUNT;
 const DEFAULT_FBO = ALL_TILES_BONUS_POINT_AMOUNT;
+export const DEFAULT_REFEREE_STATE_CONFIG = {
+  qbo: DEFAULT_QBO,
+  fbo: DEFAULT_FBO
+};
 
 const DEFAULT_STATE: JState = {
   map: [[0, [0, { color: 'red', shape: 'circle' }]]],
@@ -25,17 +29,13 @@ const DEFAULT_STATE: JState = {
   ]
 };
 const DEFAULT_QUIET = false;
-const DEFAULT_CONFIG_S = {
-  qbo: DEFAULT_QBO,
-  fbo: DEFAULT_FBO
-};
 const DEFAULT_PER_TURN = REFEREE_PLAYER_TIMEOUT_MS;
 const DEFAULT_OBSERVE = false;
 
 export const DEFAULT_REFEREE_CONFIG: RefereeConfig = {
   state0: DEFAULT_STATE,
   quiet: DEFAULT_QUIET,
-  configS: DEFAULT_CONFIG_S,
+  configS: DEFAULT_REFEREE_STATE_CONFIG,
   perTurn: DEFAULT_PER_TURN,
   observe: DEFAULT_OBSERVE
 };
@@ -48,7 +48,33 @@ export type RefereeConfig = {
   observe: boolean;
 };
 
-type RefereeStateConfig = {
+export type RefereeStateConfig = {
   qbo: number; // Q Bonus
   fbo: number; // Finish Bonus
 };
+
+export function generateRefereeConfig(
+  state0 = DEFAULT_STATE,
+  quiet = DEFAULT_QUIET,
+  configS = DEFAULT_REFEREE_STATE_CONFIG,
+  perTurn = DEFAULT_PER_TURN,
+  observe = DEFAULT_OBSERVE
+): object {
+  return {
+    state0,
+    quiet,
+    configS,
+    perTurn,
+    observe
+  };
+}
+
+export function generateRefereeStateConfig(
+  qbo = DEFAULT_QBO,
+  fbo = DEFAULT_FBO
+): object {
+  return {
+    qbo,
+    fbo
+  };
+}
