@@ -3,7 +3,7 @@ import {
   Q_BONUS_POINT_AMOUNT,
   REFEREE_PLAYER_TIMEOUT_MS
 } from '../../constants';
-import { JState } from '../../game/types/json.types';
+import { JState } from '../data/data.types';
 
 const DEFAULT_QBO = Q_BONUS_POINT_AMOUNT;
 const DEFAULT_FBO = ALL_TILES_BONUS_POINT_AMOUNT;
