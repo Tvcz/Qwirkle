@@ -7,7 +7,11 @@ import { BaseReferee } from '../../referee/referee';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
-import { DEFAULT_SERVER_CONFIG } from '../../json/config/serverConfig';
+import {
+  DEFAULT_SERVER_CONFIG,
+  ServerConfig
+} from '../../json/config/serverConfig';
+import { BaseObserver, Observer } from '../../observer/observer';
 
 /**
  * Runs a game over TCP.
@@ -73,15 +77,15 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
  */
 function waitForAdditionalPlayers(
   players: Player<ShapeColorTile>[],
-  config: ServerConfigurations,
+  config: ServerConfig,
   retryCount = 0
 ): boolean {
   const start = Date.now();
   while (players.length < SERVER_MAX_PLAYERS) {
-    if (Date.now() >= start + config.roundWaitTimeMS) {
+    if (Date.now() >= start + config.serverWait) {
       if (players.length >= SERVER_MIN_PLAYERS) {
         return true;
-      } else if (retryCount < config.roundsToWaitForPlayers) {
+      } else if (retryCount < config.serverTries) {
         waitForAdditionalPlayers(players, config, retryCount + 1);
       } else {
         return false;
@@ -121,13 +125,14 @@ function terminateConnections(connections: Connection[]) {
  */
 async function startGame(
   players: Player<ShapeColorTile>[],
-  config: ServerConfigurations
+  config: ServerConfig
 ): Promise<GameResult> {
-  const gameState = toQGameState(config.refereeConfiguration.state);
-  const observers = config.refereeConfiguration.observer
-    ? [config.refereeConfiguration.observer]
-    : [];
-  const turnTimeMS = config.refereeConfiguration.turnTimeMS;
+  const gameState = toQGameState(config.refSpec.state0);
+  const observers: Observer<ShapeColorTile>[] = [];
+  if (config.refSpec.observe) {
+    observers.push(new BaseObserver());
+  }
+  const turnTimeMS = config.refSpec.perTurn;
   return await BaseReferee(
     players,
     observers,
@@ -147,12 +152,12 @@ async function startGame(
 async function signUp(
   player: Player<ShapeColorTile>,
   players: Player<ShapeColorTile>[],
-  config: ServerConfigurations
+  config: ServerConfig
 ): Promise<void> {
   await Promise.race([
     player.name().then((_name) => players.push(player)),
     new Promise((_, reject) => {
-      setTimeout(reject, config.playerNameWaitTimeMS);
+      setTimeout(reject, config.waitForSignup);
     })
   ]);
 }
