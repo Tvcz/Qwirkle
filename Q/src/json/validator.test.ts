@@ -103,6 +103,7 @@ describe('tests for json validator', () => {
     expect(isValidJSON('true')).toBe(true);
     expect(isValidJSON('false')).toBe(true);
     expect(isValidJSON('1')).toBe(true);
+    expect(isValidJSON('"hello world"')).toBe(true);
   });
   test('isValidJson returns false for invalid Json', () => {
     expect(isValidJSON('')).toBe(false);

@@ -84,7 +84,8 @@ async function makeSetUpCall(
 ) {
   const args = message[1];
   const publicState = toQRelevantPlayerInfo(args[0]);
-  await player.setUp(publicState, publicState.playerTiles);
+  const startingTiles = args[1].map(toQTile);
+  await player.setUp(publicState, startingTiles);
   connection.send(JSON.stringify(VOID_METHOD_RESPONSE));
 }
 
