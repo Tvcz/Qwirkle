@@ -1,6 +1,15 @@
-import { JActorsB } from '../data/data.types';
+import { JActorsB, JState } from '../data/data.types';
 import { generateClientConfig } from './clientConfig';
-import { isClientConfig } from './configTypeGuard';
+import {
+  isClientConfig,
+  isRefereeConfig,
+  isRefereeStateConfig
+} from './configTypeGuard';
+import {
+  DEFAULT_REFEREE_STATE_CONFIG,
+  generateRefereeConfig,
+  generateRefereeStateConfig
+} from './refereeConfig';
 
 describe('tests for the config definitions type guards', () => {
   const localhost = '127.0.0.1';
@@ -30,6 +39,9 @@ describe('tests for the config definitions type guards', () => {
   });
 
   test('isClientConfig', () => {
+    const goodDefaultConfig = generateClientConfig();
+    expect(isClientConfig(goodDefaultConfig)).toBe(true);
+
     const goodPortLowerLimitConfig = generateClientConfig(
       10000,
       localhost,
@@ -254,9 +266,261 @@ describe('tests for the config definitions type guards', () => {
       undefined
     );
     expect(isClientConfig(badMissingPlayersConfig)).toBe(false);
+
+    const badExtraConfig = generateUnknownClientConfig(
+      18080,
+      localhost,
+      5,
+      false,
+      fourPlayers,
+      'extra'
+    );
+    expect(isClientConfig(badExtraConfig)).toBe(false);
+
+    const badWrongExtraTypeConfig = generateUnknownClientConfig(
+      18080,
+      localhost,
+      undefined,
+      false,
+      fourPlayers,
+      5
+    );
+    expect(isClientConfig(badWrongExtraTypeConfig)).toBe(false);
   });
 
-  test('isRefereeConfig', () => {});
+  test('isRefereeConfig', () => {
+    const state0: JState = {
+      map: [[0, [0, { color: 'red', shape: 'circle' }]]],
+      'tile*': [],
+      players: [
+        {
+          name: 'Player 1',
+          'tile*': [],
+          score: 0
+        },
+        {
+          name: 'Player 2',
+          'tile*': [],
+          score: 0
+        }
+      ]
+    };
+    const stateConfig = DEFAULT_REFEREE_STATE_CONFIG;
+
+    const goodDefaultConfig = generateRefereeConfig();
+    expect(isRefereeConfig(goodDefaultConfig)).toBe(true);
+
+    const goodQuietConfig = generateRefereeConfig(undefined, true);
+    expect(isRefereeConfig(goodQuietConfig)).toBe(true);
+
+    const goodPerTurnLowerLimitConfig = generateRefereeConfig(
+      undefined,
+      false,
+      undefined,
+      0
+    );
+    expect(isRefereeConfig(goodPerTurnLowerLimitConfig)).toBe(true);
+
+    const goodPerTurnUpperLimitConfig = generateRefereeConfig(
+      undefined,
+      false,
+      undefined,
+      6
+    );
+    expect(isRefereeConfig(goodPerTurnUpperLimitConfig)).toBe(true);
+
+    const goodObserveConfig = generateRefereeConfig(
+      undefined,
+      false,
+      undefined,
+      undefined,
+      true
+    );
+    expect(isRefereeConfig(goodObserveConfig)).toBe(true);
+
+    const badPerTurnLowerLimitConfig = generateRefereeConfig(
+      undefined,
+      false,
+      undefined,
+      -1
+    );
+    expect(isRefereeConfig(badPerTurnLowerLimitConfig)).toBe(false);
+
+    const badPerTurnUpperLimitConfig = generateRefereeConfig(
+      undefined,
+      false,
+      undefined,
+      7
+    );
+    expect(isRefereeConfig(badPerTurnUpperLimitConfig)).toBe(false);
+
+    const badWrongState0TypeConfig = generateUnknownRefereeConfig(
+      'state0',
+      false,
+      stateConfig,
+      4,
+      false
+    );
+    expect(isRefereeConfig(badWrongState0TypeConfig)).toBe(false);
+
+    const badWrongQuietTypeConfig = generateUnknownRefereeConfig(
+      state0,
+      1,
+      stateConfig,
+      4,
+      false
+    );
+    expect(isRefereeConfig(badWrongQuietTypeConfig)).toBe(false);
+
+    const badWrongConfigSTypeConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      'stateConfig',
+      4,
+      false
+    );
+    expect(isRefereeConfig(badWrongConfigSTypeConfig)).toBe(false);
+
+    const badWrongPerTurnTypeConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      stateConfig,
+      '4',
+      false
+    );
+    expect(isRefereeConfig(badWrongPerTurnTypeConfig)).toBe(false);
+
+    const badWrongObserveTypeConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      stateConfig,
+      4,
+      'false'
+    );
+    expect(isRefereeConfig(badWrongObserveTypeConfig)).toBe(false);
+
+    const badMissingState0Config = generateUnknownRefereeConfig(
+      undefined,
+      false,
+      stateConfig,
+      4,
+      false
+    );
+    expect(isRefereeConfig(badMissingState0Config)).toBe(false);
+
+    const badMissingQuietConfig = generateUnknownRefereeConfig(
+      state0,
+      undefined,
+      stateConfig,
+      4,
+      false
+    );
+    expect(isRefereeConfig(badMissingQuietConfig)).toBe(false);
+
+    const badMissingConfigSConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      undefined,
+      4,
+      false
+    );
+    expect(isRefereeConfig(badMissingConfigSConfig)).toBe(false);
+
+    const badMissingPerTurnConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      stateConfig,
+      undefined,
+      false
+    );
+    expect(isRefereeConfig(badMissingPerTurnConfig)).toBe(false);
+
+    const badMissingObserveConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      stateConfig,
+      4,
+      undefined
+    );
+    expect(isRefereeConfig(badMissingObserveConfig)).toBe(false);
+
+    const badExtraConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      stateConfig,
+      4,
+      false,
+      'extra'
+    );
+    expect(isRefereeConfig(badExtraConfig)).toBe(false);
+
+    const badWrongExtraTypeConfig = generateUnknownRefereeConfig(
+      state0,
+      false,
+      stateConfig,
+      undefined,
+      false,
+      4
+    );
+    expect(isRefereeConfig(badWrongExtraTypeConfig)).toBe(false);
+  });
+
+  test('isRefereeStateConfig', () => {
+    const goodDefaultConfig = generateRefereeStateConfig();
+    expect(isRefereeStateConfig(goodDefaultConfig)).toBe(true);
+
+    const goodQboLowerLimitConfig = generateRefereeStateConfig(0, 3);
+    expect(isRefereeStateConfig(goodQboLowerLimitConfig)).toBe(true);
+
+    const goodQboUpperLimitConfig = generateRefereeStateConfig(10, 3);
+    expect(isRefereeStateConfig(goodQboUpperLimitConfig)).toBe(true);
+
+    const goodFboLowerLimitConfig = generateRefereeStateConfig(3, 0);
+    expect(isRefereeStateConfig(goodFboLowerLimitConfig)).toBe(true);
+
+    const goodFboUpperLimitConfig = generateRefereeStateConfig(3, 10);
+    expect(isRefereeStateConfig(goodFboUpperLimitConfig)).toBe(true);
+
+    const badQboLowerLimitConfig = generateRefereeStateConfig(-1, 3);
+    expect(isRefereeStateConfig(badQboLowerLimitConfig)).toBe(false);
+
+    const badQboUpperLimitConfig = generateRefereeStateConfig(11, 3);
+    expect(isRefereeStateConfig(badQboUpperLimitConfig)).toBe(false);
+
+    const badFboLowerLimitConfig = generateRefereeStateConfig(3, -1);
+    expect(isRefereeStateConfig(badFboLowerLimitConfig)).toBe(false);
+
+    const badFboUpperLimitConfig = generateRefereeStateConfig(3, 11);
+    expect(isRefereeStateConfig(badFboUpperLimitConfig)).toBe(false);
+
+    const badWrongQboTypeConfig = generateUnknownRefereeStateConfig('3', 3);
+    expect(isRefereeStateConfig(badWrongQboTypeConfig)).toBe(false);
+
+    const badWrongFboTypeConfig = generateUnknownRefereeStateConfig(3, '3');
+    expect(isRefereeStateConfig(badWrongFboTypeConfig)).toBe(false);
+
+    const badMissingQboConfig = generateUnknownRefereeStateConfig(undefined, 3);
+    expect(isRefereeStateConfig(badMissingQboConfig)).toBe(false);
+
+    const badMissingFboConfig = generateUnknownRefereeStateConfig(3, undefined);
+    expect(isRefereeStateConfig(badMissingFboConfig)).toBe(false);
+
+    const badMissingConfig = generateUnknownRefereeStateConfig(
+      undefined,
+      undefined
+    );
+    expect(isRefereeStateConfig(badMissingConfig)).toBe(false);
+
+    const badExtraConfig = generateUnknownRefereeStateConfig(3, 3, 'extra');
+    expect(isRefereeStateConfig(badExtraConfig)).toBe(false);
+
+    const badWrongExtraTypeConfig = generateUnknownRefereeStateConfig(
+      3,
+      undefined,
+      3
+    );
+    expect(isRefereeStateConfig(badWrongExtraTypeConfig)).toBe(false);
+  });
 
   test('isServerConfig', () => {});
 });
@@ -266,7 +530,8 @@ function generateUnknownClientConfig(
   host?: unknown,
   wait?: unknown,
   quiet?: unknown,
-  players?: unknown
+  players?: unknown,
+  extra?: unknown
 ): object {
   const config: object = {};
   if (port) {
@@ -283,6 +548,57 @@ function generateUnknownClientConfig(
   }
   if (players) {
     config['players'] = players;
+  }
+  if (extra) {
+    config['extra'] = extra;
+  }
+  return config;
+}
+
+function generateUnknownRefereeConfig(
+  state0?: unknown,
+  quiet?: unknown,
+  configS?: unknown,
+  perTurn?: unknown,
+  observe?: unknown,
+  extra?: unknown
+): object {
+  const config: object = {};
+  if (state0) {
+    config['state0'] = state0;
+  }
+  if (quiet) {
+    config['quiet'] = quiet;
+  }
+  if (configS) {
+    config['configS'] = configS;
+  }
+  if (perTurn) {
+    config['perTurn'] = perTurn;
+  }
+  if (observe) {
+    config['observe'] = observe;
+  }
+  if (extra) {
+    config['extra'] = extra;
+  }
+  return config;
+}
+
+function generateUnknownRefereeStateConfig(
+  qbo?: unknown,
+  fbo?: unknown,
+  extra?: unknown
+): object {
+  const config: object = {};
+  if (qbo) {
+    config['qbo'] = qbo;
+  }
+  if (fbo) {
+    config['fbo'] = fbo;
+  }
+  if (extra) {
+    config['extra'] = extra;
   }
   return config;
 }
