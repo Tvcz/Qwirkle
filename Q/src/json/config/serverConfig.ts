@@ -1,9 +1,15 @@
+import {
+  DEFAULT_CONNECTION_OPTIONS,
+  SERVER_PLAYER_NAME_TIMEOUT_MS,
+  SERVER_WAIT_FOR_SIGNUPS_MS,
+  SERVER_WAIT_PERIOD_RETRY_COUNT
+} from '../../constants';
 import { RefereeConfig, DEFAULT_REFEREE_CONFIG } from './refereeConfig';
 
-const PORT = 8080;
-const SERVER_TRIES = 2;
-const SERVER_WAIT = 20;
-const WAIT_FOR_SIGNUP = 5;
+const PORT = DEFAULT_CONNECTION_OPTIONS.port;
+const SERVER_TRIES = SERVER_WAIT_PERIOD_RETRY_COUNT;
+const SERVER_WAIT = SERVER_WAIT_FOR_SIGNUPS_MS;
+const WAIT_FOR_SIGNUP = SERVER_PLAYER_NAME_TIMEOUT_MS;
 const QUIET = false;
 
 export const DEFAULT_SERVER_CONFIG: ServerConfig = {
@@ -23,3 +29,21 @@ export type ServerConfig = {
   quiet: boolean;
   refSpec: RefereeConfig;
 };
+
+export function generateServerConfig(
+  port = PORT,
+  serverTries = SERVER_TRIES,
+  serverWait = SERVER_WAIT,
+  waitForSignup = WAIT_FOR_SIGNUP,
+  quiet = QUIET,
+  refSpec = DEFAULT_REFEREE_CONFIG
+): object {
+  return {
+    port,
+    serverTries,
+    serverWait,
+    waitForSignup,
+    quiet,
+    refSpec
+  };
+}
