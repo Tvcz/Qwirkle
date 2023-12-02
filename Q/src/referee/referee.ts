@@ -4,6 +4,35 @@ import { RefereeFunction } from './referee.types';
 import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
 import { SafePlayer } from './safePlayer';
 
+export interface RefereeConfigurations {
+  state: JState;
+  turnTimeMS: number;
+  observer: Observer<ShapeColorTile> | undefined;
+}
+
+const DEFAULT_STATE: JState = {
+  map: [[0, [0, { color: 'red', shape: 'circle' }]]],
+  'tile*': [],
+  players: [
+    {
+      name: 'Player 1',
+      'tile*': [],
+      score: 0
+    },
+    {
+      name: 'Player 2',
+      'tile*': [],
+      score: 0
+    }
+  ]
+};
+
+export const DEFAULT_REFEREE_CONFIGURATIONS: RefereeConfigurations = {
+  state: DEFAULT_STATE,
+  turnTimeMS: REFEREE_PLAYER_TIMEOUT_MS,
+  observer: undefined
+};
+
 /**
  * Function representing a referee to carry out a single game of Q.
  *
@@ -55,15 +84,16 @@ export const BaseReferee: RefereeFunction<ShapeColorTile> = async (
   players,
   observers,
   ruleBook,
-  existingGameState
+  existingGameState,
+  perTurnTimeoutMS = REFEREE_PLAYER_TIMEOUT_MS
 ) => {
   const playersCopy = [...players];
 
   const safePlayers = playersCopy.map(
-    (player) => new SafePlayer(player, REFEREE_PLAYER_TIMEOUT_MS)
+    (player) => new SafePlayer(player, perTurnTimeoutMS)
   );
 
-  const gameState = await (existingGameState ?? setUpGame(safePlayers));
+  const gameState = existingGameState ?? (await setUpGame(safePlayers));
 
   const playerNamesOrder = gameState
     .getAllPlayersSetupInformation()
