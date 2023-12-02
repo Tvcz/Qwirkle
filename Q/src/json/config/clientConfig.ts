@@ -1,8 +1,12 @@
+import {
+  DEFAULT_CONNECTION_OPTIONS,
+  REFEREE_PLAYER_TIMEOUT_MS
+} from '../../constants';
 import { JActorsB } from '../data/data.types';
 
-const DEFAULT_PORT = 8080;
-const DEFAULT_HOST = 'localhost';
-const DEFAULT_WAIT = 5;
+const DEFAULT_PORT = DEFAULT_CONNECTION_OPTIONS.port;
+const DEFAULT_HOST = DEFAULT_CONNECTION_OPTIONS.host;
+const DEFAULT_WAIT = REFEREE_PLAYER_TIMEOUT_MS;
 const DEFAULT_QUIET = false;
 const DEFAULT_PLAYERS: JActorsB = [
   ['playerOne', 'dag'],
