@@ -32,7 +32,7 @@ const DEFAULT_CONFIG_S = {
 const DEFAULT_PER_TURN = REFEREE_PLAYER_TIMEOUT_MS;
 const DEFAULT_OBSERVE = false;
 
-export const defaultRefereeConfig: RefereeConfig = {
+export const DEFAULT_REFEREE_CONFIG: RefereeConfig = {
   state0: DEFAULT_STATE,
   quiet: DEFAULT_QUIET,
   configS: DEFAULT_CONFIG_S,
