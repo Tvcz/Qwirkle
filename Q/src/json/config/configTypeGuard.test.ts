@@ -3,13 +3,15 @@ import { generateClientConfig } from './clientConfig';
 import {
   isClientConfig,
   isRefereeConfig,
-  isRefereeStateConfig
+  isRefereeStateConfig,
+  isServerConfig
 } from './configTypeGuard';
 import {
   DEFAULT_REFEREE_STATE_CONFIG,
   generateRefereeConfig,
   generateRefereeStateConfig
 } from './refereeConfig';
+import { generateServerConfig } from './serverConfig';
 
 describe('tests for the config definitions type guards', () => {
   const localhost = '127.0.0.1';
@@ -522,7 +524,317 @@ describe('tests for the config definitions type guards', () => {
     expect(isRefereeStateConfig(badWrongExtraTypeConfig)).toBe(false);
   });
 
-  test('isServerConfig', () => {});
+  test('isServerConfig', () => {
+    const goodDefaultConfig = generateServerConfig();
+    expect(isServerConfig(goodDefaultConfig)).toBe(true);
+
+    const goodPortLowerLimitConfig = generateServerConfig(
+      10000,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(goodPortLowerLimitConfig)).toBe(true);
+
+    const goodPortUpperLimitConfig = generateServerConfig(
+      60000,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(goodPortUpperLimitConfig)).toBe(true);
+
+    const goodServerTriesLowerLimitConfig = generateServerConfig(
+      undefined,
+      0,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(goodServerTriesLowerLimitConfig)).toBe(true);
+
+    const goodServerTriesUpperLimitConfig = generateServerConfig(
+      undefined,
+      9,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(goodServerTriesUpperLimitConfig)).toBe(true);
+
+    const goodServerWaitLowerLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      0,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(goodServerWaitLowerLimitConfig)).toBe(true);
+
+    const goodServerWaitUpperLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      29,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(goodServerWaitUpperLimitConfig)).toBe(true);
+
+    const goodWaitForSignupLowerLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      undefined,
+      0,
+      undefined
+    );
+    expect(isServerConfig(goodWaitForSignupLowerLimitConfig)).toBe(true);
+
+    const goodWaitForSignupUpperLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      undefined,
+      9,
+      undefined
+    );
+    expect(isServerConfig(goodWaitForSignupUpperLimitConfig)).toBe(true);
+
+    const goodQuietConfig = generateServerConfig(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true
+    );
+    expect(isServerConfig(goodQuietConfig)).toBe(true);
+
+    const refereeConfig = generateRefereeConfig();
+    if (!isRefereeConfig(refereeConfig)) throw new Error('bad referee config');
+    const goodRefSpecConfig = generateServerConfig(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      refereeConfig
+    );
+    expect(isServerConfig(goodRefSpecConfig)).toBe(true);
+
+    const badPortLowerLimitConfig = generateServerConfig(
+      9999,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(badPortLowerLimitConfig)).toBe(false);
+
+    const badPortUpperLimitConfig = generateServerConfig(
+      60001,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(badPortUpperLimitConfig)).toBe(false);
+
+    const badServerTriesLowerLimitConfig = generateServerConfig(
+      undefined,
+      -1,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(badServerTriesLowerLimitConfig)).toBe(false);
+
+    const badServerTriesUpperLimitConfig = generateServerConfig(
+      undefined,
+      10,
+      undefined,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(badServerTriesUpperLimitConfig)).toBe(false);
+
+    const badServerWaitLowerLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      -1,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(badServerWaitLowerLimitConfig)).toBe(false);
+
+    const badServerWaitUpperLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      30,
+      undefined,
+      undefined
+    );
+    expect(isServerConfig(badServerWaitUpperLimitConfig)).toBe(false);
+
+    const badWaitForSignupLowerLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      undefined,
+      -1,
+      undefined
+    );
+    expect(isServerConfig(badWaitForSignupLowerLimitConfig)).toBe(false);
+
+    const badWaitForSignupUpperLimitConfig = generateServerConfig(
+      undefined,
+      undefined,
+      undefined,
+      10,
+      undefined
+    );
+    expect(isServerConfig(badWaitForSignupUpperLimitConfig)).toBe(false);
+
+    const badWrongPortTypeConfig = generateUnknownServerConfig(
+      '18080',
+      3,
+      20,
+      4,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badWrongPortTypeConfig)).toBe(false);
+
+    const badWrongServerTriesTypeConfig = generateUnknownServerConfig(
+      18080,
+      '3',
+      20,
+      4,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badWrongServerTriesTypeConfig)).toBe(false);
+
+    const badWrongServerWaitTypeConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      '20',
+      4,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badWrongServerWaitTypeConfig)).toBe(false);
+
+    const badWrongWaitForSignupTypeConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      '4',
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badWrongWaitForSignupTypeConfig)).toBe(false);
+
+    const badWrongQuietTypeConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      4,
+      'false',
+      refereeConfig
+    );
+    expect(isServerConfig(badWrongQuietTypeConfig)).toBe(false);
+
+    const badWrongRefSpecTypeConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      4,
+      false,
+      'refereeConfig'
+    );
+    expect(isServerConfig(badWrongRefSpecTypeConfig)).toBe(false);
+
+    const badMissingPortConfig = generateUnknownServerConfig(
+      undefined,
+      3,
+      20,
+      4,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badMissingPortConfig)).toBe(false);
+
+    const badMissingServerTriesConfig = generateUnknownServerConfig(
+      18080,
+      undefined,
+      20,
+      4,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badMissingServerTriesConfig)).toBe(false);
+
+    const badMissingServerWaitConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      undefined,
+      4,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badMissingServerWaitConfig)).toBe(false);
+
+    const badMissingWaitForSignupConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      undefined,
+      false,
+      refereeConfig
+    );
+    expect(isServerConfig(badMissingWaitForSignupConfig)).toBe(false);
+
+    const badMissingQuietConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      4,
+      undefined,
+      refereeConfig
+    );
+    expect(isServerConfig(badMissingQuietConfig)).toBe(false);
+
+    const badMissingRefSpecConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      4,
+      false,
+      undefined
+    );
+    expect(isServerConfig(badMissingRefSpecConfig)).toBe(false);
+
+    const badExtraConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      4,
+      false,
+      refereeConfig,
+      'extra'
+    );
+    expect(isServerConfig(badExtraConfig)).toBe(false);
+
+    const badWrongExtraTypeConfig = generateUnknownServerConfig(
+      18080,
+      3,
+      20,
+      undefined,
+      false,
+      refereeConfig,
+      4
+    );
+    expect(isServerConfig(badWrongExtraTypeConfig)).toBe(false);
+  });
 });
 
 function generateUnknownClientConfig(
@@ -596,6 +908,40 @@ function generateUnknownRefereeStateConfig(
   }
   if (fbo) {
     config['fbo'] = fbo;
+  }
+  if (extra) {
+    config['extra'] = extra;
+  }
+  return config;
+}
+
+function generateUnknownServerConfig(
+  port?: unknown,
+  serverTries?: unknown,
+  serverWait?: unknown,
+  waitForSignup?: unknown,
+  quiet?: unknown,
+  refSpec?: unknown,
+  extra?: unknown
+): object {
+  const config: object = {};
+  if (port) {
+    config['port'] = port;
+  }
+  if (serverTries) {
+    config['serverTries'] = serverTries;
+  }
+  if (serverWait) {
+    config['serverWait'] = serverWait;
+  }
+  if (waitForSignup) {
+    config['waitForSignup'] = waitForSignup;
+  }
+  if (quiet) {
+    config['quiet'] = quiet;
+  }
+  if (refSpec) {
+    config['refSpec'] = refSpec;
   }
   if (extra) {
     config['extra'] = extra;
