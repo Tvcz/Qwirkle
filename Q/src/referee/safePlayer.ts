@@ -1,8 +1,5 @@
 import { QTile } from '../game/map/tile';
-import {
-  RelevantPlayerInfo,
-  TilePlacement
-} from '../game/types/gameState.types';
+import { RelevantPlayerInfo } from '../game/types/gameState.types';
 import { Player } from '../player/player';
 import { TurnAction } from '../player/turnAction';
 import { Result } from './referee.types';

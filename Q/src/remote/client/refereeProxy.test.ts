@@ -84,7 +84,7 @@ describe('tests for tcp referee proxy', () => {
   });
 
   test('takeTurn method', (done) => {
-    (mockPlayer.takeTurn as jest.Mock<any, any, any>).mockResolvedValue(
+    (mockPlayer.takeTurn as jest.Mock).mockResolvedValue(
       new BaseTurnAction('PLACE', [
         {
           tile: new BaseTile('circle', 'red'),
