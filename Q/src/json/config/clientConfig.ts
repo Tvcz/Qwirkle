@@ -24,3 +24,19 @@ export type ClientConfig = {
   quiet: boolean;
   players: JActorsB;
 };
+
+export function generateClientConfig(
+  port = DEFAULT_PORT,
+  host = DEFAULT_HOST,
+  wait = DEFAULT_WAIT,
+  quiet = DEFAULT_QUIET,
+  players = DEFAULT_PLAYERS
+): object {
+  return {
+    port,
+    host,
+    wait,
+    quiet,
+    players
+  };
+}
