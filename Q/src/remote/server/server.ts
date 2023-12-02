@@ -3,37 +3,11 @@ import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
 import { ShapeColorTile } from '../../game/map/tile';
-import {
-  BaseReferee,
-  DEFAULT_REFEREE_CONFIGURATIONS,
-  RefereeConfigurations
-} from '../../referee/referee';
+import { BaseReferee } from '../../referee/referee';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
-import {
-  DEFAULT_CONNECTION_OPTIONS,
-  SERVER_MAX_PLAYERS,
-  SERVER_MIN_PLAYERS,
-  SERVER_PLAYER_NAME_TIMEOUT_MS,
-  SERVER_WAIT_FOR_SIGNUPS_MS,
-  SERVER_WAIT_PERIOD_RETRY_COUNT
-} from '../../constants';
+import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
-
-interface ServerConfigurations {
-  port: number;
-  roundsToWaitForPlayers: number;
-  roundWaitTimeMS: number;
-  playerNameWaitTimeMS: number;
-  refereeConfiguration: RefereeConfigurations;
-}
-
-const DEFAULT_SERVER_CONFIGURATIONS: ServerConfigurations = {
-  port: DEFAULT_CONNECTION_OPTIONS.port,
-  roundsToWaitForPlayers: SERVER_WAIT_PERIOD_RETRY_COUNT,
-  roundWaitTimeMS: SERVER_WAIT_FOR_SIGNUPS_MS,
-  playerNameWaitTimeMS: SERVER_PLAYER_NAME_TIMEOUT_MS,
-  refereeConfiguration: DEFAULT_REFEREE_CONFIGURATIONS
-};
+import { DEFAULT_SERVER_CONFIG } from '../../json/config/serverConfig';
 
 /**
  * Runs a game over TCP.
@@ -57,7 +31,7 @@ const DEFAULT_SERVER_CONFIGURATIONS: ServerConfigurations = {
  *
  * @returns the result of the game
  */
-export async function runTCPGame(config = DEFAULT_SERVER_CONFIGURATIONS) {
+export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
   const players: Player<ShapeColorTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
