@@ -6,7 +6,7 @@ import { JActorsB } from '../data/data.types';
 
 const DEFAULT_PORT = DEFAULT_CONNECTION_OPTIONS.port;
 const DEFAULT_HOST = DEFAULT_CONNECTION_OPTIONS.host;
-const DEFAULT_WAIT = REFEREE_PLAYER_TIMEOUT_MS;
+const DEFAULT_WAIT = REFEREE_PLAYER_TIMEOUT_MS / 1000;
 const DEFAULT_QUIET = false;
 const DEFAULT_PLAYERS: JActorsB = [
   ['playerOne', 'dag'],
