@@ -12,7 +12,7 @@ import {
   ServerConfig
 } from '../../json/config/serverConfig';
 import { BaseObserver, Observer } from '../../observer/observer';
-import { toQState } from '../../json/deserialize/qState';
+import { toQGameState } from '../../json/deserialize/qState';
 
 /**
  * Runs a game over TCP.
@@ -128,7 +128,7 @@ async function startGame(
   players: Player<ShapeColorTile>[],
   config: ServerConfig
 ): Promise<GameResult> {
-  const gameState = await toQState(config.refSpec.state0, players);
+  const gameState = await toQGameState(config.refSpec.state0, players);
   const observers: Observer<ShapeColorTile>[] = [];
   if (config.refSpec.observe) {
     observers.push(new BaseObserver());

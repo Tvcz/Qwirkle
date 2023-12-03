@@ -10,10 +10,16 @@ import { BaseGameState, QGameState } from '../../game/gameState/gameState';
 import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
 import { BaseBagOfTiles } from '../../game/gameState/bagOfTiles';
 
+type QState = {
+  qMap: QMap<ShapeColorTile>;
+  qTilesInBag: ShapeColorTile[];
+  playerStates: PlayerState<ShapeColorTile>[];
+};
+
 export async function toQState(
   jState: JState,
   players: Player<ShapeColorTile>[]
-): Promise<QGameState<ShapeColorTile>> {
+): Promise<QState> {
   const qMap = toQMap(jState.map);
   const qTilesInBag = jState['tile*'].map((tile) => toQTile(tile));
   const qPlayers = jState.players.map((player) => ({
@@ -42,6 +48,14 @@ export async function toQState(
     })
   );
 
+  return { qMap, qTilesInBag, playerStates };
+}
+
+export async function toQGameState(
+  jState: JState,
+  players: Player<ShapeColorTile>[]
+): Promise<QGameState<ShapeColorTile>> {
+  const { qMap, qTilesInBag, playerStates } = await toQState(jState, players);
   return new BaseGameState(
     qMap,
     new PlayerTurnQueue(playerStates),

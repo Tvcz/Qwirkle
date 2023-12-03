@@ -137,7 +137,7 @@ export class BaseRuleBook extends AbstractRuleBook<ShapeColorTile> {
   }
 }
 
-export class ConfigedRulebook extends AbstractRuleBook<BaseTile> {
+export class ConfigedRulebook extends AbstractRuleBook<ShapeColorTile> {
   constructor(endOfGameBonus: number, qBonus: number) {
     super(
       [
