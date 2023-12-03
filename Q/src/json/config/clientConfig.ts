@@ -35,7 +35,7 @@ export function generateClientConfig(
   wait = DEFAULT_WAIT,
   quiet = DEFAULT_QUIET,
   players = DEFAULT_PLAYERS
-): object {
+): ClientConfig {
   return {
     port,
     host,
