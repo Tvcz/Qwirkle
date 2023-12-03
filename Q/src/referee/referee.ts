@@ -1,10 +1,10 @@
 import { REFEREE_PLAYER_TIMEOUT_MS } from '../constants';
 import { ShapeColorTile } from '../game/map/tile';
-import { Observer } from '../observer/observer';
 import { RefereeFunction } from './referee.types';
 import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
 import { SafePlayer } from './safePlayer';
 import { JState } from '../json/data/data.types';
+import { Observer } from '../observer/observer';
 
 export interface RefereeConfigurations {
   state: JState;

@@ -6,17 +6,14 @@ import { JState } from '../data/data.types';
 import { toQMap, toQTile } from './qMap';
 import { Player } from '../../player/player';
 import { SafePlayer } from '../../referee/safePlayer';
-
-type QState = {
-  qMap: QMap<ShapeColorTile>;
-  qTilesInBag: ShapeColorTile[];
-  playerStates: PlayerState<ShapeColorTile>[];
-};
+import { BaseGameState, QGameState } from '../../game/gameState/gameState';
+import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
+import { BaseBagOfTiles } from '../../game/gameState/bagOfTiles';
 
 export async function toQState(
   jState: JState,
   players: Player<ShapeColorTile>[]
-): Promise<QState> {
+): Promise<QGameState<ShapeColorTile>> {
   const qMap = toQMap(jState.map);
   const qTilesInBag = jState['tile*'].map((tile) => toQTile(tile));
   const qPlayers = jState.players.map((player) => ({
@@ -45,5 +42,9 @@ export async function toQState(
     })
   );
 
-  return { qMap, qTilesInBag, playerStates };
+  return new BaseGameState(
+    qMap,
+    new PlayerTurnQueue(playerStates),
+    new BaseBagOfTiles(qTilesInBag)
+  );
 }

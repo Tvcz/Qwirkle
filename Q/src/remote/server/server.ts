@@ -2,45 +2,17 @@ import net from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
-import {
-  BaseReferee,
-  DEFAULT_REFEREE_CONFIGURATIONS,
-  RefereeConfigurations
-} from '../../referee/referee';
 import { ShapeColorTile } from '../../game/map/tile';
+import { BaseReferee } from '../../referee/referee';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
-import {
-  DEFAULT_CONNECTION_OPTIONS,
-  SERVER_MAX_PLAYERS,
-  SERVER_MIN_PLAYERS,
-  SERVER_PLAYER_NAME_TIMEOUT_MS,
-  SERVER_WAIT_FOR_SIGNUPS_MS,
-  SERVER_WAIT_PERIOD_RETRY_COUNT
-} from '../../constants';
+import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
 import {
   DEFAULT_SERVER_CONFIG,
   ServerConfig
 } from '../../json/config/serverConfig';
-import { toQState } from '../../json/deserialize/qState';
 import { BaseObserver, Observer } from '../../observer/observer';
-import { BaseGameState } from '../../game/gameState/gameState';
-
-interface ServerConfigurations {
-  port: number;
-  roundsToWaitForPlayers: number;
-  roundWaitTimeMS: number;
-  playerNameWaitTimeMS: number;
-  refereeConfiguration: RefereeConfigurations;
-}
-
-const DEFAULT_SERVER_CONFIGURATIONS: ServerConfigurations = {
-  port: DEFAULT_CONNECTION_OPTIONS.port,
-  roundsToWaitForPlayers: SERVER_WAIT_PERIOD_RETRY_COUNT,
-  roundWaitTimeMS: SERVER_WAIT_FOR_SIGNUPS_MS,
-  playerNameWaitTimeMS: SERVER_PLAYER_NAME_TIMEOUT_MS,
-  refereeConfiguration: DEFAULT_REFEREE_CONFIGURATIONS
-};
+import { toQState } from '../../json/deserialize/qState';
 
 /**
  * Runs a game over TCP.
@@ -161,7 +133,6 @@ async function startGame(
   if (config.refSpec.observe) {
     observers.push(new BaseObserver());
   }
-  new BaseGameState();
   const turnTimeMS = config.refSpec.perTurn;
   return await BaseReferee(
     players,
