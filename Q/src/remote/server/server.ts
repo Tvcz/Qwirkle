@@ -2,12 +2,12 @@ import net from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
-import { BaseTile } from '../../game/map/tile';
 import {
   BaseReferee,
   DEFAULT_REFEREE_CONFIGURATIONS,
   RefereeConfigurations
 } from '../../referee/referee';
+import { ShapeColorTile } from '../../game/map/tile';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import {
   DEFAULT_CONNECTION_OPTIONS,
@@ -18,6 +18,13 @@ import {
   SERVER_WAIT_PERIOD_RETRY_COUNT
 } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
+import {
+  DEFAULT_SERVER_CONFIG,
+  ServerConfig
+} from '../../json/config/serverConfig';
+import { toQState } from '../../json/deserialize/qState';
+import { BaseObserver, Observer } from '../../observer/observer';
+import { BaseGameState } from '../../game/gameState/gameState';
 
 interface ServerConfigurations {
   port: number;
@@ -57,8 +64,8 @@ const DEFAULT_SERVER_CONFIGURATIONS: ServerConfigurations = {
  *
  * @returns the result of the game
  */
-export async function runTCPGame(config = DEFAULT_SERVER_CONFIGURATIONS) {
-  const players: Player<BaseTile>[] = [];
+export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
+  const players: Player<ShapeColorTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
 
@@ -79,6 +86,8 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIGURATIONS) {
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
     gameResult = await startGame(players, config);
+  } else {
+    informPlayersOfNoGame(players);
   }
   terminateConnections(connections);
   server.close();
@@ -96,16 +105,16 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIGURATIONS) {
  * @returns true if the game should be run, false otherwise
  */
 function waitForAdditionalPlayers(
-  players: Player<BaseTile>[],
-  config: ServerConfigurations,
+  players: Player<ShapeColorTile>[],
+  config: ServerConfig,
   retryCount = 0
 ): boolean {
   const start = Date.now();
   while (players.length < SERVER_MAX_PLAYERS) {
-    if (Date.now() >= start + config.roundWaitTimeMS) {
+    if (Date.now() >= start + config.serverWait) {
       if (players.length >= SERVER_MIN_PLAYERS) {
         return true;
-      } else if (retryCount < config.roundsToWaitForPlayers) {
+      } else if (retryCount < config.serverTries) {
         waitForAdditionalPlayers(players, config, retryCount + 1);
       } else {
         return false;
@@ -113,6 +122,20 @@ function waitForAdditionalPlayers(
     }
   }
   return true;
+}
+
+/**
+ * Attempts to inform all players that the game will not be run.
+ * @param players the players to inform
+ */
+function informPlayersOfNoGame(players: Player<ShapeColorTile>[]) {
+  players.forEach((player) => {
+    try {
+      player.win(false);
+    } catch (e) {
+      // ignore
+    }
+  });
 }
 
 /**
@@ -130,14 +153,16 @@ function terminateConnections(connections: Connection[]) {
  * @returns the result of the game
  */
 async function startGame(
-  players: Player<BaseTile>[],
-  config: ServerConfigurations
+  players: Player<ShapeColorTile>[],
+  config: ServerConfig
 ): Promise<GameResult> {
-  const gameState = toQGameState(config.refereeConfiguration.state);
-  const observers = config.refereeConfiguration.observer
-    ? [config.refereeConfiguration.observer]
-    : [];
-  const turnTimeMS = config.refereeConfiguration.turnTimeMS;
+  const gameState = await toQState(config.refSpec.state0, players);
+  const observers: Observer<ShapeColorTile>[] = [];
+  if (config.refSpec.observe) {
+    observers.push(new BaseObserver());
+  }
+  new BaseGameState();
+  const turnTimeMS = config.refSpec.perTurn;
   return await BaseReferee(
     players,
     observers,
@@ -155,14 +180,14 @@ async function startGame(
  * time
  */
 async function signUp(
-  player: Player<BaseTile>,
-  players: Player<BaseTile>[],
-  config: ServerConfigurations
+  player: Player<ShapeColorTile>,
+  players: Player<ShapeColorTile>[],
+  config: ServerConfig
 ): Promise<void> {
   await Promise.race([
     player.name().then((_name) => players.push(player)),
     new Promise((_, reject) => {
-      setTimeout(reject, config.playerNameWaitTimeMS);
+      setTimeout(reject, config.waitForSignup);
     })
   ]);
 }

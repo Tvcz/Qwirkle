@@ -104,6 +104,7 @@
     "players": [
         {
             "score": 0,
+            "name": "playerOne",
             "tile*": [
                 {
                     "color": "purple",
@@ -133,6 +134,7 @@
         },
         {
             "score": 0,
+            "name": "playerTwo",
             "tile*": [
                 {
                     "color": "purple",
@@ -162,6 +164,7 @@
         },
         {
             "score": 0,
+            "name": "playerThree",
             "tile*": [
                 {
                     "color": "purple",
@@ -191,6 +194,7 @@
         },
         {
             "score": 0,
+            "name": "playerFour",
             "tile*": [
                 {
                     "color": "purple",
@@ -221,8 +225,28 @@
     ]
 }
 [
-    ["playerOne", "ldasg", "win", 1],
-    ["playerTwo", "ldasg", "win", 1],
-    ["playerThree", "ldasg", "win", 1],
-    ["playerFour", "ldasg", "win", 1]
+    [
+        "playerOne",
+        "ldasg",
+        "win",
+        1
+    ],
+    [
+        "playerTwo",
+        "ldasg",
+        "win",
+        1
+    ],
+    [
+        "playerThree",
+        "ldasg",
+        "win",
+        1
+    ],
+    [
+        "playerFour",
+        "ldasg",
+        "win",
+        1
+    ]
 ]

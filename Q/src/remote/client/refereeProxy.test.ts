@@ -1,14 +1,13 @@
 import { Server, createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { BaseTurnAction } from '../../player/turnAction';
-import { BaseTile } from '../../game/map/tile';
+import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
 import { Player } from '../../player/player';
 import { refereeProxy } from './refereeProxy';
 import { RelevantPlayerInfo } from '../../game/types/gameState.types';
-import { mock } from 'node:test';
 
-const mockPlayer: Player<BaseTile> = {
+const mockPlayer: Player<ShapeColorTile> = {
   name: jest.fn().mockResolvedValue('Mock Player'),
   setUp: jest.fn().mockResolvedValue(undefined),
   takeTurn: jest.fn(),
@@ -85,7 +84,7 @@ describe('tests for tcp referee proxy', () => {
   });
 
   test('takeTurn method', (done) => {
-    (mockPlayer.takeTurn as jest.Mock<any, any, any>).mockResolvedValue(
+    (mockPlayer.takeTurn as jest.Mock).mockResolvedValue(
       new BaseTurnAction('PLACE', [
         {
           tile: new BaseTile('circle', 'red'),

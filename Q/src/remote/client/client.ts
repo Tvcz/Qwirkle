@@ -11,7 +11,7 @@ import { DEFAULT_CONNECTION_OPTIONS } from '../../constants';
  * @param player The player to join the game.
  * @param connectionOptions The host and port to connect to.
  */
-function joinGame(
+export function joinGame(
   player: Player<BaseTile>,
   connectionOptions = DEFAULT_CONNECTION_OPTIONS
 ) {

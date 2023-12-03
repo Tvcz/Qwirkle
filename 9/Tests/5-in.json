@@ -15,6 +15,7 @@
     "players": [
         {
             "score": 3,
+            "name": "C",
             "tile*": [
                 {
                     "color": "blue",
@@ -28,6 +29,7 @@
         },
         {
             "score": 2,
+            "name": "B",
             "tile*": [
                 {
                     "color": "blue",
@@ -41,6 +43,7 @@
         },
         {
             "score": 1,
+            "name": "A",
             "tile*": [
                 {
                     "color": "blue",
@@ -54,6 +57,7 @@
         },
         {
             "score": 0,
+            "name": "D",
             "tile*": [
                 {
                     "color": "blue",

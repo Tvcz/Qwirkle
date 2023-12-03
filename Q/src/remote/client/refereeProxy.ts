@@ -1,16 +1,24 @@
 import { Player } from '../../player/player';
-import { BaseTile } from '../../game/map/tile';
+import { ShapeColorTile } from '../../game/map/tile';
 import { Connection } from '../connection';
+import { validateJSON } from '../../json/validator';
 import {
   isNameCall,
-  isNewTilesCall,
   isSetUpCall,
   isTakeTurnCall,
-  isWinCall,
-  validateJSON
-} from '../jsonValidator';
-import { NewTilesCall, SetUpCall, TakeTurnCall, WinCall } from '../types';
-import { buildTile, buildTilePlacement } from '../parse';
+  isNewTilesCall,
+  isWinCall
+} from '../../json/messages/messagesTypeGuards';
+import {
+  SetUpCall,
+  TakeTurnCall,
+  NewTilesCall,
+  WinCall
+} from '../../json/messages/messages.types';
+import { toQRelevantPlayerInfo } from '../../json/deserialize/qPub';
+import { toQTile } from '../../json/deserialize/qMap';
+import { toJChoice } from '../../json/serialize/jTurn';
+import { VOID_METHOD_RESPONSE } from '../../constants';
 
 /**
  * A referee proxy listens for messages from the server and converts them
@@ -23,7 +31,10 @@ import { buildTile, buildTilePlacement } from '../parse';
  * @param player - The player to make method calls on.
  * @param connection - The connection to the server.
  */
-export function refereeProxy(player: Player<BaseTile>, connection: Connection) {
+export function refereeProxy(
+  player: Player<ShapeColorTile>,
+  connection: Connection
+) {
   // listens for tcp messages from the server
   // converts them to method calls on the player
   connection.onResponse(async (data) => {
@@ -51,10 +62,12 @@ export function refereeProxy(player: Player<BaseTile>, connection: Connection) {
  * @param player - The player to make the call on.
  * @param connection - The connection to the server.
  */
-async function makeNameCall(player: Player<BaseTile>, connection: Connection) {
+async function makeNameCall(
+  player: Player<ShapeColorTile>,
+  connection: Connection
+) {
   const result = await player.name();
-  const response = { method: 'name', result };
-  connection.send(JSON.stringify(response));
+  connection.send(JSON.stringify(result));
 }
 
 /**
@@ -65,17 +78,14 @@ async function makeNameCall(player: Player<BaseTile>, connection: Connection) {
  * @param message - The setup call message received from the server.
  */
 async function makeSetUpCall(
-  player: Player<BaseTile>,
+  player: Player<ShapeColorTile>,
   connection: Connection,
   message: SetUpCall
 ) {
-  const args = message.args;
-  await player.setUp(
-    args.mapState.map(buildTilePlacement),
-    args.startingTiles.map(buildTile)
-  );
-  const response = { method: 'setUp', result: 0 };
-  connection.send(JSON.stringify(response));
+  const args = message[1];
+  const publicState = toQRelevantPlayerInfo(args[0]);
+  await player.setUp(publicState, publicState.playerTiles);
+  connection.send(JSON.stringify(VOID_METHOD_RESPONSE));
 }
 
 /**
@@ -86,20 +96,14 @@ async function makeSetUpCall(
  * @param message - The takeTurn call message received from the server.
  */
 async function makeTakeTurnCall(
-  player: Player<BaseTile>,
+  player: Player<ShapeColorTile>,
   connection: Connection,
   message: TakeTurnCall
 ) {
-  const parsedPublicState = message.args.publicState;
-  const publicState = {
-    playerTiles: parsedPublicState.playerTiles.map(buildTile),
-    mapState: parsedPublicState.mapState.map(buildTilePlacement),
-    scoreboard: parsedPublicState.scoreboard,
-    remainingTilesCount: parsedPublicState.remainingTilesCount,
-    playersQueue: parsedPublicState.playersQueue
-  };
+  const args = message[1];
+  const publicState = toQRelevantPlayerInfo(args[0]);
   const result = await player.takeTurn(publicState);
-  const response = { method: 'takeTurn', result };
+  const response = toJChoice(result);
   connection.send(JSON.stringify(response));
 }
 
@@ -111,13 +115,14 @@ async function makeTakeTurnCall(
  * @param message - The newTiles call message received from the server.
  */
 async function makeNewTilesCall(
-  player: Player<BaseTile>,
+  player: Player<ShapeColorTile>,
   connection: Connection,
   message: NewTilesCall
 ) {
-  await player.newTiles(message.args.newTiles.map(buildTile));
-  const response = { method: 'newTiles', result: 0 };
-  connection.send(JSON.stringify(response));
+  const args = message[1];
+  const tiles = args[0].map(toQTile);
+  await player.newTiles(tiles);
+  connection.send(JSON.stringify(VOID_METHOD_RESPONSE));
 }
 
 /**
@@ -128,12 +133,12 @@ async function makeNewTilesCall(
  * @param message - The win call message received from the server.
  */
 async function makeWinCall(
-  player: Player<BaseTile>,
+  player: Player<ShapeColorTile>,
   connection: Connection,
   message: WinCall
 ) {
-  await player.win(message.args.win);
-  const response = { method: 'win', result: 0 };
-  connection.send(JSON.stringify(response));
+  const args = message[1];
+  await player.win(args[0]);
+  connection.send(JSON.stringify(VOID_METHOD_RESPONSE));
   connection.close();
 }
