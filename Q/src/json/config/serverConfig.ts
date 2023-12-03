@@ -14,20 +14,20 @@ const QUIET = false;
 
 export const DEFAULT_SERVER_CONFIG: ServerConfig = {
   port: PORT,
-  serverTries: SERVER_TRIES,
-  serverWait: SERVER_WAIT,
-  waitForSignup: WAIT_FOR_SIGNUP,
+  'server-tries': SERVER_TRIES,
+  'server-wait': SERVER_WAIT,
+  'wait-for-signup': WAIT_FOR_SIGNUP,
   quiet: QUIET,
-  refSpec: DEFAULT_REFEREE_CONFIG
+  'ref-spec': DEFAULT_REFEREE_CONFIG
 };
 
 export type ServerConfig = {
   port: number;
-  serverTries: number;
-  serverWait: number;
-  waitForSignup: number;
+  'server-tries': number;
+  'server-wait': number;
+  'wait-for-signup': number;
   quiet: boolean;
-  refSpec: RefereeConfig;
+  'ref-spec': RefereeConfig;
 };
 
 export function generateServerConfig(
@@ -40,10 +40,10 @@ export function generateServerConfig(
 ): object {
   return {
     port,
-    serverTries,
-    serverWait,
-    waitForSignup,
+    'server-tries': serverTries,
+    'server-wait': serverWait,
+    'wait-for-signup': waitForSignup,
     quiet,
-    refSpec
+    'ref-spec': refSpec
   };
 }
