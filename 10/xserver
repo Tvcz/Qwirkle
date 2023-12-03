@@ -1,2 +1,3 @@
 #!/bin/sh
-(cd ../Q && xvfb-run npx electron . "$@")
+# (cd ../Q && xvfb-run npx electron . "$@")
+(cd ../Q && npx electron . "$@")
