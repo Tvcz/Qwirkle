@@ -35,16 +35,16 @@ const DEFAULT_OBSERVE = false;
 export const DEFAULT_REFEREE_CONFIG: RefereeConfig = {
   state0: DEFAULT_STATE,
   quiet: DEFAULT_QUIET,
-  configS: DEFAULT_REFEREE_STATE_CONFIG,
-  perTurn: DEFAULT_PER_TURN,
+  'config-s': DEFAULT_REFEREE_STATE_CONFIG,
+  'per-turn': DEFAULT_PER_TURN,
   observe: DEFAULT_OBSERVE
 };
 
 export type RefereeConfig = {
   state0: JState;
   quiet: boolean;
-  configS: RefereeStateConfig;
-  perTurn: number;
+  'config-s': RefereeStateConfig;
+  'per-turn': number;
   observe: boolean;
 };
 
@@ -63,8 +63,8 @@ export function generateRefereeConfig(
   return {
     state0,
     quiet,
-    configS,
-    perTurn,
+    'config-s': configS,
+    'per-turn': perTurn,
     observe
   };
 }

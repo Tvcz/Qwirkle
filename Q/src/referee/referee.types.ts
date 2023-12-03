@@ -20,7 +20,7 @@ export type RefereeFunction<T extends QTile> = (
   observers: Observer<T>[],
   ruleBook: QRuleBook<T>,
   existingGameState?: QGameState<T>,
-  perTurnTimeoutMS?: number
+  perTurnTimeoutMs?: number
 ) => Promise<GameResult>;
 
 /**

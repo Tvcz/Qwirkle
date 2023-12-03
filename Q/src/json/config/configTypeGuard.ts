@@ -65,7 +65,8 @@ export function isRefereeConfig(obj: unknown): obj is RefereeConfig {
   }
   const containsState0 = 'state0' in obj && isJState(obj.state0);
   const containsQuiet = 'quiet' in obj && typeof obj.quiet === 'boolean';
-  const containsConfigS = 'configS' in obj && isRefereeStateConfig(obj.configS);
+  const containsConfigS =
+    'config-s' in obj && isRefereeStateConfig(obj['config-s']);
   const containsPerTurn = hasPerTurn(obj);
   const containsObserve = 'observe' in obj && typeof obj.observe === 'boolean';
   const containsFiveKeys = Object.keys(obj).length === 5;
@@ -79,12 +80,12 @@ export function isRefereeConfig(obj: unknown): obj is RefereeConfig {
   );
 }
 
-function hasPerTurn(obj: object): obj is { perTurn: number } {
+function hasPerTurn(obj: object): obj is { 'per-turn': number } {
   return (
-    'perTurn' in obj &&
-    typeof obj.perTurn === 'number' &&
-    obj.perTurn >= 0 &&
-    obj.perTurn <= 6
+    'per-turn' in obj &&
+    typeof obj['per-turn'] === 'number' &&
+    obj['per-turn'] >= 0 &&
+    obj['per-turn'] <= 6
   );
 }
 
@@ -119,8 +120,17 @@ export function isServerConfig(obj: unknown): obj is ServerConfig {
   const containsServerWait = hasServerWait(obj);
   const containsWaitForSignup = hasWaitForSignup(obj);
   const containsQuiet = 'quiet' in obj && typeof obj.quiet === 'boolean';
-  const containsRefSpec = 'refSpec' in obj && isRefereeConfig(obj.refSpec);
+  const containsRefSpec = 'ref-spec' in obj && isRefereeConfig(obj['ref-spec']);
   const containsSixKeys = Object.keys(obj).length === 6;
+  console.log(
+    containsPort,
+    containsServerTries,
+    containsServerWait,
+    containsWaitForSignup,
+    containsQuiet,
+    containsRefSpec,
+    containsSixKeys
+  );
   return (
     containsPort &&
     containsServerTries &&
@@ -132,29 +142,29 @@ export function isServerConfig(obj: unknown): obj is ServerConfig {
   );
 }
 
-function hasServerTries(obj: object): obj is { serverTries: number } {
+function hasServerTries(obj: object): obj is { 'server-tries': number } {
   return (
-    'serverTries' in obj &&
-    typeof obj.serverTries === 'number' &&
-    obj.serverTries >= 0 &&
-    obj.serverTries <= 9
+    'server-tries' in obj &&
+    typeof obj['server-tries'] === 'number' &&
+    obj['server-tries'] >= 0 &&
+    obj['server-tries'] <= 9
   );
 }
 
-function hasServerWait(obj: object): obj is { serverWait: number } {
+function hasServerWait(obj: object): obj is { 'server-wait': number } {
   return (
-    'serverWait' in obj &&
-    typeof obj.serverWait === 'number' &&
-    obj.serverWait >= 0 &&
-    obj.serverWait <= 29
+    'server-wait' in obj &&
+    typeof obj['server-wait'] === 'number' &&
+    obj['server-wait'] >= 0 &&
+    obj['server-wait'] <= 29
   );
 }
 
-function hasWaitForSignup(obj: object): obj is { waitForSignup: number } {
+function hasWaitForSignup(obj: object): obj is { 'wait-for-signup': number } {
   return (
-    'waitForSignup' in obj &&
-    typeof obj.waitForSignup === 'number' &&
-    obj.waitForSignup >= 0 &&
-    obj.waitForSignup <= 9
+    'wait-for-signup' in obj &&
+    typeof obj['wait-for-signup'] === 'number' &&
+    obj['wait-for-signup'] >= 0 &&
+    obj['wait-for-signup'] <= 9
   );
 }
