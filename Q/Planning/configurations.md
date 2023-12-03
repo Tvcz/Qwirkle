@@ -1,6 +1,6 @@
 ### Changes made to allow for configurable client and server startups
 - Created a `ConfiguredRulebook` class that takes in the end of game and Q
-  bonuses as parameters rather than using constant defaults. 
+  bonuses as parameters rather than using constant defaults (`ruleBook.ts`).
 - Created types for the Client, Server, and Referee configs (`clientConfig.ts`, 
   `serverConfig.ts`, `refereeConfig.ts`).
   - Created typeguards to handle converting input json objects to Typescript
