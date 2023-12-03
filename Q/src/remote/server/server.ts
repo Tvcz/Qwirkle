@@ -97,12 +97,11 @@ function waitForAdditionalPlayers(
 ): Promise<boolean> {
   !config.quiet ?? console.log('waiting for additional players');
   const serverWaitMs = toMs(config['server-wait']);
-  let intervalId: NodeJS.Timeout;
 
   return new Promise<boolean>((resolve) => {
     const start = Date.now();
     const checkIntervalMs = 200; // check every 200ms
-    intervalId = setInterval(() => {
+    const intervalId = setInterval(() => {
       if (players.length >= SERVER_MAX_PLAYERS) {
         clearInterval(intervalId);
         resolve(true);
