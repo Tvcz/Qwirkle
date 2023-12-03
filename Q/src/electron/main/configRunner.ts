@@ -61,6 +61,7 @@ function processInput(port: number, isServer: boolean) {
  */
 function runServerGame() {
   process.stdin.on('end', async () => {
+    console.log('running server game');
     if (!inputServerConfig) {
       throw new Error(
         'invalid JSON input, improperly formatted server config defined'
@@ -71,7 +72,7 @@ function runServerGame() {
 
     process.stdout.write(JSON.stringify(gameResult));
 
-    if (!inputServerConfig?.refSpec.observe) {
+    if (inputServerConfig && !inputServerConfig['ref-spec'].observe) {
       process.exit();
     }
   });
