@@ -1,0 +1,194 @@
+{
+  "port": 7651,
+  "server-tries": 2,
+  "server-wait": 29,
+  "wait-for-signup": 6,
+  "quiet": true,
+  "ref-spec": {
+    "state0": {
+      "map": [
+        [
+          0,
+          [
+            0,
+            {
+              "color": "blue",
+              "shape": "star"
+            }
+          ]
+        ]
+      ],
+      "tile*": [
+        {
+          "color": "green",
+          "shape": "clover"
+        },
+        {
+          "color": "green",
+          "shape": "clover"
+        },
+        {
+          "color": "red",
+          "shape": "square"
+        },
+        {
+          "color": "purple",
+          "shape": "square"
+        },
+        {
+          "color": "orange",
+          "shape": "8star"
+        },
+        {
+          "color": "green",
+          "shape": "star"
+        },
+        {
+          "color": "blue",
+          "shape": "star"
+        },
+        {
+          "color": "blue",
+          "shape": "8star"
+        },
+        {
+          "color": "orange",
+          "shape": "diamond"
+        },
+        {
+          "color": "green",
+          "shape": "clover"
+        }
+      ],
+      "players": [
+        {
+          "score": 0,
+          "name": "A",
+          "tile*": [
+            {
+              "color": "purple",
+              "shape": "8star"
+            },
+            {
+              "color": "orange",
+              "shape": "circle"
+            },
+            {
+              "color": "blue",
+              "shape": "diamond"
+            },
+            {
+              "color": "yellow",
+              "shape": "circle"
+            },
+            {
+              "color": "red",
+              "shape": "8star"
+            },
+            {
+              "color": "green",
+              "shape": "star"
+            }
+          ]
+        },
+        {
+          "score": 0,
+          "name": "B",
+          "tile*": [
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "clover"
+            },
+            {
+              "color": "yellow",
+              "shape": "circle"
+            },
+            {
+              "color": "orange",
+              "shape": "square"
+            },
+            {
+              "color": "red",
+              "shape": "square"
+            }
+          ]
+        },
+        {
+          "score": 0,
+          "name": "C",
+          "tile*": [
+            {
+              "color": "red",
+              "shape": "square"
+            },
+            {
+              "color": "purple",
+              "shape": "square"
+            },
+            {
+              "color": "green",
+              "shape": "clover"
+            },
+            {
+              "color": "blue",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "star"
+            },
+            {
+              "color": "blue",
+              "shape": "8star"
+            }
+          ]
+        },
+        {
+          "score": 0,
+          "name": "D",
+          "tile*": [
+            {
+              "color": "red",
+              "shape": "circle"
+            },
+            {
+              "color": "blue",
+              "shape": "star"
+            },
+            {
+              "color": "green",
+              "shape": "circle"
+            },
+            {
+              "color": "red",
+              "shape": "diamond"
+            },
+            {
+              "color": "green",
+              "shape": "square"
+            },
+            {
+              "color": "orange",
+              "shape": "clover"
+            }
+          ]
+        }
+      ]
+    },
+    "quiet": true,
+    "config-s": {
+      "qbo": 8,
+      "fbo": 4
+    },
+    "per-turn": 5,
+    "observe": false
+  }
+}

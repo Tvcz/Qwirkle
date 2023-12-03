@@ -1,0 +1,242 @@
+{
+  "port": 7653,
+  "server-tries": 2,
+  "server-wait": 29,
+  "wait-for-signup": 6,
+  "quiet": true,
+  "ref-spec": {
+    "state0": {
+      "map": [
+        [
+          0,
+          [
+            0,
+            {
+              "color": "blue",
+              "shape": "star"
+            }
+          ]
+        ]
+      ],
+      "tile*": [
+        {
+          "color": "green",
+          "shape": "clover"
+        },
+        {
+          "color": "green",
+          "shape": "clover"
+        },
+        {
+          "color": "red",
+          "shape": "square"
+        },
+        {
+          "color": "purple",
+          "shape": "square"
+        },
+        {
+          "color": "orange",
+          "shape": "8star"
+        },
+        {
+          "color": "green",
+          "shape": "star"
+        },
+        {
+          "color": "blue",
+          "shape": "star"
+        },
+        {
+          "color": "blue",
+          "shape": "8star"
+        },
+        {
+          "color": "orange",
+          "shape": "diamond"
+        },
+        {
+          "color": "green",
+          "shape": "clover"
+        },
+        {
+          "color": "purple",
+          "shape": "8star"
+        },
+        {
+          "color": "orange",
+          "shape": "circle"
+        },
+        {
+          "color": "blue",
+          "shape": "diamond"
+        },
+        {
+          "color": "yellow",
+          "shape": "circle"
+        },
+        {
+          "color": "red",
+          "shape": "8star"
+        },
+        {
+          "color": "green",
+          "shape": "star"
+        },
+        {
+          "color": "purple",
+          "shape": "circle"
+        },
+        {
+          "color": "purple",
+          "shape": "circle"
+        },
+        {
+          "color": "purple",
+          "shape": "clover"
+        },
+        {
+          "color": "yellow",
+          "shape": "circle"
+        },
+        {
+          "color": "orange",
+          "shape": "square"
+        },
+        {
+          "color": "red",
+          "shape": "square"
+        }
+      ],
+      "players": [
+        {
+          "score": 0,
+          "name": "playerOne",
+          "tile*": [
+            {
+              "color": "purple",
+              "shape": "8star"
+            },
+            {
+              "color": "orange",
+              "shape": "circle"
+            },
+            {
+              "color": "blue",
+              "shape": "diamond"
+            },
+            {
+              "color": "yellow",
+              "shape": "circle"
+            },
+            {
+              "color": "red",
+              "shape": "8star"
+            },
+            {
+              "color": "green",
+              "shape": "star"
+            }
+          ]
+        },
+        {
+          "score": 0,
+          "name": "playerTwo",
+          "tile*": [
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "clover"
+            },
+            {
+              "color": "yellow",
+              "shape": "circle"
+            },
+            {
+              "color": "orange",
+              "shape": "square"
+            },
+            {
+              "color": "red",
+              "shape": "square"
+            }
+          ]
+        },
+        {
+          "score": 0,
+          "name": "playerThree",
+          "tile*": [
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "clover"
+            },
+            {
+              "color": "yellow",
+              "shape": "circle"
+            },
+            {
+              "color": "orange",
+              "shape": "square"
+            },
+            {
+              "color": "red",
+              "shape": "square"
+            }
+          ]
+        },
+        {
+          "score": 0,
+          "name": "playerFour",
+          "tile*": [
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "circle"
+            },
+            {
+              "color": "purple",
+              "shape": "clover"
+            },
+            {
+              "color": "yellow",
+              "shape": "circle"
+            },
+            {
+              "color": "orange",
+              "shape": "square"
+            },
+            {
+              "color": "red",
+              "shape": "square"
+            }
+          ]
+        }
+      ]
+    },
+    "quiet": true,
+    "config-s": {
+      "qbo": 8,
+      "fbo": 4
+    },
+    "per-turn": 5,
+    "observe": false
+  }
+}

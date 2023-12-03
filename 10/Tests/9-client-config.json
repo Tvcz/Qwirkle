@@ -1,0 +1,26 @@
+{
+  "port": 7659,
+  "host": "127.0.0.1",
+  "wait": 2,
+  "quiet": true,
+  "players": [
+    [
+      "C",
+      "ldasg",
+      "take-turn",
+      2
+    ],
+    [
+      "A",
+      "dag",
+      "take-turn",
+      3
+    ],
+    [
+      "D",
+      "dag",
+      "take-turn",
+      6
+    ]
+  ]
+}
