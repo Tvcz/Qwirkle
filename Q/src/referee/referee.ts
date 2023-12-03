@@ -87,12 +87,12 @@ export const BaseReferee: RefereeFunction<ShapeColorTile> = async (
   observers,
   ruleBook,
   existingGameState,
-  perTurnTimeoutMS = REFEREE_PLAYER_TIMEOUT_MS
+  perTurnTimeoutMs = REFEREE_PLAYER_TIMEOUT_MS
 ) => {
   const playersCopy = [...players];
 
   const safePlayers = playersCopy.map(
-    (player) => new SafePlayer(player, perTurnTimeoutMS)
+    (player) => new SafePlayer(player, perTurnTimeoutMs)
   );
 
   const gameState = await (existingGameState ?? setUpGame(safePlayers));
