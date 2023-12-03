@@ -74,12 +74,13 @@ export class TCPPlayer implements Player<ShapeColorTile> {
   ): Promise<void> {
     const setUpArgs = this.buildSetUpArgs(s, st);
     const parsedRes = await this.sendMessageAndGetParsedResponse(
-      'setUp',
+      'setup',
       setUpArgs
     );
-    this.validateResponse(parsedRes, isSetUpResponse, 'setUp');
+    this.validateResponse(parsedRes, isSetUpResponse, 'setup');
   }
 
+  // INVARIANT: the name of the player is cached before this method is called
   private buildSetUpArgs(
     s: RelevantPlayerInfo<ShapeColorTile>,
     st: ShapeColorTile[]
@@ -92,13 +93,13 @@ export class TCPPlayer implements Player<ShapeColorTile> {
   ): Promise<TurnAction<ShapeColorTile>> {
     const takeTurnArgs = this.buildTakeTurnArgs(s);
     const parsedRes = await this.sendMessageAndGetParsedResponse(
-      'takeTurn',
+      'take-turn',
       takeTurnArgs
     );
     const validTakeTurn = this.validateResponse(
       parsedRes,
       isTakeTurnResponse,
-      'takeTurn'
+      'take-turn'
     );
     return toTurnAction(validTakeTurn);
   }
@@ -110,10 +111,10 @@ export class TCPPlayer implements Player<ShapeColorTile> {
   async newTiles(st: ShapeColorTile[]): Promise<void> {
     const newTilesArgs = this.buildNewTilesArgs(st);
     const parsedRes = await this.sendMessageAndGetParsedResponse(
-      'newTiles',
+      'new-tiles',
       newTilesArgs
     );
-    this.validateResponse(parsedRes, isNewTilesResponse, 'newTiles');
+    this.validateResponse(parsedRes, isNewTilesResponse, 'new-tiles');
   }
 
   private buildNewTilesArgs(st: ShapeColorTile[]): [JTile[]] {

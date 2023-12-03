@@ -7,7 +7,7 @@ describe('tests for TCPConnection', () => {
   let clientSocket: Socket;
 
   beforeEach(() => {
-    const PORT = 3333;
+    const PORT = 5555;
     server = createServer();
     server.listen(PORT);
     clientSocket = createConnection({ port: PORT });
