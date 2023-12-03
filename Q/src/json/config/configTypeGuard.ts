@@ -122,15 +122,6 @@ export function isServerConfig(obj: unknown): obj is ServerConfig {
   const containsQuiet = 'quiet' in obj && typeof obj.quiet === 'boolean';
   const containsRefSpec = 'ref-spec' in obj && isRefereeConfig(obj['ref-spec']);
   const containsSixKeys = Object.keys(obj).length === 6;
-  console.log(
-    containsPort,
-    containsServerTries,
-    containsServerWait,
-    containsWaitForSignup,
-    containsQuiet,
-    containsRefSpec,
-    containsSixKeys
-  );
   return (
     containsPort &&
     containsServerTries &&

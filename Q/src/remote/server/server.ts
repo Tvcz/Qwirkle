@@ -39,7 +39,7 @@ import { toMs } from '../../utils';
  * @returns the result of the game
  */
 export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
-  console.log('running TCP game in func');
+  !config.quiet ?? console.log('running TCP game in func');
   const players: Player<ShapeColorTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
@@ -49,15 +49,16 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
   );
 
   server.on('connection', (socket) => {
-    console.log('received connection on the server');
+    !config.quiet ?? console.log('received connection on the server');
     const newConnection = new TCPConnection(socket);
     connections.push(newConnection);
     signUp(new TCPPlayer(newConnection, maxResponseWait), players, config);
   });
 
-  console.log('starting server');
+  !config.quiet ?? console.log('starting server');
   server.listen(config.port);
-  console.log(`server started listening on port ${config.port}`);
+  !config.quiet ??
+    console.log(`server started listening on port ${config.port}`);
 
   const enoughPlayersToRun = await new Promise<boolean>((resolve) => {
     server.once('connection', () => {
@@ -68,7 +69,8 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
     const playerNames = await Promise.all(players.map((p) => p.name()));
-    console.log('running game with players ' + playerNames.join(', '));
+    !config.quiet ??
+      console.log('running game with players ' + playerNames.join(', '));
     gameResult = await startGame(players, config['ref-spec']);
   } else {
     informPlayersOfNoGame(players);
@@ -93,7 +95,7 @@ function waitForAdditionalPlayers(
   config: ServerConfig,
   attempt = 1
 ): Promise<boolean> {
-  console.log('waiting for additional players');
+  !config.quiet ?? console.log('waiting for additional players');
   const serverWaitMs = toMs(config['server-wait']);
   let intervalId: NodeJS.Timeout;
 
@@ -109,9 +111,10 @@ function waitForAdditionalPlayers(
           clearInterval(intervalId);
           resolve(true);
         } else if (attempt < config['server-tries']) {
-          console.log(
-            `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
-          );
+          !config.quiet ??
+            console.log(
+              `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
+            );
           clearInterval(intervalId);
           waitForAdditionalPlayers(players, config, attempt + 1).then(resolve);
         } else {
@@ -186,10 +189,10 @@ async function signUp(
   config: ServerConfig
 ): Promise<void> {
   const waitForSignupMs = toMs(config['wait-for-signup']);
-  console.log(`waiting for signup for ${waitForSignupMs}ms`);
+  !config.quiet ?? console.log(`waiting for signup for ${waitForSignupMs}ms`);
   await Promise.race([
     player.name().then((name) => {
-      console.log(`received signup from ${name}`);
+      !config.quiet ?? console.log(`received signup from ${name}`);
       players.push(player);
     }),
     new Promise((_, reject) => {
@@ -198,6 +201,6 @@ async function signUp(
       }, waitForSignupMs);
     })
   ]).catch(() => {
-    console.log('signup timed out');
+    !config.quiet ?? console.log('signup timed out');
   });
 }
