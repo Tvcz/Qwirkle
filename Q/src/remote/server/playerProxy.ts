@@ -77,10 +77,6 @@ export class TCPPlayer implements Player<ShapeColorTile> {
       'setup',
       setUpArgs
     );
-    // console.log(
-    //   `setup response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
-    // );
-    // console.log(`is valid setup response: ${isSetUpResponse(parsedRes)}`);
     this.validateResponse(parsedRes, isSetUpResponse, 'setup');
   }
 
@@ -105,7 +101,6 @@ export class TCPPlayer implements Player<ShapeColorTile> {
       isTakeTurnResponse,
       'take-turn'
     );
-    console.log(`turn action: ${JSON.stringify(toTurnAction(validTakeTurn))}`);
     return toTurnAction(validTakeTurn);
   }
 
@@ -194,9 +189,6 @@ export class TCPPlayer implements Player<ShapeColorTile> {
         } else if (start + this.maxResponseWait < Date.now()) {
           // stops waiting to avoid a hanging async process
           clearInterval(interval);
-          console.log(
-            `exceeded max wait for player proxy ${this.maxResponseWait}ms`
-          );
           resolve('');
         }
       }, TCP_PLAYER_BUFFER_INTERVAL_MS);
