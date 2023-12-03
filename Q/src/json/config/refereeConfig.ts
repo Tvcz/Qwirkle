@@ -59,7 +59,7 @@ export function generateRefereeConfig(
   configS = DEFAULT_REFEREE_STATE_CONFIG,
   perTurn = DEFAULT_PER_TURN,
   observe = DEFAULT_OBSERVE
-): object {
+): RefereeConfig {
   return {
     state0,
     quiet,
@@ -72,7 +72,7 @@ export function generateRefereeConfig(
 export function generateRefereeStateConfig(
   qbo = DEFAULT_QBO,
   fbo = DEFAULT_FBO
-): object {
+): RefereeStateConfig {
   return {
     qbo,
     fbo

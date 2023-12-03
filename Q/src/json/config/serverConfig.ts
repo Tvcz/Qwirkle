@@ -37,7 +37,7 @@ export function generateServerConfig(
   waitForSignup = WAIT_FOR_SIGNUP,
   quiet = QUIET,
   refSpec = DEFAULT_REFEREE_CONFIG
-): object {
+): ServerConfig {
   return {
     port,
     'server-tries': serverTries,
