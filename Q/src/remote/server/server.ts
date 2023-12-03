@@ -1,4 +1,4 @@
-import net from 'net';
+import * as net from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
