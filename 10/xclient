@@ -1,0 +1,2 @@
+#!/bin/sh
+(cd ../Q && npx ts-node ./src/electron/main/client.ts "$@")
