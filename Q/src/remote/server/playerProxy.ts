@@ -12,7 +12,7 @@ import {
 } from '../../json/messages/messagesTypeGuards';
 import { toJTile } from '../../json/serialize/jMap';
 import { toJPub } from '../../json/serialize/jPub';
-import { validateJSON } from '../../json/validator';
+import { isValidJSON, validateJSON } from '../../json/validator';
 import { Player } from '../../player/player';
 import { TurnAction } from '../../player/turnAction';
 import { toMs } from '../../utils';
@@ -77,10 +77,10 @@ export class TCPPlayer implements Player<ShapeColorTile> {
       'setup',
       setUpArgs
     );
-    console.log(
-      `setup response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
-    );
-    console.log(`is valid setup response: ${isSetUpResponse(parsedRes)}`);
+    // console.log(
+    //   `setup response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
+    // );
+    // console.log(`is valid setup response: ${isSetUpResponse(parsedRes)}`);
     this.validateResponse(parsedRes, isSetUpResponse, 'setup');
   }
 
@@ -100,12 +100,12 @@ export class TCPPlayer implements Player<ShapeColorTile> {
       'take-turn',
       takeTurnArgs
     );
-    console.log(
-      `take turn response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
-    );
-    console.log(
-      `is valid take turn response: ${isTakeTurnResponse(parsedRes)}`
-    );
+    // console.log(
+    //   `take turn response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
+    // );
+    // console.log(
+    //   `is valid take turn response: ${isTakeTurnResponse(parsedRes)}`
+    // );
     const validTakeTurn = this.validateResponse(
       parsedRes,
       isTakeTurnResponse,
@@ -169,6 +169,7 @@ export class TCPPlayer implements Player<ShapeColorTile> {
   ): Promise<unknown> {
     const res = this.awaitResponse();
     this.connection.send(this.buildMessage(methodName, args));
+    console.log(`response from ${this.cachedName}: ${await res}`);
     return validateJSON(await res);
   }
 
@@ -192,13 +193,16 @@ export class TCPPlayer implements Player<ShapeColorTile> {
     const start = Date.now();
     return new Promise((resolve) => {
       const interval = setInterval(() => {
-        if (this.buffer !== '') {
+        if (this.buffer !== '' && isValidJSON(this.buffer)) {
           clearInterval(interval);
           resolve(this.buffer);
           this.buffer = '';
         } else if (start + this.maxResponseWait > Date.now()) {
           // stops waiting to avoid a hanging async process
           clearInterval(interval);
+          console.log(
+            `exceeded max wait for player proxy ${this.maxResponseWait}ms`
+          );
           resolve('');
         }
       }, TCP_PLAYER_BUFFER_INTERVAL_MS);

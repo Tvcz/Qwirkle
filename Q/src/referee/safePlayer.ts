@@ -33,6 +33,7 @@ export class SafePlayer<T extends QTile> {
       ]);
       return { success: true, value: response };
     } catch (error) {
+      console.log(`${error}`);
       return new Promise((resolve) => resolve({ success: false }));
     }
   }
@@ -40,6 +41,7 @@ export class SafePlayer<T extends QTile> {
   private async timeoutPromise(ms: number): Promise<never> {
     return new Promise((_resolve, reject) => {
       setTimeout(() => {
+        console.log(`time out after ${ms}ms`);
         reject(new Error('Function timed out'));
       }, ms);
     });
