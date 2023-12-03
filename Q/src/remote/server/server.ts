@@ -4,7 +4,7 @@ import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
 import { ShapeColorTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';
-import { BaseRuleBook } from '../../game/rules/ruleBook';
+import { ConfigedRulebook } from '../../game/rules/ruleBook';
 import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
 import {
@@ -13,6 +13,8 @@ import {
 } from '../../json/config/serverConfig';
 import { BaseObserver, Observer } from '../../observer/observer';
 import { toQGameState } from '../../json/deserialize/qState';
+import { RefereeConfig } from '../../json/config/refereeConfig';
+import { toMs } from '../../utils';
 
 /**
  * Runs a game over TCP.
@@ -57,7 +59,7 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
 
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
-    gameResult = await startGame(players, config);
+    gameResult = await startGame(players, config.refSpec);
   } else {
     informPlayersOfNoGame(players);
   }
@@ -82,8 +84,9 @@ function waitForAdditionalPlayers(
   retryCount = 0
 ): boolean {
   const start = Date.now();
+  const serverWaitMs = toMs(config.serverWait);
   while (players.length < SERVER_MAX_PLAYERS) {
-    if (Date.now() >= start + config.serverWait) {
+    if (Date.now() >= start + serverWaitMs) {
       if (players.length >= SERVER_MIN_PLAYERS) {
         return true;
       } else if (retryCount < config.serverTries) {
@@ -126,18 +129,18 @@ function terminateConnections(connections: Connection[]) {
  */
 async function startGame(
   players: Player<ShapeColorTile>[],
-  config: ServerConfig
+  refereeConfig: RefereeConfig
 ): Promise<GameResult> {
-  const gameState = await toQGameState(config.refSpec.state0, players);
+  const gameState = await toQGameState(refereeConfig.state0, players);
   const observers: Observer<ShapeColorTile>[] = [];
-  if (config.refSpec.observe) {
+  if (refereeConfig.observe) {
     observers.push(new BaseObserver());
   }
-  const turnTimeMS = config.refSpec.perTurn;
+  const turnTimeMS = refereeConfig.perTurn;
   return await BaseReferee(
     players,
     observers,
-    new BaseRuleBook(),
+    new ConfigedRulebook(refereeConfig.configS.fbo, refereeConfig.configS.qbo),
     gameState,
     turnTimeMS
   );
@@ -155,10 +158,11 @@ async function signUp(
   players: Player<ShapeColorTile>[],
   config: ServerConfig
 ): Promise<void> {
+  const waitForSignupMs = toMs(config.waitForSignup);
   await Promise.race([
     player.name().then((_name) => players.push(player)),
     new Promise((_, reject) => {
-      setTimeout(reject, config.waitForSignup);
+      setTimeout(reject, waitForSignupMs);
     })
   ]);
 }

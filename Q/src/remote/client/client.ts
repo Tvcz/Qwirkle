@@ -1,9 +1,29 @@
 import { createConnection } from 'net';
 import { TCPConnection } from '../connection';
 import { Player } from '../../player/player';
-import { BaseTile } from '../../game/map/tile';
+import { ShapeColorTile } from '../../game/map/tile';
 import { refereeProxy } from './refereeProxy';
 import { DEFAULT_CONNECTION_OPTIONS } from '../../constants';
+import { ClientConfig } from '../../json/config/clientConfig';
+import { toQPlayers } from '../../json/deserialize/qActor';
+import { BaseRuleBook } from '../../game/rules/ruleBook';
+import { toMs } from '../../utils';
+
+export function runClient(config: ClientConfig) {
+  const players = toQPlayers(config.players, new BaseRuleBook());
+  const connectionOptions = {
+    host: config.host,
+    port: config.port
+  };
+  players.forEach((player, index) => {
+    setTimeout(
+      () => {
+        joinGame(player, connectionOptions);
+      },
+      toMs(config.wait * index)
+    );
+  });
+}
 
 /**
  * Joins a game hosted at the specified host and port.
@@ -12,7 +32,7 @@ import { DEFAULT_CONNECTION_OPTIONS } from '../../constants';
  * @param connectionOptions The host and port to connect to.
  */
 export function joinGame(
-  player: Player<BaseTile>,
+  player: Player<ShapeColorTile>,
   connectionOptions = DEFAULT_CONNECTION_OPTIONS
 ) {
   // send initial message to server to join game
