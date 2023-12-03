@@ -90,7 +90,6 @@ function runGame(observers: BaseObserver<BaseTile>[]) {
       rulebook,
       qGameState
     );
-    winners.sort();
 
     process.stdout.write(JSON.stringify([winners, eliminated]));
 
