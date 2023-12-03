@@ -100,17 +100,12 @@ export class TCPPlayer implements Player<ShapeColorTile> {
       'take-turn',
       takeTurnArgs
     );
-    // console.log(
-    //   `take turn response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
-    // );
-    // console.log(
-    //   `is valid take turn response: ${isTakeTurnResponse(parsedRes)}`
-    // );
     const validTakeTurn = this.validateResponse(
       parsedRes,
       isTakeTurnResponse,
       'take-turn'
     );
+    console.log(`turn action: ${JSON.stringify(toTurnAction(validTakeTurn))}`);
     return toTurnAction(validTakeTurn);
   }
 
@@ -169,7 +164,6 @@ export class TCPPlayer implements Player<ShapeColorTile> {
   ): Promise<unknown> {
     const res = this.awaitResponse();
     this.connection.send(this.buildMessage(methodName, args));
-    console.log(`response from ${this.cachedName}: ${await res}`);
     return validateJSON(await res);
   }
 
