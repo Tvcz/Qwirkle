@@ -57,7 +57,7 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
 
   const enoughPlayersToRun = await new Promise<boolean>((resolve) => {
     server.once('connection', () => {
-      resolve(waitForAdditionalPlayers(players, config));
+      waitForAdditionalPlayers(players, config).then(resolve);
     });
   });
 
@@ -86,25 +86,35 @@ function waitForAdditionalPlayers(
   players: Player<ShapeColorTile>[],
   config: ServerConfig,
   attempt = 1
-): boolean {
+): Promise<boolean> {
   console.log('waiting for additional players');
-  const start = Date.now();
   const serverWaitMs = toMs(config['server-wait']);
-  while (players.length < SERVER_MAX_PLAYERS) {
-    if (Date.now() >= start + serverWaitMs) {
-      if (players.length >= SERVER_MIN_PLAYERS) {
-        return true;
-      } else if (attempt < config['server-tries']) {
-        console.log(
-          `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
-        );
-        waitForAdditionalPlayers(players, config, attempt + 1);
-      } else {
-        return false;
+  let intervalId: NodeJS.Timeout;
+
+  return new Promise<boolean>((resolve) => {
+    const start = Date.now();
+    const checkIntervalMs = 200; // check every 200ms
+    intervalId = setInterval(() => {
+      if (players.length >= SERVER_MAX_PLAYERS) {
+        clearInterval(intervalId);
+        resolve(true);
+      } else if (Date.now() >= start + serverWaitMs) {
+        if (players.length >= SERVER_MIN_PLAYERS) {
+          clearInterval(intervalId);
+          resolve(true);
+        } else if (attempt < config['server-tries']) {
+          console.log(
+            `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
+          );
+          clearInterval(intervalId);
+          waitForAdditionalPlayers(players, config, attempt + 1).then(resolve);
+        } else {
+          clearInterval(intervalId);
+          resolve(false);
+        }
       }
-    }
-  }
-  return true;
+    }, checkIntervalMs);
+  });
 }
 
 /**
