@@ -43,12 +43,16 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
   const players: Player<ShapeColorTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
+  const maxResponseWait = Math.max(
+    config['wait-for-signup'],
+    config['ref-spec']['per-turn']
+  );
 
   server.on('connection', (socket) => {
     console.log('received connection on the server');
     const newConnection = new TCPConnection(socket);
     connections.push(newConnection);
-    signUp(new TCPPlayer(newConnection), players, config);
+    signUp(new TCPPlayer(newConnection, maxResponseWait), players, config);
   });
 
   console.log('starting server');
@@ -63,6 +67,8 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
 
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
+    const playerNames = await Promise.all(players.map((p) => p.name()));
+    console.log('running game with players ' + playerNames.join(', '));
     gameResult = await startGame(players, config['ref-spec']);
   } else {
     informPlayersOfNoGame(players);
@@ -188,9 +194,10 @@ async function signUp(
     }),
     new Promise((_, reject) => {
       setTimeout(() => {
-        console.log('signup timed out');
         reject();
       }, waitForSignupMs);
     })
-  ]);
+  ]).catch(() => {
+    console.log('signup timed out');
+  });
 }

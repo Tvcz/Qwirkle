@@ -1,7 +1,4 @@
-import {
-  REFEREE_PLAYER_TIMEOUT_MS,
-  TCP_PLAYER_BUFFER_INTERVAL_MS
-} from '../../constants';
+import { TCP_PLAYER_BUFFER_INTERVAL_MS } from '../../constants';
 import { ShapeColorTile } from '../../game/map/tile';
 import { RelevantPlayerInfo } from '../../game/types/gameState.types';
 import { JPub, JTile } from '../../json/data/data.types';
@@ -18,6 +15,7 @@ import { toJPub } from '../../json/serialize/jPub';
 import { validateJSON } from '../../json/validator';
 import { Player } from '../../player/player';
 import { TurnAction } from '../../player/turnAction';
+import { toMs } from '../../utils';
 import { Connection } from '../connection';
 
 /**
@@ -33,6 +31,7 @@ import { Connection } from '../connection';
  */
 export class TCPPlayer implements Player<ShapeColorTile> {
   private readonly connection: Connection;
+  private readonly maxResponseWait: number;
   private cachedName: string = '';
   private buffer: string = '';
 
@@ -41,7 +40,8 @@ export class TCPPlayer implements Player<ShapeColorTile> {
    * @param connection the connection with the client player
    * @param nameTimeout the time to wait for a response
    */
-  constructor(connection: Connection) {
+  constructor(connection: Connection, maxResponseWait: number) {
+    this.maxResponseWait = toMs(maxResponseWait);
     this.connection = connection;
     this.connection.onResponse((message: string) => {
       this.buffer += message;
@@ -186,7 +186,7 @@ export class TCPPlayer implements Player<ShapeColorTile> {
           clearInterval(interval);
           resolve(this.buffer);
           this.buffer = '';
-        } else if (start + REFEREE_PLAYER_TIMEOUT_MS > Date.now()) {
+        } else if (start + this.maxResponseWait > Date.now()) {
           // stops waiting to avoid a hanging async process
           clearInterval(interval);
           resolve('');

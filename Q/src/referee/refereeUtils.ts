@@ -125,6 +125,7 @@ const createPlayerStates = (
 
         const playerName = await player.name();
         if (!playerName.success || playerName.value === undefined) {
+          console.log('Failed to create a player state');
           return undefined;
         }
 
@@ -157,6 +158,7 @@ export const setUpPlayers = async (gameState: QGameState<ShapeColorTile>) => {
       tiles
     );
     if (setUpResult.success === false) {
+      console.log(`Player ${name} failed to set up`);
       gameState.eliminatePlayer(name);
     }
   }
