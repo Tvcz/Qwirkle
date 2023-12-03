@@ -72,7 +72,7 @@ function runServerGame() {
 
     process.stdout.write(JSON.stringify([winners, eliminated]));
 
-    if (inputServerConfig && !inputServerConfig['ref-spec'].observe) {
+    if (!inputServerConfig['ref-spec'].observe) {
       process.exit();
     }
   });
