@@ -1,5 +1,5 @@
 import { REFEREE_PLAYER_TIMEOUT_MS } from '../constants';
-import { BaseTile } from '../game/map/tile';
+import { ShapeColorTile } from '../game/map/tile';
 import { RefereeFunction } from './referee.types';
 import { endGame, runGame, setUpGame, setUpPlayers } from './refereeUtils';
 import { SafePlayer } from './safePlayer';
@@ -51,7 +51,7 @@ import { SafePlayer } from './safePlayer';
  * @param existingGameState optional QGameState type. When passed in, the referee resumes the game from that game state.
  * @returns GameResult type: pair of a list of the winners and a list of the eliminated players
  */
-export const BaseReferee: RefereeFunction<BaseTile> = async (
+export const BaseReferee: RefereeFunction<ShapeColorTile> = async (
   players,
   observers,
   ruleBook,

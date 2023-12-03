@@ -2,7 +2,7 @@ import {
   coordinateMustBeEmpty,
   coordinateMustShareASide
 } from '../rules/placementRules';
-import { type QTile, type BaseTile } from './tile';
+import { type QTile, ShapeColorTile } from './tile';
 import { Dictionary, Set } from 'typescript-collections';
 import Coordinate from './coordinate';
 import { Dimensions } from '../types/map.types';
@@ -181,8 +181,8 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
 /**
  * Class representing a map for the Q Game.
  */
-class BaseMap extends AbstractQMap<BaseTile> {
-  constructor(startingTiles: TilePlacement<BaseTile>[]) {
+class BaseMap extends AbstractQMap<ShapeColorTile> {
+  constructor(startingTiles: TilePlacement<ShapeColorTile>[]) {
     super(startingTiles);
   }
 }

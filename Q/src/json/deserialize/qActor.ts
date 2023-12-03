@@ -1,5 +1,12 @@
-import { BaseTile } from '../../../game/map/tile';
-import { QRuleBook } from '../../../game/rules/ruleBook';
+import { ShapeColorTile } from '../../game/map/tile';
+import { QRuleBook } from '../../game/rules/ruleBook';
+import { JActorsB, JCheat, JExn, JStrategy } from '../data/data.types';
+import {
+  isCheatJActor,
+  isExceptionJActor,
+  isLoopJActor,
+  isSimpleJActor
+} from '../data/dataTypeGuards';
 import {
   Player,
   BasePlayer,
@@ -11,7 +18,7 @@ import {
   TurnExceptionPlayer,
   NewTilesExceptionPlayer,
   WinExceptionPlayer
-} from '../../../player/player';
+} from '../../player/player';
 import {
   Strategy,
   DagStrategy,
@@ -21,19 +28,12 @@ import {
   NotALineStrategy,
   BadAskForTilesStrategy,
   NoFitStrategy
-} from '../../../player/strategy';
-import {
-  isSimpleJActor,
-  isExceptionJActor,
-  isCheatJActor,
-  isDelayedInfiniteLoopJActor
-} from '../parseJson/parseActor';
-import { JActor, JStrategy, JExn, JCheat } from '../types';
+} from '../../player/strategy';
 
 export const toQPlayers = (
-  jActors: JActor[],
-  rulebook: QRuleBook<BaseTile>
-): Player<BaseTile>[] => {
+  jActors: JActorsB,
+  rulebook: QRuleBook<ShapeColorTile>
+): Player<ShapeColorTile>[] => {
   return jActors.map((jActor) => {
     const name = jActor[0];
     const jStrategy = jActor[1];
@@ -51,7 +51,7 @@ export const toQPlayers = (
       const cheatStrategy = getCheatStrategy(jCheat, qStrategy);
       return new BasePlayer(name, cheatStrategy, rulebook);
     }
-    if (isDelayedInfiniteLoopJActor(jActor)) {
+    if (isLoopJActor(jActor)) {
       const jExn = jActor[2];
       const count = jActor[3];
       return getInfiniteLoopPlayer(name, qStrategy, rulebook, jExn, count);
@@ -62,8 +62,8 @@ export const toQPlayers = (
 
 const getCheatStrategy = (
   jCheat: JCheat,
-  qStrategy: Strategy<BaseTile>
-): Strategy<BaseTile> => {
+  qStrategy: Strategy<ShapeColorTile>
+): Strategy<ShapeColorTile> => {
   switch (jCheat) {
     case 'non-adjacent-coordinate':
       return new NonAdjacentCoordinateStrategy();
@@ -78,7 +78,9 @@ const getCheatStrategy = (
   }
 };
 
-const jStrategyToQStrategy = (jStrategy: JStrategy): Strategy<BaseTile> => {
+const jStrategyToQStrategy = (
+  jStrategy: JStrategy
+): Strategy<ShapeColorTile> => {
   switch (jStrategy) {
     case 'dag':
       return new DagStrategy();
@@ -89,10 +91,10 @@ const jStrategyToQStrategy = (jStrategy: JStrategy): Strategy<BaseTile> => {
 
 const getExceptionPlayer = (
   name: string,
-  strategy: Strategy<BaseTile>,
-  rulebook: QRuleBook<BaseTile>,
+  strategy: Strategy<ShapeColorTile>,
+  rulebook: QRuleBook<ShapeColorTile>,
   jExn: JExn
-): Player<BaseTile> => {
+): Player<ShapeColorTile> => {
   switch (jExn) {
     case 'setup':
       return new SetupExceptionPlayer(name, strategy, rulebook);
@@ -109,11 +111,11 @@ const getExceptionPlayer = (
 
 const getInfiniteLoopPlayer = (
   name: string,
-  strategy: Strategy<BaseTile>,
-  rulebook: QRuleBook<BaseTile>,
+  strategy: Strategy<ShapeColorTile>,
+  rulebook: QRuleBook<ShapeColorTile>,
   jExn: JExn,
   count: number
-): Player<BaseTile> => {
+): Player<ShapeColorTile> => {
   switch (jExn) {
     case 'setup':
       return new DelayedSetupTimeoutPlayer(name, strategy, rulebook, count);

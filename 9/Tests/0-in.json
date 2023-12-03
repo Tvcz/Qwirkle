@@ -56,6 +56,7 @@
     "players": [
         {
             "score": 0,
+            "name": "A",
             "tile*": [
                 {
                     "color": "green",
@@ -85,6 +86,7 @@
         },
         {
             "score": 0,
+            "name": "B",
             "tile*": [
                 {
                     "color": "green",
@@ -114,6 +116,7 @@
         },
         {
             "score": 0,
+            "name": "C",
             "tile*": [
                 {
                     "color": "orange",
@@ -143,6 +146,7 @@
         },
         {
             "score": 0,
+            "name": "D",
             "tile*": [
                 {
                     "color": "orange",
@@ -173,8 +177,28 @@
     ]
 }
 [
-    ["A", "dag", "setup", 2],
-    ["B", "ldasg", "setup", 2],
-    ["C", "ldasg", "setup", 2],
-    ["D", "dag", "setup", 2]
+    [
+        "A",
+        "dag",
+        "setup",
+        2
+    ],
+    [
+        "B",
+        "ldasg",
+        "setup",
+        2
+    ],
+    [
+        "C",
+        "ldasg",
+        "setup",
+        2
+    ],
+    [
+        "D",
+        "dag",
+        "setup",
+        2
+    ]
 ]

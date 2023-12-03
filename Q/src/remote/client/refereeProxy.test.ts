@@ -1,14 +1,16 @@
 import { Server, createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { BaseTurnAction } from '../../player/turnAction';
-import { BaseTile } from '../../game/map/tile';
+import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
 import { Player } from '../../player/player';
 import { refereeProxy } from './refereeProxy';
 import { RelevantPlayerInfo } from '../../game/types/gameState.types';
-import { mock } from 'node:test';
+import { toJPub } from '../../json/serialize/jPub';
+import { toJTile } from '../../json/serialize/jMap';
+import { toJChoice } from '../../json/serialize/jTurn';
 
-const mockPlayer: Player<BaseTile> = {
+const mockPlayer: Player<ShapeColorTile> = {
   name: jest.fn().mockResolvedValue('Mock Player'),
   setUp: jest.fn().mockResolvedValue(undefined),
   takeTurn: jest.fn(),
@@ -54,71 +56,66 @@ describe('tests for tcp referee proxy', () => {
   test('name method', (done) => {
     serverConnection.onResponse((data: string) => {
       const json = JSON.parse(data);
-      expect(json.method).toBe('name');
-      expect(json.result).toBe('Mock Player');
+      expect(json).toBe('Mock Player');
       expect(mockPlayer.name).toHaveBeenCalled();
       done();
     });
-    serverConnection.send('{"method": "name", "args": {}}');
+    serverConnection.send('["name", []]');
   });
 
   test('setUp method', (done) => {
-    const mapState = [
-      {
-        tile: new BaseTile('circle', 'red'),
-        coordinate: new Coordinate(0, 0)
-      }
-    ];
     const startingTiles = [new BaseTile('circle', 'blue')];
+    const pubState: RelevantPlayerInfo<ShapeColorTile> = {
+      playerTiles: startingTiles,
+      mapState: [
+        {
+          tile: new BaseTile('circle', 'red'),
+          coordinate: new Coordinate(0, 0)
+        }
+      ],
+      scoreboard: [{ name: '', score: 0 }],
+      remainingTilesCount: 0,
+      playersQueue: ['']
+    };
+    const jPubState = toJPub(pubState, '');
+    const jStartingTiles = startingTiles.map(toJTile);
     serverConnection.onResponse((data: string) => {
       const json = JSON.parse(data);
-      expect(json.method).toBe('setUp');
-      expect(json.result).toBe(0);
-      expect(mockPlayer.setUp).toHaveBeenCalledWith(mapState, startingTiles);
+      expect(json).toBe('void');
+      expect(mockPlayer.setUp).toHaveBeenCalledWith(pubState, startingTiles);
       done();
     });
     serverConnection.send(
-      `{"method": "setUp", "args": {"mapState": ${JSON.stringify(
-        mapState
-      )}, "startingTiles": ${JSON.stringify(startingTiles)}}}`
+      `["setup", ${JSON.stringify([jPubState, jStartingTiles])}]`
     );
   });
 
   test('takeTurn method', (done) => {
-    (mockPlayer.takeTurn as jest.Mock<any, any, any>).mockResolvedValue(
-      new BaseTurnAction('PLACE', [
-        {
-          tile: new BaseTile('circle', 'red'),
-          coordinate: new Coordinate(1, 1)
-        }
-      ])
-    );
     const turnAction = new BaseTurnAction('PLACE', [
       {
         tile: new BaseTile('circle', 'red'),
         coordinate: new Coordinate(1, 1)
       }
     ]);
-    const parsedTurnAction = JSON.parse(JSON.stringify(turnAction));
+    (mockPlayer.takeTurn as jest.Mock<any, any, any>).mockResolvedValue(
+      turnAction
+    );
+    const jTurnAction = toJChoice(turnAction);
     const pubInfo: RelevantPlayerInfo<BaseTile> = {
       playerTiles: [],
       mapState: [],
-      scoreboard: [],
+      scoreboard: [{ name: '', score: 0 }],
       remainingTilesCount: 0,
-      playersQueue: []
+      playersQueue: ['']
     };
+    const jPubInfo = toJPub(pubInfo, '');
     serverConnection.onResponse((data: string) => {
       const json = JSON.parse(data);
-      expect(json.method).toBe('takeTurn');
-      expect(json.result).toStrictEqual(parsedTurnAction);
+      expect(json).toStrictEqual(jTurnAction);
       expect(mockPlayer.takeTurn).toHaveBeenCalledWith(pubInfo);
       done();
     });
-    serverConnection.send(
-      `{"method": "takeTurn", "args": { "publicState": ${JSON.stringify(
-        pubInfo
-      )}}}`
-    );
+    serverConnection.send(`["take-turn", ${JSON.stringify([jPubInfo])}]`);
   });
 
   test('newTiles method', (done) => {
@@ -126,28 +123,23 @@ describe('tests for tcp referee proxy', () => {
       new BaseTile('circle', 'red'),
       new BaseTile('circle', 'purple')
     ];
+    const jNewTiles = newTiles.map(toJTile);
     serverConnection.onResponse((data: string) => {
       const json = JSON.parse(data);
-      expect(json.method).toBe('newTiles');
-      expect(json.result).toBe(0);
+      expect(json).toBe('void');
       expect(mockPlayer.newTiles).toHaveBeenCalledWith(newTiles);
       done();
     });
-    serverConnection.send(
-      `{"method": "newTiles", "args": {"newTiles": ${JSON.stringify(
-        newTiles
-      )}}}`
-    );
+    serverConnection.send(`["new-tiles", ${JSON.stringify([jNewTiles])}]`);
   });
 
   test('win method', (done) => {
     serverConnection.onResponse((data: string) => {
       const json = JSON.parse(data);
-      expect(json.method).toBe('win');
-      expect(json.result).toBe(0);
+      expect(json).toBe('void');
       expect(mockPlayer.win).toHaveBeenCalledWith(true);
       done();
     });
-    serverConnection.send('{"method": "win", "args": {"win": true}}');
+    serverConnection.send('["win", [true]]');
   });
 });

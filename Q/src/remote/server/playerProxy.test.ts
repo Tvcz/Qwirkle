@@ -2,16 +2,27 @@ import { Server } from 'http';
 import { createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
+import { BaseTile, ShapeColorTile } from '../../game/map/tile';
+import Coordinate from '../../game/map/coordinate';
+import { BaseTurnAction } from '../../player/turnAction';
+import { validateJSON } from '../../json/validator';
+import {
+  SetUpCall,
+  MethodCall,
+  NewTilesCall,
+  WinCall
+} from '../../json/messages/messages.types';
 import {
   isNameCall,
   isSetUpCall,
-  isTakeTurnCall,
-  validateJSON
-} from '../jsonValidator';
-import { BaseTile } from '../../game/map/tile';
-import Coordinate from '../../game/map/coordinate';
-import { MethodCall, SetUpCall } from '../types';
-import { BaseTurnAction } from '../../player/turnAction';
+  isTakeTurnCall
+} from '../../json/messages/messagesTypeGuards';
+import {
+  RelevantPlayerInfo,
+  Scoreboard
+} from '../../game/types/gameState.types';
+import { toJChoice } from '../../json/serialize/jTurn';
+import { toJPub } from '../../json/serialize/jPub';
 
 describe('tests for tcp player proxy', () => {
   let server: Server;
@@ -52,7 +63,7 @@ describe('tests for tcp player proxy', () => {
     clientConnection.onResponse((data: string) => {
       const json = validateJSON(data);
       expect(isNameCall(json)).toBe(true);
-      clientConnection.send('{"method": "name", "result": "myname"}');
+      clientConnection.send('"myname"');
     });
     const name = await player.name();
     expect(name).toBe('myname');
@@ -62,30 +73,31 @@ describe('tests for tcp player proxy', () => {
     clientConnection.onResponse((data: string) => {
       const json = validateJSON(data);
       expect(isNameCall(json)).toBe(true);
-      clientConnection.send('{"method": "name", "result": 0}');
+      clientConnection.send('1');
     });
     await expect(player.name()).rejects.toThrow();
   });
 
   test('setUp method', async () => {
     // arrange
-    const mapState = [
-      {
-        tile: new BaseTile('circle', 'red'),
-        coordinate: new Coordinate(0, 0)
-      }
-    ];
-    const mapStateParsed = [
-      {
-        tile: { shape: 'circle', color: 'red' },
-        coordinate: { x: 0, y: 0 }
-      }
-    ];
+    const pubState: RelevantPlayerInfo<ShapeColorTile> = {
+      playerTiles: [],
+      mapState: [
+        {
+          tile: new BaseTile('circle', 'red'),
+          coordinate: new Coordinate(0, 0)
+        }
+      ],
+      scoreboard: [{ name: '', score: 0 }],
+      remainingTilesCount: 0,
+      playersQueue: ['']
+    };
+    const jPubState = toJPub(pubState, '');
     const startingTiles = [
       new BaseTile('circle', 'red'),
       new BaseTile('circle', 'red')
     ];
-    const startingTilesParsed = [
+    const jStartingTiles = [
       { shape: 'circle', color: 'red' },
       { shape: 'circle', color: 'red' }
     ];
@@ -95,23 +107,26 @@ describe('tests for tcp player proxy', () => {
       const json = validateJSON(data);
       expect(isSetUpCall(json)).toBe(true);
       const setUpCall = json as SetUpCall;
-      clientConnection.send('{"method": "setUp", "result": 0}');
-      expect(setUpCall.args).toStrictEqual({
-        mapState: mapStateParsed,
-        startingTiles: startingTilesParsed
-      });
+      clientConnection.send('"void"');
+      expect(setUpCall).toStrictEqual(['setup', [jPubState, jStartingTiles]]);
     });
-    await expect(player.setUp(mapState, startingTiles)).resolves.not.toThrow();
+    await expect(player.setUp(pubState, startingTiles)).resolves.not.toThrow();
   });
 
   test('setUp method bad response', async () => {
     // arrange
-    const mapState = [
-      {
-        tile: new BaseTile('circle', 'red'),
-        coordinate: new Coordinate(0, 0)
-      }
-    ];
+    const pubState: RelevantPlayerInfo<ShapeColorTile> = {
+      playerTiles: [],
+      mapState: [
+        {
+          tile: new BaseTile('circle', 'red'),
+          coordinate: new Coordinate(0, 0)
+        }
+      ],
+      scoreboard: [],
+      remainingTilesCount: 0,
+      playersQueue: []
+    };
     const startingTiles = [
       new BaseTile('circle', 'red'),
       new BaseTile('circle', 'red')
@@ -121,28 +136,26 @@ describe('tests for tcp player proxy', () => {
     clientConnection.onResponse((data: string) => {
       const json = validateJSON(data);
       expect(isSetUpCall(json)).toBe(true);
-      clientConnection.send('{"method": "setUp", "result": 1}');
+      clientConnection.send('1');
     });
-    await expect(player.setUp(mapState, startingTiles)).rejects.toThrow();
+    await expect(player.setUp(pubState, startingTiles)).rejects.toThrow();
   });
 
   test('takeTurn method', async () => {
     const expectedTurnAction = new BaseTurnAction('PLACE', [
       { tile: new BaseTile('circle', 'red'), coordinate: new Coordinate(0, 0) }
     ]);
-    const turnActionString = JSON.stringify(expectedTurnAction);
+    const turnActionRes = JSON.stringify(toJChoice(expectedTurnAction));
 
     clientConnection.onResponse((data: string) => {
       const json = validateJSON(data);
       expect(isTakeTurnCall(json)).toBe(true);
-      clientConnection.send(
-        `{"method": "takeTurn", "result": ${turnActionString}}`
-      );
+      clientConnection.send(turnActionRes);
     });
     const turnAction = await player.takeTurn({
       playerTiles: [],
       mapState: [],
-      scoreboard: [],
+      scoreboard: [{ name: '', score: 0 }],
       remainingTilesCount: 0,
       playersQueue: []
     });
@@ -153,7 +166,7 @@ describe('tests for tcp player proxy', () => {
     clientConnection.onResponse((data: string) => {
       const json = validateJSON(data);
       expect(isTakeTurnCall(json)).toBe(true);
-      clientConnection.send('{"method": "takeTurn", "result": 0}');
+      clientConnection.send('"void"');
     });
     await expect(
       player.takeTurn({
@@ -177,10 +190,10 @@ describe('tests for tcp player proxy', () => {
     ];
 
     clientConnection.onResponse((data: string) => {
-      const json = validateJSON(data) as MethodCall;
-      expect(json.method).toBe('newTiles');
-      expect(json.args).toStrictEqual({ newTiles: newTilesParsed });
-      clientConnection.send('{"method": "newTiles", "result": 0}');
+      const json = validateJSON(data) as NewTilesCall;
+      expect(json[0]).toBe('new-tiles');
+      expect(json[1][0]).toStrictEqual(newTilesParsed);
+      clientConnection.send('"void"');
     });
     await expect(player.newTiles(newTiles)).resolves.not.toThrow();
   });
@@ -192,18 +205,18 @@ describe('tests for tcp player proxy', () => {
     ];
 
     clientConnection.onResponse((data: string) => {
-      const json = validateJSON(data) as MethodCall;
-      expect(json.method).toBe('newTiles');
-      clientConnection.send('{"method": "newTiles"}');
+      const json = validateJSON(data) as NewTilesCall;
+      expect(json[0]).toBe('new-tiles');
+      clientConnection.send('1');
     });
     await expect(player.newTiles(newTiles)).rejects.toThrow();
   });
 
   test('win method', async () => {
     clientConnection.onResponse((data: string) => {
-      const json = validateJSON(data) as MethodCall;
-      expect(json.method).toBe('win');
-      clientConnection.send('{"method": "win", "result": 0}');
+      const json = validateJSON(data) as WinCall;
+      expect(json[0]).toBe('win');
+      clientConnection.send('"void"');
     });
     await expect(player.win(true)).resolves.not.toThrow();
   });
@@ -211,8 +224,8 @@ describe('tests for tcp player proxy', () => {
   test('win method bad response', async () => {
     clientConnection.onResponse((data: string) => {
       const json = validateJSON(data) as MethodCall;
-      expect(json.method).toBe('win');
-      clientConnection.send('{"method": "blah"}');
+      expect(json[0]).toBe('win');
+      clientConnection.send('1');
     });
     await expect(player.win(true)).rejects.toThrow();
   });

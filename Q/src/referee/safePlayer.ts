@@ -49,7 +49,7 @@ export class SafePlayer<T extends QTile> {
   }
 
   /**
-   * Getter method for the player's name that handles errors and timeouts
+   * Getter method for the player's name that handles errors and timeouts.
    * @returns a result which indicates whether the call was successful and if so
    * contains the player's name
    */
@@ -58,17 +58,17 @@ export class SafePlayer<T extends QTile> {
   }
 
   /**
-   * Calls the player's setUp method and handles errors and timeouts
-   * @param m The initial map of the game
+   * Calls the player's setUp method and handles errors and timeouts.
+   * @param s The public state of the game
    * @param st The player's starting tiles
    * @returns a result which indicates whether the call was successful
    */
-  public async setUp(m: TilePlacement<T>[], st: T[]): Promise<Result<void>> {
-    return this.handleErrorsAndTimeout(() => this.player.setUp(m, st));
+  public async setUp(s: RelevantPlayerInfo<T>, st: T[]): Promise<Result<void>> {
+    return this.handleErrorsAndTimeout(() => this.player.setUp(s, st));
   }
 
   /**
-   * Calls the player's takeTurn method and handles errors and timeouts
+   * Calls the player's takeTurn method and handles errors and timeouts.
    * @param s The current public game state. Includes the map, number of remaining tiles, and the player's tiles.
    * @returns a result which indicates whether the call was successful and if so
    * contains the turn action that the player wants to take
@@ -80,7 +80,7 @@ export class SafePlayer<T extends QTile> {
   }
 
   /**
-   * Calls the player's newTiles method and handles errors and timeouts
+   * Calls the player's newTiles method and handles errors and timeouts.
    * @param st The new tiles
    * @returns a result which indicates whether the call was successful
    */

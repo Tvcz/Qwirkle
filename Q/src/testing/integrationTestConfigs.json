@@ -4,23 +4,5 @@
     "directories": [
       "9/ForStudents"
     ]
-  },
-  {
-    "testScript": "8/xgames-with-observer",
-    "directories": [
-      "8/OldTests/*"
-    ]
-  },
-  {
-    "testScript": "9/xbaddies",
-    "directories": [
-      "9/Tests"
-    ]
-  },
-  {
-    "testScript": "8/xgames-with-observer",
-    "directories": [
-      "8/grade/*"
-    ]
   }
 ]

@@ -2,24 +2,23 @@ import {
   REFEREE_PLAYER_TIMEOUT_MS,
   TCP_PLAYER_BUFFER_INTERVAL_MS
 } from '../../constants';
-import { BaseTile } from '../../game/map/tile';
-import {
-  TilePlacement,
-  RelevantPlayerInfo
-} from '../../game/types/gameState.types';
-import { Player } from '../../player/player';
-import { TurnAction } from '../../player/turnAction';
-import { Connection } from '../connection';
+import { ShapeColorTile } from '../../game/map/tile';
+import { RelevantPlayerInfo } from '../../game/types/gameState.types';
+import { JPub, JTile } from '../../json/data/data.types';
+import { toTurnAction } from '../../json/deserialize/qTurn';
 import {
   isNameResponse,
   isNewTilesResponse,
   isSetUpResponse,
   isTakeTurnResponse,
-  isWinResponse,
-  validateJSON
-} from '../jsonValidator';
-import { buildTurnAction } from '../parse';
-import { MethodResponse } from '../types';
+  isWinResponse
+} from '../../json/messages/messagesTypeGuards';
+import { toJTile } from '../../json/serialize/jMap';
+import { toJPub } from '../../json/serialize/jPub';
+import { validateJSON } from '../../json/validator';
+import { Player } from '../../player/player';
+import { TurnAction } from '../../player/turnAction';
+import { Connection } from '../connection';
 
 /**
  * A TCPPlayer implements the Player interface but rather than handling
@@ -32,7 +31,7 @@ import { MethodResponse } from '../types';
  * `REFEREE_PLAYER_TIMEOUT_MS`, in order to align with the timeout in the
  * referee.
  */
-export class TCPPlayer implements Player<BaseTile> {
+export class TCPPlayer implements Player<ShapeColorTile> {
   private readonly connection: Connection;
   private cachedName: string = '';
   private buffer: string = '';
@@ -58,50 +57,73 @@ export class TCPPlayer implements Player<BaseTile> {
    * @returns the name of the player
    */
   async name(): Promise<string> {
-    if (this.cachedName !== '') {
-      return this.cachedName;
+    if (this.cachedName == '') {
+      const parsedRes = await this.sendMessageAndGetParsedResponse('name', []);
+      this.cachedName = this.validateResponse(
+        parsedRes,
+        isNameResponse,
+        'name'
+      );
     }
-    const parsedRes = await this.sendMessageAndGetParsedResponse('name', {});
-    const validName = this.validateResponse(parsedRes, isNameResponse, 'name');
-    this.cachedName = validName.result;
-    return validName.result;
+    return this.cachedName;
   }
 
-  async setUp(m: TilePlacement<BaseTile>[], st: BaseTile[]): Promise<void> {
-    const parsedRes = await this.sendMessageAndGetParsedResponse('setUp', {
-      mapState: m,
-      startingTiles: st
-    });
-    this.validateResponse(parsedRes, isSetUpResponse, 'setUp', true);
+  async setUp(
+    s: RelevantPlayerInfo<ShapeColorTile>,
+    st: ShapeColorTile[]
+  ): Promise<void> {
+    const setUpArgs = this.buildSetUpArgs(s, st);
+    const parsedRes = await this.sendMessageAndGetParsedResponse(
+      'setup',
+      setUpArgs
+    );
+    this.validateResponse(parsedRes, isSetUpResponse, 'setup');
+  }
+
+  // INVARIANT: the name of the player is cached before this method is called
+  private buildSetUpArgs(
+    s: RelevantPlayerInfo<ShapeColorTile>,
+    st: ShapeColorTile[]
+  ): [JPub, JTile[]] {
+    return [toJPub(s, this.cachedName), st.map(toJTile)];
   }
 
   async takeTurn(
-    s: RelevantPlayerInfo<BaseTile>
-  ): Promise<TurnAction<BaseTile>> {
-    const parsedRes = await this.sendMessageAndGetParsedResponse('takeTurn', {
-      publicState: s
-    });
+    s: RelevantPlayerInfo<ShapeColorTile>
+  ): Promise<TurnAction<ShapeColorTile>> {
+    const takeTurnArgs = this.buildTakeTurnArgs(s);
+    const parsedRes = await this.sendMessageAndGetParsedResponse(
+      'take-turn',
+      takeTurnArgs
+    );
     const validTakeTurn = this.validateResponse(
       parsedRes,
       isTakeTurnResponse,
-      'takeTurn'
+      'take-turn'
     );
-    return buildTurnAction(validTakeTurn.result);
+    return toTurnAction(validTakeTurn);
   }
 
-  async newTiles(st: BaseTile[]): Promise<void> {
-    const parsedRes = await this.sendMessageAndGetParsedResponse('newTiles', {
-      newTiles: st
-    });
-    this.validateResponse(parsedRes, isNewTilesResponse, 'newTiles', true);
+  private buildTakeTurnArgs(s: RelevantPlayerInfo<ShapeColorTile>): [JPub] {
+    return [toJPub(s, this.cachedName)];
+  }
+
+  async newTiles(st: ShapeColorTile[]): Promise<void> {
+    const newTilesArgs = this.buildNewTilesArgs(st);
+    const parsedRes = await this.sendMessageAndGetParsedResponse(
+      'new-tiles',
+      newTilesArgs
+    );
+    this.validateResponse(parsedRes, isNewTilesResponse, 'new-tiles');
+  }
+
+  private buildNewTilesArgs(st: ShapeColorTile[]): [JTile[]] {
+    return [st.map(toJTile)];
   }
 
   async win(w: boolean): Promise<void> {
-    const parsedRes = await this.sendMessageAndGetParsedResponse('win', {
-      win: w
-    });
-
-    this.validateResponse(parsedRes, isWinResponse, 'win', true);
+    const parsedRes = await this.sendMessageAndGetParsedResponse('win', [w]);
+    this.validateResponse(parsedRes, isWinResponse, 'win');
     this.connection.close();
   }
 
@@ -113,17 +135,13 @@ export class TCPPlayer implements Player<BaseTile> {
    * @param isVoidMethod whether the method should have returned an
    * acknowledgement, since some methods do not return anything
    */
-  private validateResponse<T extends MethodResponse>(
+  private validateResponse<T>(
     response: unknown,
     validator: (res: unknown) => res is T,
-    methodName: string,
-    isVoidMethod = false
+    methodName: string
   ): T {
     if (!validator(response)) {
       throw new Error(`invalid response: ${methodName}`);
-    }
-    if (isVoidMethod && response.result !== 0) {
-      throw new Error(`invalid response: ${methodName} not acknowledged`);
     }
     return response;
   }
@@ -137,7 +155,7 @@ export class TCPPlayer implements Player<BaseTile> {
    */
   private async sendMessageAndGetParsedResponse(
     methodName: string,
-    args: unknown
+    args: unknown[]
   ): Promise<unknown> {
     const res = this.awaitResponse();
     this.connection.send(this.buildMessage(methodName, args));
@@ -150,8 +168,8 @@ export class TCPPlayer implements Player<BaseTile> {
    * @param args the arguments to pass to the method
    * @returns the JSON message to send to the client
    */
-  private buildMessage(methodName: string, args: unknown): string {
-    return JSON.stringify({ method: methodName, args });
+  private buildMessage(methodName: string, args: unknown[]): string {
+    return JSON.stringify([methodName, args]);
   }
 
   /**

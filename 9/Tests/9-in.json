@@ -32,6 +32,7 @@
     "players": [
         {
             "score": 0,
+            "name": "C",
             "tile*": [
                 {
                     "color": "purple",
@@ -61,6 +62,7 @@
         },
         {
             "score": 0,
+            "name": "A",
             "tile*": [
                 {
                     "color": "purple",
@@ -90,6 +92,7 @@
         },
         {
             "score": 0,
+            "name": "D",
             "tile*": [
                 {
                     "color": "red",
@@ -108,7 +111,22 @@
     ]
 }
 [
-    ["C", "ldasg", "take-turn", 2],
-    ["A", "dag", "take-turn", 3],
-    ["D", "dag", "take-turn", 6]
+    [
+        "C",
+        "ldasg",
+        "take-turn",
+        2
+    ],
+    [
+        "A",
+        "dag",
+        "take-turn",
+        3
+    ],
+    [
+        "D",
+        "dag",
+        "take-turn",
+        6
+    ]
 ]
