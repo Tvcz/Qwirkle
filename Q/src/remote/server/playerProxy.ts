@@ -77,6 +77,10 @@ export class TCPPlayer implements Player<ShapeColorTile> {
       'setup',
       setUpArgs
     );
+    console.log(
+      `setup response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
+    );
+    console.log(`is valid setup response: ${isSetUpResponse(parsedRes)}`);
     this.validateResponse(parsedRes, isSetUpResponse, 'setup');
   }
 
@@ -95,6 +99,12 @@ export class TCPPlayer implements Player<ShapeColorTile> {
     const parsedRes = await this.sendMessageAndGetParsedResponse(
       'take-turn',
       takeTurnArgs
+    );
+    console.log(
+      `take turn response from ${this.cachedName}: ${JSON.stringify(parsedRes)}`
+    );
+    console.log(
+      `is valid take turn response: ${isTakeTurnResponse(parsedRes)}`
     );
     const validTakeTurn = this.validateResponse(
       parsedRes,
