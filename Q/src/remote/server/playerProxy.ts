@@ -197,7 +197,7 @@ export class TCPPlayer implements Player<ShapeColorTile> {
           clearInterval(interval);
           resolve(this.buffer);
           this.buffer = '';
-        } else if (start + this.maxResponseWait > Date.now()) {
+        } else if (start + this.maxResponseWait < Date.now()) {
           // stops waiting to avoid a hanging async process
           clearInterval(interval);
           console.log(
