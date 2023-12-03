@@ -68,9 +68,10 @@ function runServerGame() {
       );
     }
 
-    const gameResult = await runTCPGame(inputServerConfig);
+    const [winners, eliminated] = await runTCPGame(inputServerConfig);
+    winners.sort();
 
-    process.stdout.write(JSON.stringify(gameResult));
+    process.stdout.write(JSON.stringify([winners, eliminated]));
 
     if (inputServerConfig && !inputServerConfig['ref-spec'].observe) {
       process.exit();
