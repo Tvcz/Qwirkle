@@ -3,6 +3,11 @@ import { RelevantPlayerInfo } from '../../game/types/gameState.types';
 import { ShapeColorTile } from '../../game/map/tile';
 import { toQMap, toQTile } from './qMap';
 
+/**
+ * Converts a json representation of a public game state to a RelevantPlayerInfo.
+ * @param jPub a json representation of a public game state
+ * @returns a RelevantPlayerInfo, which is a representation of the game state
+ */
 export function toQRelevantPlayerInfo(
   jPub: JPub
 ): RelevantPlayerInfo<ShapeColorTile> {

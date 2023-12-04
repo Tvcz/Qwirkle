@@ -30,6 +30,12 @@ import {
   NoFitStrategy
 } from '../../player/strategy';
 
+/**
+ * Converts a list of JActors to a list of QPlayers.
+ * @param jActors a json representation of a list of QPlayers
+ * @param rulebook the rulebook to use for the QPlayers
+ * @returns a list of QPlayers
+ */
 export const toQPlayers = (
   jActors: JActorsB,
   rulebook: QRuleBook<ShapeColorTile>
@@ -60,6 +66,12 @@ export const toQPlayers = (
   });
 };
 
+/**
+ * Gets the cheat strategy for the given cheat.
+ * @param jCheat the cheat to use
+ * @param qStrategy the base strategy to use
+ * @returns a cheat strategy
+ */
 const getCheatStrategy = (
   jCheat: JCheat,
   qStrategy: Strategy<ShapeColorTile>
@@ -89,6 +101,14 @@ const jStrategyToQStrategy = (
   }
 };
 
+/**
+ * Gets the exception player for the given exception.
+ * @param name the name of the player
+ * @param strategy the strategy to use
+ * @param rulebook the rulebook to use
+ * @param jExn the exception to use
+ * @returns an exception player
+ */
 const getExceptionPlayer = (
   name: string,
   strategy: Strategy<ShapeColorTile>,

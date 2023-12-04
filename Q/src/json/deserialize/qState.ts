@@ -16,6 +16,13 @@ type QState = {
   playerStates: PlayerState<ShapeColorTile>[];
 };
 
+/**
+ * Converts a json representation of a game state to a QState.
+ * @param jState a json representation of a game state
+ * @param players the players in the game
+ * @returns a QState, which is a representation of the game state for use in
+ * the testing framework
+ */
 export async function toQState(
   jState: JState,
   players: Player<ShapeColorTile>[]
@@ -51,6 +58,13 @@ export async function toQState(
   return { qMap, qTilesInBag, playerStates };
 }
 
+/**
+ * Converts a json representation of a game state to a QGameState.
+ * @param jState a json representation of a game state
+ * @param players the players in the game
+ * @returns a QGameState, which is a representation of the game state for use in
+ * json messages
+ */
 export async function toQGameState(
   jState: JState,
   players: Player<ShapeColorTile>[]

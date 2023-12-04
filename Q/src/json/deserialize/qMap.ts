@@ -4,6 +4,11 @@ import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import { TilePlacement } from '../../game/types/gameState.types';
 import { JCell, JMap, JTile } from '../data/data.types';
 
+/**
+ * Converts a json representation of a map to a QMap.
+ * @param jMap a json representation of a map
+ * @returns a QMap
+ */
 export function toQMap(jMap: JMap): QMap<ShapeColorTile> {
   const tilePlacements: TilePlacement<ShapeColorTile>[] = [];
   jMap.forEach((row) => {
@@ -14,6 +19,12 @@ export function toQMap(jMap: JMap): QMap<ShapeColorTile> {
   return new BaseMap(tilePlacements);
 }
 
+/**
+ * Converts a json representation of a tile placement to a TilePlacement.
+ * @param jCell a json representation of a tile and column index
+ * @param rowIndex the row index of the tile placement
+ * @returns a TilePlacement
+ */
 function toTilePlacement(
   jCell: JCell,
   rowIndex: number

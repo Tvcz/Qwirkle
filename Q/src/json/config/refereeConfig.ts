@@ -69,6 +69,12 @@ export function generateRefereeConfig(
   };
 }
 
+/**
+ * Generates a default RefereeStateConfig.
+ * @param qbo Q game bonus
+ * @param fbo all tiles bonus
+ * @returns a referee config
+ */
 export function generateRefereeStateConfig(
   qbo = DEFAULT_QBO,
   fbo = DEFAULT_FBO

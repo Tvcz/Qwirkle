@@ -4,6 +4,12 @@ import { JPlayer, JState } from '../data/data.types';
 import { toJMap, toJTile } from './jMap';
 import { toJPlayer } from './jPlayer';
 
+/**
+ * Converts a RenderableGameState (data about the public state of the game for
+ * graphical rendering) to a JState.
+ * @param gameState a RenderableGameState
+ * @returns a JState
+ */
 export function toJState(
   gameState: RenderableGameState<ShapeColorTile>
 ): JState {
