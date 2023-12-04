@@ -37,10 +37,12 @@ The server took in an optional config, which if undefined was set to a default c
 
 Does the server touch the referee or scoring configuration, other than
 passing it on?
+
 Yes, as mentioned above we already had abstracted some of these things out, like the starting state for the referee, but we had used our own implementation. To keep things backwards compatiable with our previous tests we had the server construct our data representation of a state, convert seconds to milliseconds, ect. This can be found [here](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L160-L176).
 
 Does the referee touch the scoring configuration, other than passing
 it on?
+
 No it does not, it actually never directly reacieves the scoring configuration to begin with. Our scoring is handled inside the rulebook, so the scoring is actually passed in to a [ConfigedRulebook](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L169-L172) which extends our rulebook and uses the scoring configuration to set the Q bonus and Finish bonus. Our referee then takes in this rulebook.
 
 The ideal feedback for each of these three points is a GitHub
