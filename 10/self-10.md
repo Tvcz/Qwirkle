@@ -13,7 +13,7 @@ pieces of functionality. Explain how your chosen data representation
 
 - implements creation within programs _and_ from JSON specs 
 
-  - Our configs are represented as types, which mirror the JSON specs. Since we are in TypeScript, the JSON configurations in the spec can translate one-to-one to configuration objects in the code. This is also due to the fact that the client, server, and referee configs could be used by their respective components in our codebase without major changes to their signatures.
+  - Our configs are represented as types, which mirror the JSON specs. Since we are in TypeScript, the JSON configurations in the spec can translate one-to-one to configuration objects in the code.
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/clientConfig.ts#L24-L30
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/serverConfig.ts#L24-L31
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/refereeConfig.ts#L43-L54
