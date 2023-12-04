@@ -1,18 +1,10 @@
 {
-  "port": 7652,
-  "host": "127.0.0.1",
-  "wait": 2,
-  "quiet": true,
-  "players": [
-    [
-      "playerOne",
-      "ldasg",
-      "take-turn",
-      4
-    ],
-    [
-      "playerTwo",
-      "ldasg"
+    "port": 37652,
+    "host": "127.0.0.1",
+    "wait": 2,
+    "quiet": true,
+    "players": [
+        ["playerOne", "ldasg", "take-turn", 4],
+        ["playerTwo", "ldasg"]
     ]
-  ]
 }
