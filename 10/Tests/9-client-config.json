@@ -1,7 +1,7 @@
 {
     "port": 57659,
     "host": "127.0.0.1",
-    "wait": 2,
+    "wait": 3,
     "quiet": true,
     "players": [
         ["C", "ldasg", "take-turn", 2],

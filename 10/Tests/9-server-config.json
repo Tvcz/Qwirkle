@@ -1,7 +1,7 @@
 {
     "port": 57659,
-    "server-tries": 2,
-    "server-wait": 29,
+    "server-tries": 3,
+    "server-wait": 1,
     "wait-for-signup": 6,
     "quiet": true,
     "ref-spec": {
