@@ -44,7 +44,7 @@ export function refereeProxy(
     try {
       await handleMessage(parsedMessage, player, connection);
     } catch (error) {
-      !shouldLog ?? console.log(error);
+      !shouldLog && console.error(error);
       // pass so that the client doesn't crash
     }
   });

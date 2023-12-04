@@ -18,8 +18,8 @@ export function runClient(config: ClientConfig) {
   players.forEach((player, index) => {
     setTimeout(
       () => {
-        !config.quiet ??
-          console.log(`joining game as player ${config.players[index][0]}`);
+        !config.quiet &&
+          console.error(`joining game as player ${config.players[index][0]}`);
         joinGame(player, connectionOptions, !config.quiet);
       },
       toMs(config.wait * index)
