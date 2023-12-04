@@ -1,0 +1,10 @@
+{
+    "port": 47658,
+    "host": "127.0.0.1",
+    "wait": 2,
+    "quiet": false,
+    "players": [
+        ["A", "dag", "take-turn", 6],
+        ["D", "dag", "win", 2]
+    ]
+}

@@ -188,6 +188,6 @@ function saveJsonToFilePath(jsonString: string, filePath: string) {
       console.error('An error occurred:', err);
       return;
     }
-    console.log('File has been saved.');
+    console.error('File has been saved.');
   });
 }

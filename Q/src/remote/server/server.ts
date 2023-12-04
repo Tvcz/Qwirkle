@@ -1,19 +1,20 @@
-import net from 'net';
+import * as net from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
 import { ShapeColorTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';
-import { BaseRuleBook } from '../../game/rules/ruleBook';
-import {
-  DEFAULT_CONNECTION_OPTIONS,
-  SERVER_MAX_PLAYERS,
-  SERVER_MIN_PLAYERS,
-  SERVER_PLAYER_NAME_TIMEOUT_MS,
-  SERVER_WAIT_FOR_SIGNUPS_MS,
-  SERVER_WAIT_PERIOD_RETRY_COUNT
-} from '../../constants';
+import { ConfigedRulebook } from '../../game/rules/ruleBook';
+import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
+import {
+  DEFAULT_SERVER_CONFIG,
+  ServerConfig
+} from '../../json/config/serverConfig';
+import { BaseObserver, Observer } from '../../observer/observer';
+import { toQGameState } from '../../json/deserialize/qState';
+import { RefereeConfig } from '../../json/config/refereeConfig';
+import { toMs } from '../../utils';
 
 /**
  * Runs a game over TCP.
@@ -37,28 +38,40 @@ import { GameResult } from '../../referee/referee.types';
  *
  * @returns the result of the game
  */
-export async function runTCPGame() {
+export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
+  !config.quiet && console.error('running TCP game in func');
   const players: Player<ShapeColorTile>[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
+  const maxResponseWait = Math.max(
+    config['wait-for-signup'],
+    config['ref-spec']['per-turn']
+  );
 
   server.on('connection', (socket) => {
+    !config.quiet && console.error('received connection on the server');
     const newConnection = new TCPConnection(socket);
     connections.push(newConnection);
-    signUp(new TCPPlayer(newConnection), players);
+    signUp(new TCPPlayer(newConnection, maxResponseWait), players, config);
   });
+
+  !config.quiet && console.error('starting server');
+  server.listen(config.port);
+  !config.quiet &&
+    console.error(`server started listening on port ${config.port}`);
 
   const enoughPlayersToRun = await new Promise<boolean>((resolve) => {
     server.once('connection', () => {
-      resolve(waitForAdditionalPlayers(players));
+      waitForAdditionalPlayers(players, config).then(resolve);
     });
   });
 
-  server.listen(DEFAULT_CONNECTION_OPTIONS.port);
-
   let gameResult: GameResult = [[], []];
   if (enoughPlayersToRun) {
-    gameResult = await startGame(players);
+    const playerNames = await Promise.all(players.map((p) => p.name()));
+    !config.quiet &&
+      console.error('running game with players ' + playerNames.join(', '));
+    gameResult = await startGame(players, config['ref-spec']);
   } else {
     informPlayersOfNoGame(players);
   }
@@ -74,26 +87,42 @@ export async function runTCPGame() {
  * a client connects mutating the players array while this function is running.
  *
  * @param players the player list which new players are added to as they connect.
- * @param retryCount
+ * @param attempt the number of times the wait period has been tried
  * @returns true if the game should be run, false otherwise
  */
 function waitForAdditionalPlayers(
   players: Player<ShapeColorTile>[],
-  retryCount = 0
-): boolean {
-  const start = Date.now();
-  while (players.length < SERVER_MAX_PLAYERS) {
-    if (Date.now() >= start + SERVER_WAIT_FOR_SIGNUPS_MS) {
-      if (players.length >= SERVER_MIN_PLAYERS) {
-        return true;
-      } else if (retryCount < SERVER_WAIT_PERIOD_RETRY_COUNT) {
-        waitForAdditionalPlayers(players, retryCount + 1);
-      } else {
-        return false;
+  config: ServerConfig,
+  attempt = 1
+): Promise<boolean> {
+  !config.quiet && console.error('waiting for additional players');
+  const serverWaitMs = toMs(config['server-wait']);
+
+  return new Promise<boolean>((resolve) => {
+    const start = Date.now();
+    const checkIntervalMs = 200; // check every 200ms
+    const intervalId = setInterval(() => {
+      if (players.length >= SERVER_MAX_PLAYERS) {
+        clearInterval(intervalId);
+        resolve(true);
+      } else if (Date.now() >= start + serverWaitMs) {
+        if (players.length >= SERVER_MIN_PLAYERS) {
+          clearInterval(intervalId);
+          resolve(true);
+        } else if (attempt < config['server-tries']) {
+          !config.quiet &&
+            console.error(
+              `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
+            );
+          clearInterval(intervalId);
+          waitForAdditionalPlayers(players, config, attempt + 1).then(resolve);
+        } else {
+          clearInterval(intervalId);
+          resolve(false);
+        }
       }
-    }
-  }
-  return true;
+    }, checkIntervalMs);
+  });
 }
 
 /**
@@ -125,9 +154,25 @@ function terminateConnections(connections: Connection[]) {
  * @returns the result of the game
  */
 async function startGame(
-  players: Player<ShapeColorTile>[]
+  players: Player<ShapeColorTile>[],
+  refereeConfig: RefereeConfig
 ): Promise<GameResult> {
-  return await BaseReferee(players, [], new BaseRuleBook());
+  const gameState = await toQGameState(refereeConfig.state0, players);
+  const observers: Observer<ShapeColorTile>[] = [];
+  if (refereeConfig.observe) {
+    observers.push(new BaseObserver());
+  }
+  const turnTimeMS = toMs(refereeConfig['per-turn']);
+  return await BaseReferee(
+    players,
+    observers,
+    new ConfigedRulebook(
+      refereeConfig['config-s'].fbo,
+      refereeConfig['config-s'].qbo
+    ),
+    gameState,
+    turnTimeMS
+  );
 }
 
 /**
@@ -139,12 +184,22 @@ async function startGame(
  */
 async function signUp(
   player: Player<ShapeColorTile>,
-  players: Player<ShapeColorTile>[]
+  players: Player<ShapeColorTile>[],
+  config: ServerConfig
 ): Promise<void> {
+  const waitForSignupMs = toMs(config['wait-for-signup']);
+  !config.quiet && console.error(`waiting for signup for ${waitForSignupMs}ms`);
   await Promise.race([
-    player.name().then((_name) => players.push(player)),
+    player.name().then((name) => {
+      !config.quiet && console.error(`received signup from ${name}`);
+      players.push(player);
+    }),
     new Promise((_, reject) => {
-      setTimeout(reject, SERVER_PLAYER_NAME_TIMEOUT_MS);
+      setTimeout(() => {
+        reject();
+      }, waitForSignupMs);
     })
-  ]);
+  ]).catch(() => {
+    !config.quiet && console.error('signup timed out');
+  });
 }

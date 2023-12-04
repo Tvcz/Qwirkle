@@ -136,3 +136,26 @@ export class BaseRuleBook extends AbstractRuleBook<ShapeColorTile> {
     );
   }
 }
+
+export class ConfigedRulebook extends AbstractRuleBook<ShapeColorTile> {
+  constructor(endOfGameBonus: number, qBonus: number) {
+    super(
+      [
+        mustMatchNeighboringShapesOrColors,
+        tilesPlacedMustShareRowOrColumn,
+        mustPlaceAtLeastOneTile
+      ],
+      [
+        pointPerTilePlaced,
+        pointPerTileInSequence,
+        pointsForPlayingAllTiles(endOfGameBonus),
+        pointsPerQ(qBonus)
+      ],
+      [
+        noPlayersRemaining,
+        allPlayersPassedOrExchangedInRound,
+        playerHasPlacedAllTilesInPossession
+      ]
+    );
+  }
+}

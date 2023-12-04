@@ -1,8 +1,9 @@
 [
   {
-    "testScript": "9/xbaddies",
+    "testScript": "10/xserver",
+    "clientScript": "10/xclients",
     "directories": [
-      "9/ForStudents"
+      "10/ForStudents"
     ]
   }
 ]

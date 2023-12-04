@@ -4,7 +4,7 @@ export default defineConfig({
   main: {
     build: {
       lib: {
-        entry: 'src/electron/main/main.ts'
+        entry: 'src/electron/main/server.ts'
       }
     },
     plugins: [externalizeDepsPlugin()]

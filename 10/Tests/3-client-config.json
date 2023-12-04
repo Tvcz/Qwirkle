@@ -1,0 +1,12 @@
+{
+    "port": 47653,
+    "host": "127.0.0.1",
+    "wait": 2,
+    "quiet": false,
+    "players": [
+        ["playerOne", "ldasg", "setup", 1],
+        ["playerTwo", "ldasg", "setup", 1],
+        ["playerThree", "ldasg", "setup", 1],
+        ["playerFour", "ldasg", "setup", 1]
+    ]
+}

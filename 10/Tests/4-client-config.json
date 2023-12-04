@@ -1,0 +1,12 @@
+{
+    "port": 57654,
+    "host": "127.0.0.1",
+    "wait": 2,
+    "quiet": false,
+    "players": [
+        ["playerOne", "ldasg", "win", 1],
+        ["playerTwo", "ldasg", "win", 1],
+        ["playerThree", "ldasg", "win", 1],
+        ["playerFour", "ldasg", "win", 1]
+    ]
+}

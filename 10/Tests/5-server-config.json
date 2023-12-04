@@ -1,0 +1,89 @@
+{
+    "port": 17655,
+    "server-tries": 2,
+    "server-wait": 29,
+    "wait-for-signup": 6,
+    "quiet": false,
+    "ref-spec": {
+        "state0": {
+            "map": [
+                [
+                    0,
+                    [
+                        0,
+                        {
+                            "color": "blue",
+                            "shape": "star"
+                        }
+                    ]
+                ]
+            ],
+            "tile*": [],
+            "players": [
+                {
+                    "score": 3,
+                    "name": "C",
+                    "tile*": [
+                        {
+                            "color": "blue",
+                            "shape": "star"
+                        },
+                        {
+                            "color": "red",
+                            "shape": "clover"
+                        }
+                    ]
+                },
+                {
+                    "score": 2,
+                    "name": "B",
+                    "tile*": [
+                        {
+                            "color": "blue",
+                            "shape": "star"
+                        },
+                        {
+                            "color": "red",
+                            "shape": "clover"
+                        }
+                    ]
+                },
+                {
+                    "score": 1,
+                    "name": "A",
+                    "tile*": [
+                        {
+                            "color": "blue",
+                            "shape": "star"
+                        },
+                        {
+                            "color": "red",
+                            "shape": "clover"
+                        }
+                    ]
+                },
+                {
+                    "score": 0,
+                    "name": "D",
+                    "tile*": [
+                        {
+                            "color": "blue",
+                            "shape": "star"
+                        },
+                        {
+                            "color": "green",
+                            "shape": "clover"
+                        }
+                    ]
+                }
+            ]
+        },
+        "quiet": false,
+        "config-s": {
+            "qbo": 8,
+            "fbo": 4
+        },
+        "per-turn": 5,
+        "observe": false
+    }
+}
