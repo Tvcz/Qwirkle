@@ -35,7 +35,7 @@ describe('tests for tcp referee proxy', () => {
     const clientSocket = createConnection({ port: 4444 });
     clientSocket.once('connect', () => {
       clientConnection = new TCPConnection(clientSocket);
-      refereeProxy(mockPlayer, clientConnection);
+      refereeProxy(mockPlayer, clientConnection, false);
       clientReady = true;
     });
     const interval = setInterval(() => {

@@ -20,7 +20,7 @@ export function runClient(config: ClientConfig) {
       () => {
         !config.quiet ??
           console.log(`joining game as player ${config.players[index][0]}`);
-        joinGame(player, connectionOptions);
+        joinGame(player, connectionOptions, !config.quiet);
       },
       toMs(config.wait * index)
     );
@@ -35,7 +35,8 @@ export function runClient(config: ClientConfig) {
  */
 export function joinGame(
   player: Player<ShapeColorTile>,
-  connectionOptions = DEFAULT_CONNECTION_OPTIONS
+  connectionOptions = DEFAULT_CONNECTION_OPTIONS,
+  shouldLog: boolean
 ) {
   // send initial message to server to join game
   const socket = createConnection(connectionOptions);
@@ -43,6 +44,6 @@ export function joinGame(
     // use server response to build connection
     const connection = new TCPConnection(socket);
     // use connection to create refereeProxy and hand off player instance
-    refereeProxy(player, connection);
+    refereeProxy(player, connection, shouldLog);
   });
 }

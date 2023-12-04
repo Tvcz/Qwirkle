@@ -33,27 +33,41 @@ import { VOID_METHOD_RESPONSE } from '../../constants';
  */
 export function refereeProxy(
   player: Player<ShapeColorTile>,
-  connection: Connection
+  connection: Connection,
+  shouldLog: boolean
 ) {
   // listens for tcp messages from the server
   // converts them to method calls on the player
   connection.onResponse(async (data) => {
     // json validator
     const parsedMessage = validateJSON(data);
-    if (isNameCall(parsedMessage)) {
-      await makeNameCall(player, connection);
-    } else if (isSetUpCall(parsedMessage)) {
-      await makeSetUpCall(player, connection, parsedMessage);
-    } else if (isTakeTurnCall(parsedMessage)) {
-      await makeTakeTurnCall(player, connection, parsedMessage);
-    } else if (isNewTilesCall(parsedMessage)) {
-      await makeNewTilesCall(player, connection, parsedMessage);
-    } else if (isWinCall(parsedMessage)) {
-      await makeWinCall(player, connection, parsedMessage);
-    } else {
-      throw new Error('invalid method received in message');
+    try {
+      await handleMessage(parsedMessage, player, connection);
+    } catch (error) {
+      !shouldLog ?? console.log(error);
+      // pass so that the client doesn't crash
     }
   });
+}
+
+async function handleMessage(
+  parsedMessage: unknown,
+  player: Player<ShapeColorTile>,
+  connection: Connection
+) {
+  if (isNameCall(parsedMessage)) {
+    await makeNameCall(player, connection);
+  } else if (isSetUpCall(parsedMessage)) {
+    await makeSetUpCall(player, connection, parsedMessage);
+  } else if (isTakeTurnCall(parsedMessage)) {
+    await makeTakeTurnCall(player, connection, parsedMessage);
+  } else if (isNewTilesCall(parsedMessage)) {
+    await makeNewTilesCall(player, connection, parsedMessage);
+  } else if (isWinCall(parsedMessage)) {
+    await makeWinCall(player, connection, parsedMessage);
+  } else {
+    throw new Error('invalid method received in message');
+  }
 }
 
 /**
