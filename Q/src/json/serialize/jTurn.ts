@@ -4,6 +4,11 @@ import { TurnAction } from '../../player/turnAction';
 import { JChoice, OnePlacement } from '../data/data.types';
 import { toJTile } from './jMap';
 
+/**
+ * Converts a TurnAction to a json representation of a turn action.
+ * @param turnAction a TurnAction
+ * @returns a json representation of a turn action
+ */
 export function toJChoice(turnAction: TurnAction<ShapeColorTile>): JChoice {
   if (turnAction.ofType('PASS')) {
     return 'pass';
@@ -14,6 +19,11 @@ export function toJChoice(turnAction: TurnAction<ShapeColorTile>): JChoice {
   return turnAction.getPlacements().map(toOnePlacement);
 }
 
+/**
+ * Converts a TilePlacement to a json representation of a tile placement.
+ * @param placement a TilePlacement
+ * @returns a json representation of a tile placement
+ */
 function toOnePlacement(
   placement: TilePlacement<ShapeColorTile>
 ): OnePlacement {
