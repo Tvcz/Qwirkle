@@ -9,6 +9,7 @@ const REPO_ROOT = resolve(__dirname, '../../../');
 // Where the testScript and directories paths are relative to the repo root
 interface TestConfig {
   testScript: string;
+  clientScript?: string;
   directories: string[];
 }
 
@@ -24,15 +25,22 @@ for (const config of integrationTestConfigs) {
       ...glob.sync(dir).filter((d) => lstatSync(d).isDirectory())
     )
   );
-  xTest(config.testScript, nestedDirectories);
+  xTest(config.testScript, nestedDirectories, config.clientScript);
 }
 
 function getAbsolutePaths(directories: string[]): string[] {
   return directories.map((directory) => join(REPO_ROOT, directory));
 }
 
-function xTest(testScript: string, directories: string[]) {
+function xTest(
+  testScript: string,
+  directories: string[],
+  clientScript?: string
+) {
   const absolutePathTestScript = join(REPO_ROOT, testScript);
+  const absolutePathClientScript = clientScript
+    ? join(REPO_ROOT, clientScript)
+    : undefined;
   const testScriptDirectory = dirname(absolutePathTestScript);
 
   process.chdir(testScriptDirectory);
@@ -40,15 +48,29 @@ function xTest(testScript: string, directories: string[]) {
   for (const directory of directories) {
     const directoryName = directory.split('/').pop();
     describe(`Integration tests for ${testScript} from ${directoryName}`, () => {
-      for (let n = 0; existsSync(join(directory, `${n}-in.json`)); n += 1) {
-        const inputPath = join(directory, `${n}-in.json`);
+      for (
+        let n = 0;
+        existsSync(join(directory, `${n}-in.json`)) ||
+        existsSync(join(directory, `${n}-server-config.json`));
+        n += 1
+      ) {
+        let inputPath: string;
+        let clientInputPath: string | undefined = undefined;
+        if (clientScript) {
+          inputPath = join(directory, `${n}-server-config.json`);
+          clientInputPath = join(directory, `${n}-client-config.json`);
+        } else {
+          inputPath = join(directory, `${n}-in.json`);
+        }
         const expectedOutputPath = join(directory, `${n}-out.json`);
         xTestOneFile(
           absolutePathTestScript,
           inputPath,
           expectedOutputPath,
           testScript,
-          `${directoryName}/${n}`
+          `${directoryName}/${n}`,
+          absolutePathClientScript,
+          clientInputPath
         );
       }
     });
@@ -60,20 +82,35 @@ function xTestOneFile(
   inputPath: string,
   expectedOutputPath: string,
   testScriptName: string,
-  inputName: string
+  inputName: string,
+  clientScript?: string,
+  clientInputPath?: string
 ) {
   test(`Integration test of ${testScriptName} against ${inputName}`, async () => {
     // try {
-    expect(() => assertFileHasValidJSONs(inputPath)).not.toThrowError(
+    expect(() => assertFileHasValidJSONs(inputPath)).not.toThrow(
       'invalid JSON'
     );
-    expect(() => assertFileHasValidJSONs(expectedOutputPath)).not.toThrowError(
+    if (clientInputPath) {
+      expect(() => assertFileHasValidJSONs(clientInputPath)).not.toThrow(
+        'invalid JSON'
+      );
+    }
+    expect(() => assertFileHasValidJSONs(expectedOutputPath)).not.toThrow(
       'invalid JSON'
     );
     const inputData = readFileSync(inputPath, 'utf-8').trim();
+    const clientInputData = clientInputPath
+      ? readFileSync(clientInputPath, 'utf-8').trim()
+      : undefined;
     const expectedOutputData = readFileSync(expectedOutputPath, 'utf-8').trim();
 
-    const outputData = await getOutputFromTest(testScript, inputData);
+    const outputData = await getOutputFromTest(
+      testScript,
+      inputData,
+      clientScript,
+      clientInputData
+    );
 
     expect(JSON.parse(outputData)).toStrictEqual(
       JSON.parse(expectedOutputData)
@@ -81,16 +118,29 @@ function xTestOneFile(
   }, 30000);
 }
 
+let curPort = 15000;
 async function getOutputFromTest(
   testScript: string,
-  inputData: string
+  inputData: string,
+  clientScript?: string,
+  clientInputData?: string
 ): Promise<string> {
-  const child = spawn(testScript, [], {
+  curPort += 1;
+  const args = clientScript ? [`${curPort}`] : [];
+  const child = spawn(testScript, args, {
     stdio: ['pipe', 'pipe', 'inherit']
   });
-
   child.stdin.write(inputData);
   child.stdin.end();
+
+  let clientChild: any = undefined;
+  if (clientScript) {
+    clientChild = spawn(clientScript, args, {
+      stdio: ['pipe', 'pipe', 'inherit']
+    });
+    clientChild.stdin.write(clientInputData);
+    clientChild.stdin.end();
+  }
 
   const outputData = await new Promise<string>((resolve, reject) => {
     let data = '';
@@ -100,6 +150,9 @@ async function getOutputFromTest(
   });
 
   child.kill();
+  if (clientChild) {
+    clientChild.kill();
+  }
 
   return outputData;
 }
