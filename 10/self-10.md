@@ -29,7 +29,7 @@ pieces of functionality. Explain how your chosen data representation
 
 - enforces that each configuration specifies a fixed set of properties (no more, no less)
 
-  - In [configTypeGuard.ts](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.ts#L6-L161) file you can see there are `isClientConfig`, `isRefereeConfig`, and `isServerConfig`. These checks, and their respective helper functions, ensure that each field is correctly in the config and that it is according to the spec. It also checks that there are only the needed number of keys needed in that config, which can be seen [here](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.ts#L72). This means that extra fields invalidate the config. 
+  - In [configTypeGuard.ts](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.ts#L6-L161) you can see there are `isClientConfig`, `isRefereeConfig`, and `isServerConfig`. These checks, and their respective helper functions, ensure that each field is correctly in the config and that it is according to the spec. It also checks that there are only the needed number of keys needed in that config, which can be seen [here](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.ts#L72). This means that extra fields invalidate the config. 
   
 - supports the retrieval of properties 
   
