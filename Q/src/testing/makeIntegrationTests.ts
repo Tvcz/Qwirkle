@@ -21,6 +21,7 @@ const oldTests = join(REPO_ROOT, '9/Tests/');
 const newTests = join(REPO_ROOT, '10/Tests/');
 
 const host = '127.0.0.1';
+const basePort = 37650;
 
 function buildClientConfig(jActors: JActorsB, port: number): ClientConfig {
   return generateClientConfig(port, host, 2, true, jActors);
@@ -45,7 +46,7 @@ function buildServerConfig(jState: JState, port: number): ServerConfig {
 
 for (let n = 0; n <= 9; n++) {
   try {
-    const port = 7650 + n;
+    const port = basePort + n;
     const jsonData = readFileSync(join(oldTests, `${n}-in.json`), 'utf-8');
 
     let buffer = '';
