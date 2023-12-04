@@ -2,7 +2,7 @@
     "port": 17650,
     "host": "127.0.0.1",
     "wait": 2,
-    "quiet": true,
+    "quiet": false,
     "players": [
         ["A", "dag", "setup", 2],
         ["B", "ldasg", "setup", 2],

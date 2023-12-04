@@ -3,7 +3,7 @@
     "server-tries": 2,
     "server-wait": 29,
     "wait-for-signup": 6,
-    "quiet": true,
+    "quiet": false,
     "ref-spec": {
         "state0": {
             "map": [
@@ -171,7 +171,7 @@
                 }
             ]
         },
-        "quiet": true,
+        "quiet": false,
         "config-s": {
             "qbo": 8,
             "fbo": 4
