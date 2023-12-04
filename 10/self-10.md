@@ -33,7 +33,7 @@ pieces of functionality. Explain how your chosen data representation
   
 - supports the retrieval of properties 
   
-  - The config in our case is a type, for instance [`serverConfig`](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/serverConfig.ts#L24-L31), so the retrieval of a property is done as follows: `config.port`. An example of this can be seen in [`server.ts`](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L59), where the server starts to listen according to the config (the port field is overriden in our test script with the passed in port, but the example of how we access properties in the config still stands). 
+  - The config in our case is a type, for instance [`serverConfig`](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/serverConfig.ts#L24-L31), so the retrieval of a property is done as follows: `config.port`. An example of this can be seen in [`server.ts`](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L59), where the server starts to listen according to the config (the port field is overriden in our test script by the passed in port, but the example of how we access properties in the config still stands). 
 
 - sets properties (what happens when the property shouldn't exist?) 
   - Since we are using TypeScript, additional properties cannot be set on these configs. Since Typescript enforces adherence to the defined type, attempting to set a new property to any of the configs would cause a compile-time error.
@@ -41,28 +41,29 @@ pieces of functionality. Explain how your chosen data representation
 - unit tests for these pieces of functionality
 
   - The unit tests can be found at [configTypeGuard.test.ts](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.test.ts). 
-   - These test parsing and creating configs
-  https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.test.ts#L44-L63      - enforcing that there are no missing properties 
+    - parsing and creating configs
+  https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.test.ts#L44-L63       - enforcing that there are no missing properties 
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.test.ts#L227-L270 
-   - enforcing that there are no extra properties 
+    - enforcing that there are no extra properties 
   https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/json/config/configTypeGuard.test.ts#L272-L290
-   - retrieval and setting of individual properties were not tested as the configs are simple types.
+    - retrieval and setting of individual properties were not tested as the configs are simple types.
 
 Explain how the server, referee, and scoring functionalities are abstracted
 over their respective configurations.
 
-- The server took in an optional config, which if undefined was set to a default config, this can be seen in the [signature](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L41). 
+- The server takes in an optional config, which if undefined is set to a default config, this can be seen in the [signature](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L41). 
 - For the referee, we didn't modify the internal behavior but rather changed the values being passed into the referee to be config values rather than constants. [Referee signature](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/referee/referee.ts#L86-L90). https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L160-L176
+- Scoring is handled in the rulebook, so we created a [ConfiguredRulebook](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/game/rules/ruleBook.ts#L140-L161), which takes in a Q bonus and a Finish bonus.
 
 Does the server touch the referee or scoring configuration, other than
 passing it on?
 
-- Yes, the server destructures the scoring config in order to construct the rulebook, which is passed into the referee, and it destructures the referee config in order to pass the values as parameters into the referee [here](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L160-L176). We did this to avoid modifying the existing referee and scoring functionality more than is necessary.
+- Yes, the server destructures the scoring config in order to construct the rulebook, which is passed into the referee, and it destructures the referee config in order to pass the config values as parameters into the referee [here](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L160-L176). We did this to avoid modifying the existing referee and scoring functionality more than is necessary.
 
 Does the referee touch the scoring configuration, other than passing
 it on?
 
-- No it does not. Our scoring is handled inside the rulebook, so the scoring is actually used to construct a [ConfigedRulebook](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L169-L172) which extends our rulebook and uses the scoring configuration to set the Q bonus and Finish bonus. Our referee then takes in this rulebook.
+- No it does not. Our scoring is handled inside the rulebook, so the scoring config is actually used to [construct a ConfigedRulebook](https://github.khoury.northeastern.edu/CS4500-F23/thoughtful-lions/blob/1fc09a5b853f324fa1b4c2aa46a3ed87712b60c2/Q/src/remote/server/server.ts#L169-L172) which extends our rulebook and uses the scoring configuration to set the Q bonus and Finish bonus. Our referee then takes in this rulebook.
 
 The ideal feedback for each of these three points is a GitHub
 perma-link to the range of lines in a specific file or a collection of
