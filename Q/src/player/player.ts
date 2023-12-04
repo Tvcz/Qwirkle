@@ -175,7 +175,7 @@ abstract class AbstractDelayedTimeoutPlayer<
   protected async callDelayedTimeoutMethod() {
     this.methodCallCount++;
     if (this.methodCallCount >= this.methodCallsUntilDelay) {
-      await new Promise((resolve) => setTimeout(resolve, 500000));
+      await new Promise((resolve) => setTimeout(resolve, 500000000));
     }
   }
 }
