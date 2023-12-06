@@ -83,7 +83,7 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
 /**
  * Attempts to wait for additional players to connect to the game.
  *
- * This is a synchronous operation which relies on the callbacks triggering when
+ * This is a asynchronous operation which relies on the callbacks triggering when
  * a client connects mutating the players array while this function is running.
  *
  * @param players the player list which new players are added to as they connect.

@@ -58,7 +58,7 @@ export interface QGameState<T extends QTile> {
    * the beginning of their turn
    * @param turnAction the action taken by the player who just took a turn
    */
-  nextTurn(playerTiles: T[], turnAction: TurnAction<T>);
+  nextTurn: (playerTiles: T[], turnAction: TurnAction<T>) => void;
 
   /**
    * Execute a turn where the player passes.
