@@ -9,8 +9,8 @@ import { JCell, JMap, JTile } from '../data/data.types';
  * @param jMap a json representation of a map
  * @returns a QMap
  */
-export function toQMap(jMap: JMap): QMap<ShapeColorTile> {
-  const tilePlacements: TilePlacement<ShapeColorTile>[] = [];
+export function toQMap(jMap: JMap): QMap {
+  const tilePlacements: TilePlacement[] = [];
   jMap.forEach((row) => {
     (row.slice(1) as JCell[]).forEach((cell) =>
       tilePlacements.push(toTilePlacement(cell, row[0]))
@@ -25,10 +25,7 @@ export function toQMap(jMap: JMap): QMap<ShapeColorTile> {
  * @param rowIndex the row index of the tile placement
  * @returns a TilePlacement
  */
-function toTilePlacement(
-  jCell: JCell,
-  rowIndex: number
-): TilePlacement<ShapeColorTile> {
+function toTilePlacement(jCell: JCell, rowIndex: number): TilePlacement {
   return {
     tile: toQTile(jCell[1]),
     coordinate: new Coordinate(jCell[0], rowIndex)

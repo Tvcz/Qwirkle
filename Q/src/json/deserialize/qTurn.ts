@@ -1,5 +1,4 @@
 import Coordinate from '../../game/map/coordinate';
-import { ShapeColorTile } from '../../game/map/tile';
 import { TilePlacement } from '../../game/types/gameState.types';
 import { TurnActionDescription } from '../../player/strategy.types';
 import { BaseTurnAction } from '../../player/turnAction';
@@ -11,9 +10,9 @@ import { toQTile } from './qMap';
  * @param jChoice a json representation of a turn action
  * @returns a TurnAction
  */
-export function toTurnAction(jChoice: JChoice): BaseTurnAction<ShapeColorTile> {
+export function toTurnAction(jChoice: JChoice): BaseTurnAction {
   let type: TurnActionDescription;
-  let placements: TilePlacement<ShapeColorTile>[] | undefined;
+  let placements: TilePlacement[] | undefined;
   if (jChoice === 'pass') {
     type = 'PASS';
   } else if (jChoice === 'replace') {
@@ -30,9 +29,7 @@ export function toTurnAction(jChoice: JChoice): BaseTurnAction<ShapeColorTile> {
  * @param OnePlacement a json representation of a tile and column index
  * @returns a TilePlacement
  */
-function toTilePlacement(
-  OnePlacement: OnePlacement
-): TilePlacement<ShapeColorTile> {
+function toTilePlacement(OnePlacement: OnePlacement): TilePlacement {
   const x = OnePlacement.coordinate.column;
   const y = OnePlacement.coordinate.row;
   return {

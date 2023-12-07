@@ -7,8 +7,8 @@ import { JCell, JMap, JRow, JTile } from '../data/data.types';
  * @param mapState a internal representation of a map (tile placements)
  * @returns a JMap
  */
-export function toJMap(mapState: TilePlacement<ShapeColorTile>[]): JMap {
-  const rowBuckets = new Map<number, TilePlacement<ShapeColorTile>[]>();
+export function toJMap(mapState: TilePlacement[]): JMap {
+  const rowBuckets = new Map<number, TilePlacement[]>();
   mapState.forEach((element) => {
     const y = element.coordinate.getCoordinate().y;
     if (rowBuckets.has(y)) {
@@ -44,10 +44,7 @@ export function toJTile(tile: ShapeColorTile): JTile {
  * @param rowIndex the row index of the tile placement row
  * @returns
  */
-function toJRow(
-  tileRow: TilePlacement<ShapeColorTile>[],
-  rowIndex: number
-): JRow {
+function toJRow(tileRow: TilePlacement[], rowIndex: number): JRow {
   const jCells = tileRow.map(toJCell);
   jCells.sort((a, b) => a[0] - b[0]);
   return [rowIndex, ...jCells];
@@ -58,7 +55,7 @@ function toJRow(
  * @param tilePlacement an internal representation of a tile placement
  * @returns a JCell
  */
-function toJCell(tilePlacement: TilePlacement<ShapeColorTile>): JCell {
+function toJCell(tilePlacement: TilePlacement): JCell {
   return [
     tilePlacement.coordinate.getCoordinate().x,
     toJTile(tilePlacement.tile)

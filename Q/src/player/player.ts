@@ -112,7 +112,7 @@ export class BasePlayer implements Player {
     }
   }
 
-  public async newTiles(st: T[]) {
+  public async newTiles(st: ShapeColorTile[]) {
     this.tiles = [...this.tiles, ...st];
   }
 
@@ -140,10 +140,8 @@ export class TurnExceptionPlayer extends BasePlayer {
   }
 }
 
-export class NewTilesExceptionPlayer<
-  T extends ShapeColorTile
-> extends BasePlayer {
-  public async newTiles(st: T[]) {
+export class NewTilesExceptionPlayer extends BasePlayer {
+  public async newTiles(st: ShapeColorTile[]) {
     const tilesString = JSON.stringify(st);
     throw new Error(
       `New tiles exception for player ${this.name()} when called with tiles: ${tilesString}`
@@ -195,7 +193,7 @@ export class DelayedTurnTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
 }
 
 export class DelayedNewTilesTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
-  public async newTiles(st: T[]) {
+  public async newTiles(st: ShapeColorTile[]) {
     await this.callDelayedTimeoutMethod();
     super.newTiles(st);
   }
