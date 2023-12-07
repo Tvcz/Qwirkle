@@ -10,7 +10,7 @@ import { toJPub } from '../../json/serialize/jPub';
 import { toJTile } from '../../json/serialize/jMap';
 import { toJChoice } from '../../json/serialize/jTurn';
 
-const mockPlayer: Player<ShapeColorTile> = {
+const mockPlayer: Player = {
   name: jest.fn().mockResolvedValue('Mock Player'),
   setUp: jest.fn().mockResolvedValue(undefined),
   takeTurn: jest.fn(),
@@ -65,7 +65,7 @@ describe('tests for tcp referee proxy', () => {
 
   test('setUp method', (done) => {
     const startingTiles = [new BaseTile('circle', 'blue')];
-    const pubState: RelevantPlayerInfo<ShapeColorTile> = {
+    const pubState: RelevantPlayerInfo = {
       playerTiles: startingTiles,
       mapState: [
         {
@@ -101,7 +101,7 @@ describe('tests for tcp referee proxy', () => {
       turnAction
     );
     const jTurnAction = toJChoice(turnAction);
-    const pubInfo: RelevantPlayerInfo<BaseTile> = {
+    const pubInfo: RelevantPlayerInfo = {
       playerTiles: [],
       mapState: [],
       scoreboard: [{ name: '', score: 0 }],

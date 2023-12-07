@@ -2,7 +2,7 @@ import { Server } from 'http';
 import { createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
-import { BaseTile, ShapeColorTile } from '../../game/map/tile';
+import { BaseTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
 import { BaseTurnAction } from '../../player/turnAction';
 import { validateJSON } from '../../json/validator/validator';
@@ -17,10 +17,7 @@ import {
   isSetUpCall,
   isTakeTurnCall
 } from '../../json/messages/messagesTypeGuards';
-import {
-  RelevantPlayerInfo,
-  Scoreboard
-} from '../../game/types/gameState.types';
+import { RelevantPlayerInfo } from '../../game/types/gameState.types';
 import { toJChoice } from '../../json/serialize/jTurn';
 import { toJPub } from '../../json/serialize/jPub';
 
@@ -37,7 +34,7 @@ describe('tests for tcp player proxy', () => {
     let serverReady = false;
     server.once('connection', (socket) => {
       serverConnection = new TCPConnection(socket);
-      player = new TCPPlayer(serverConnection);
+      player = new TCPPlayer(serverConnection, 10000);
       serverReady = true;
     });
     const clientSocket = createConnection({ port: 3333 });
@@ -80,7 +77,7 @@ describe('tests for tcp player proxy', () => {
 
   test('setUp method', async () => {
     // arrange
-    const pubState: RelevantPlayerInfo<ShapeColorTile> = {
+    const pubState: RelevantPlayerInfo = {
       playerTiles: [],
       mapState: [
         {
@@ -115,7 +112,7 @@ describe('tests for tcp player proxy', () => {
 
   test('setUp method bad response', async () => {
     // arrange
-    const pubState: RelevantPlayerInfo<ShapeColorTile> = {
+    const pubState: RelevantPlayerInfo = {
       playerTiles: [],
       mapState: [
         {
