@@ -3,7 +3,7 @@ export class DebugLog {
 
   log(message: string) {
     if (this.verbose) {
-      console.log(message);
+      console.error(message);
     }
   }
 }
