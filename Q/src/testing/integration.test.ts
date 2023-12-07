@@ -115,7 +115,7 @@ function xTestOneFile(
     expect(JSON.parse(outputData)).toStrictEqual(
       JSON.parse(expectedOutputData)
     );
-  }, 90000);
+  }, 60000);
 }
 
 let curPort = 15000;

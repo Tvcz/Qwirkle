@@ -8,6 +8,11 @@ import { toQPlayers } from '../../json/deserialize/qActor';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import { toMs } from '../../utils';
 
+/**
+ * Starts a client which creates players according to a client config and
+ * attempts to join them all to a game hosted at the specified host and port.
+ * @param config The client config
+ */
 export async function runClient(config: ClientConfig) {
   const players = toQPlayers(config.players, new BaseRuleBook());
   const connectionOptions = {

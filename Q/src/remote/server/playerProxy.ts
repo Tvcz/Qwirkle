@@ -119,6 +119,12 @@ export class TCPPlayer implements Player {
   async win(w: boolean): Promise<void> {
     const parsedRes = await this.sendMessageAndGetParsedResponse('win', [w]);
     this.validateResponse(parsedRes, isWinResponse, 'win');
+  }
+
+  /**
+   * Closes the connection with the client.
+   */
+  killConnection(): void {
     this.connection.close();
   }
 
