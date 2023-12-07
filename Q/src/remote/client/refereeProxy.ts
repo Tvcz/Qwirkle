@@ -1,7 +1,7 @@
 import { Player } from '../../player/player';
 import { ShapeColorTile } from '../../game/map/tile';
 import { Connection } from '../connection';
-import { validateJSON } from '../../json/validator';
+import { validateJSON } from '../../json/validator/validator';
 import {
   isNameCall,
   isSetUpCall,

@@ -1,5 +1,5 @@
 import * as net from 'net';
-import { isValidJSON } from '../json/validator';
+import { isValidJSON } from '../json/validator/validator';
 
 /**
  * A connection is a two-way communication channel between two endpoints.

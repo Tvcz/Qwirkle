@@ -5,7 +5,7 @@ import { TCPPlayer } from './playerProxy';
 import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
 import { BaseTurnAction } from '../../player/turnAction';
-import { validateJSON } from '../../json/validator';
+import { validateJSON } from '../../json/validator/validator';
 import {
   SetUpCall,
   MethodCall,

@@ -4,7 +4,7 @@ import { JCell, JMap, JRow, JTile } from '../data/data.types';
 
 /**
  * Converts an internal representation of a map to a JMap.
- * @param mapState a internal representation of a map (tile placements)
+ * @param mapState a internal representation of a map, which is a list of tile placements
  * @returns a JMap
  */
 export function toJMap(mapState: TilePlacement<ShapeColorTile>[]): JMap {

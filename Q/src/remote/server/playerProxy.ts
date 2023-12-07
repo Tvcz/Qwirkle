@@ -12,7 +12,7 @@ import {
 } from '../../json/messages/messagesTypeGuards';
 import { toJTile } from '../../json/serialize/jMap';
 import { toJPub } from '../../json/serialize/jPub';
-import { isValidJSON, validateJSON } from '../../json/validator';
+import { isValidJSON, validateJSON } from '../../json/validator/validator';
 import { Player } from '../../player/player';
 import { TurnAction } from '../../player/turnAction';
 import { toMs } from '../../utils';
