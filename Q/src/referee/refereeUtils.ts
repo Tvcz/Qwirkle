@@ -33,7 +33,7 @@ import { SafePlayer } from './safePlayer';
  * players will never change.
  * @returns The initial game state
  */
-export const setUpGame = async (players: SafePlayer<ShapeColorTile>[]) => {
+export const setUpGame = async (players: SafePlayer[]) => {
   const bagOfTiles = createBagOfTiles(NUMBER_OF_EACH_TILE);
 
   const map = createMap(bagOfTiles);
@@ -79,7 +79,7 @@ const createNumOfEachTile = (numOfEach: number) => {
  * @param bagOfTiles The bag of tiles for the game
  * @returns The inital map
  */
-const createMap = (bagOfTiles: QBagOfTiles<ShapeColorTile>) => {
+const createMap = (bagOfTiles: QBagOfTiles) => {
   const startingTile = bagOfTiles.drawTile();
   return new BaseMap([
     { tile: startingTile, coordinate: new Coordinate(0, 0) }
@@ -96,11 +96,11 @@ const createMap = (bagOfTiles: QBagOfTiles<ShapeColorTile>) => {
  * @returns The initial Player Turn Queue
  */
 const createPlayerTurnQueue = async (
-  bagOfTiles: QBagOfTiles<ShapeColorTile>,
-  players: SafePlayer<ShapeColorTile>[]
-): Promise<PlayerTurnQueue<ShapeColorTile>> => {
+  bagOfTiles: QBagOfTiles,
+  players: SafePlayer[]
+): Promise<PlayerTurnQueue> => {
   const playerStates = await createPlayerStates(bagOfTiles, players);
-  return new PlayerTurnQueue<ShapeColorTile>(playerStates);
+  return new PlayerTurnQueue(playerStates);
 };
 
 /**
@@ -111,10 +111,7 @@ const createPlayerTurnQueue = async (
  * @param players A list of the Players in the game
  * @returns a list of the PlayerStates generated for the players
  */
-const createPlayerStates = (
-  bagOfTiles: QBagOfTiles<ShapeColorTile>,
-  players: SafePlayer<ShapeColorTile>[]
-) => {
+const createPlayerStates = (bagOfTiles: QBagOfTiles, players: SafePlayer[]) => {
   return Promise.all(
     players
       .map(async (player) => {
@@ -128,10 +125,10 @@ const createPlayerStates = (
           return undefined;
         }
 
-        return new PlayerState<ShapeColorTile>(player, playerName.value);
+        return new PlayerState(player, playerName.value);
       })
       .filter(
-        (playerState): playerState is Promise<PlayerState<ShapeColorTile>> =>
+        (playerState): playerState is Promise<PlayerState> =>
           playerState !== undefined
       )
   );
@@ -144,7 +141,7 @@ const createPlayerStates = (
  * @param gameState the current game state
  * @return void
  */
-export const setUpPlayers = async (gameState: QGameState<ShapeColorTile>) => {
+export const setUpPlayers = async (gameState: QGameState) => {
   const playerSetupInformation = gameState.getAllPlayersSetupInformation();
   const initialGameState = gameState.getActivePlayerInfo();
 
@@ -182,10 +179,10 @@ export const setUpPlayers = async (gameState: QGameState<ShapeColorTile>) => {
  * @returns The final scoreboard of the game
  */
 export const runGame = async (
-  gameState: QGameState<ShapeColorTile>,
-  rulebook: QRuleBook<ShapeColorTile>,
-  observers: Observer<ShapeColorTile>[]
-): Promise<QGameState<ShapeColorTile>> => {
+  gameState: QGameState,
+  rulebook: QRuleBook,
+  observers: Observer[]
+): Promise<QGameState> => {
   const isGameOver = () => gameState.isGameOver(rulebook.getEndOfGameRules());
 
   updateObservers(gameState.getRenderableData(), observers);
@@ -204,8 +201,8 @@ export const runGame = async (
  * @param observers the observers to inform of the current game state
  */
 const updateObservers = (
-  gameState: RenderableGameState<ShapeColorTile>,
-  observers: Observer<ShapeColorTile>[]
+  gameState: RenderableGameState,
+  observers: Observer[]
 ): void => {
   observers.forEach((observer) => observer.receiveState(gameState));
 };
@@ -217,10 +214,7 @@ const updateObservers = (
  * @param rulebook the rules of the game
  * @returns void
  */
-const manageTurn = async (
-  gameState: QGameState<ShapeColorTile>,
-  rulebook: QRuleBook<ShapeColorTile>
-) => {
+const manageTurn = async (gameState: QGameState, rulebook: QRuleBook) => {
   const publicState = gameState.getActivePlayerInfo();
   const activePlayerName = publicState.playersQueue[0];
   const activePlayerController = gameState.getActivePlayerController();
@@ -244,11 +238,11 @@ const manageTurn = async (
 };
 
 const doTurnAndUpdatePlayer = async (
-  turnAction: TurnAction<ShapeColorTile>,
+  turnAction: TurnAction,
   playerName: string,
-  playerController: SafePlayer<ShapeColorTile>,
-  gameState: QGameState<ShapeColorTile>,
-  rulebook: QRuleBook<ShapeColorTile>
+  playerController: SafePlayer,
+  gameState: QGameState,
+  rulebook: QRuleBook
 ) => {
   const replacementTiles = getReplacementTiles(turnAction, gameState);
 
@@ -286,8 +280,8 @@ const doTurnAndUpdatePlayer = async (
  * @returns the replacement tiles for the given turn action
  */
 const getReplacementTiles = (
-  turnAction: TurnAction<ShapeColorTile>,
-  gameState: QGameState<ShapeColorTile>
+  turnAction: TurnAction,
+  gameState: QGameState
 ): ShapeColorTile[] => {
   if (turnAction.ofType('PLACE')) {
     return gameState.getReplacementTilesPlace(turnAction.getPlacements());
@@ -311,11 +305,11 @@ const getReplacementTiles = (
  */
 const givePlayerNewTiles = async (
   playerName: string,
-  playerController: SafePlayer<ShapeColorTile>,
+  playerController: SafePlayer,
   newTiles: ShapeColorTile[],
-  gameState: QGameState<ShapeColorTile>,
-  endOfGameRules: ReadonlyArray<EndOfGameRule<ShapeColorTile>>,
-  turnAction: TurnAction<ShapeColorTile>
+  gameState: QGameState,
+  endOfGameRules: ReadonlyArray<EndOfGameRule>,
+  turnAction: TurnAction
 ): Promise<void> => {
   if (
     newTiles.length > 0 &&
@@ -339,10 +333,10 @@ const givePlayerNewTiles = async (
  */
 const getAndValidateTurnAction = (
   activePlayerName: string,
-  turnAction: Result<TurnAction<ShapeColorTile>>,
-  gameState: QGameState<ShapeColorTile>,
-  placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
-): TurnAction<ShapeColorTile> | undefined => {
+  turnAction: Result<TurnAction>,
+  gameState: QGameState,
+  placementRules: ReadonlyArray<PlacementRule>
+): TurnAction | undefined => {
   if (turnAction.success === false || turnAction.value === undefined) {
     gameState.eliminatePlayer(activePlayerName);
     return undefined;
@@ -373,9 +367,9 @@ const getAndValidateTurnAction = (
  * @returns boolean, true if it is a valid turn action, false otherwise.
  */
 const validateTurnAction = (
-  turnAction: TurnAction<ShapeColorTile>,
-  gameState: QGameState<ShapeColorTile>,
-  placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+  turnAction: TurnAction,
+  gameState: QGameState,
+  placementRules: ReadonlyArray<PlacementRule>
 ): boolean => {
   if (turnAction.ofType('PLACE')) {
     return gameState.isValidPlacement(
@@ -403,15 +397,15 @@ const validateTurnAction = (
  */
 const scoreTurnAction = (
   originalTiles: ShapeColorTile[],
-  turnAction: TurnAction<ShapeColorTile>,
-  gameState: QGameState<ShapeColorTile>,
-  scoringRules: ReadonlyArray<ScoringRule<ShapeColorTile>>
+  turnAction: TurnAction,
+  gameState: QGameState,
+  scoringRules: ReadonlyArray<ScoringRule>
 ) => {
   if (turnAction.ofType('PASS') || turnAction.ofType('EXCHANGE')) {
     return 0;
   }
 
-  const turnState: TurnState<ShapeColorTile> = {
+  const turnState: TurnState = {
     turnAction,
     playerTiles: originalTiles
   };
@@ -428,8 +422,8 @@ const scoreTurnAction = (
  * the player received during the turn
  */
 const executeTurnAction = (
-  turnAction: TurnAction<ShapeColorTile>,
-  gameState: QGameState<ShapeColorTile>,
+  turnAction: TurnAction,
+  gameState: QGameState,
   replacementTiles: ShapeColorTile[]
 ): ShapeColorTile[] => {
   if (turnAction.ofType('PLACE')) {
@@ -450,8 +444,8 @@ const executeTurnAction = (
  * @returns A GameResult of the winners and eliminated players
  */
 export async function endGame(
-  finalGameState: QGameState<ShapeColorTile>,
-  observers: Observer<ShapeColorTile>[],
+  finalGameState: QGameState,
+  observers: Observer[],
   playerOrder: string[]
 ): Promise<GameResult> {
   const scoreboard = finalGameState.getScoreboard();
@@ -480,8 +474,8 @@ export async function endGame(
  * @param observers the observers to inform about the end of the game
  */
 const informObserversOfEndGame = (
-  observers: Observer<ShapeColorTile>[],
-  gameState: RenderableGameState<ShapeColorTile>,
+  observers: Observer[],
+  gameState: RenderableGameState,
   winnerNames: string[],
   eliminatedNames: string[]
 ) => {

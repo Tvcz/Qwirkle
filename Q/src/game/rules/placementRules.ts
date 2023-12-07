@@ -13,7 +13,7 @@ import { getTileWithPlacements } from './scoringRules';
  * or undefined if no tile exists
  * @returns true if the coordinate is empty, false if there is a tile present
  */
-export const coordinateMustBeEmpty: PlacementRule<QTile> = (
+export const coordinateMustBeEmpty: PlacementRule = (
   tilePlacements,
   getTile
 ) => {
@@ -43,7 +43,7 @@ export const coordinateMustBeEmpty: PlacementRule<QTile> = (
  * or undefined if no tile exists
  * @returns true if all the placements share a side, false if it does not
  */
-export const coordinateMustShareASide: PlacementRule<QTile> = (
+export const coordinateMustShareASide: PlacementRule = (
   tilePlacements,
   getTile
 ) => {
@@ -69,7 +69,7 @@ export const coordinateMustShareASide: PlacementRule<QTile> = (
  * or undefined if no tile exists
  * @returns true if one of the neighbors was already placed on the map, false otherwise
  */
-const neighborIsOnMapOrWasPlaced = <QTile>(
+const neighborIsOnMapOrWasPlaced = (
   neighbors: Coordinate[],
   tilesPlacedInTurn: Set<Coordinate>,
   getTile: (coordinate: Coordinate) => QTile | undefined
@@ -87,9 +87,7 @@ const neighborIsOnMapOrWasPlaced = <QTile>(
  * @param tilePlacements the tiles and coordinates to be placed on the board
  * @returns true if at least one tile is placed, false otherwise
  */
-export const mustPlaceAtLeastOneTile: PlacementRule<ShapeColorTile> = (
-  tilePlacements
-) => {
+export const mustPlaceAtLeastOneTile: PlacementRule = (tilePlacements) => {
   return tilePlacements.length > 0;
 };
 
@@ -102,9 +100,10 @@ export const mustPlaceAtLeastOneTile: PlacementRule<ShapeColorTile> = (
  * @returns true if the shapes or colors match the given tile in its row and
  * column, false otherwise
  */
-export const mustMatchNeighboringShapesOrColors: PlacementRule<
-  ShapeColorTile
-> = (tilePlacements, getTile) => {
+export const mustMatchNeighboringShapesOrColors: PlacementRule = (
+  tilePlacements,
+  getTile
+) => {
   return tilePlacements.every(({ tile, coordinate }, i) => {
     const getWithTilePlacements = getTileWithPlacements(
       tilePlacements.slice(0, i),
@@ -155,7 +154,7 @@ function matchesShapeOrColor(
  * coordinate) placed in a turn
  * @returns true if the tiles are in the same row or column, false otherwise
  */
-export const tilesPlacedMustShareRowOrColumn: PlacementRule<QTile> = (
+export const tilesPlacedMustShareRowOrColumn: PlacementRule = (
   tilePlacements
 ) => {
   if (tilePlacements.length === 0) {

@@ -1,4 +1,3 @@
-import { QTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
 import { TurnActionDescription } from './strategy.types';
 
@@ -7,7 +6,7 @@ import { TurnActionDescription } from './strategy.types';
  * It contains information about the type of the action as well as the
  * tile placements made through the action, if applicable.
  */
-export interface TurnAction<T extends QTile> {
+export interface TurnAction {
   /**
    * Checks if the given turn action type is the same as the type of this turn action
    * @param typeDescription the turn action type to compare against
@@ -21,19 +20,19 @@ export interface TurnAction<T extends QTile> {
    * @throws an error if the type of the turn action does not allow for
    * placements or if the placements are undefined
    */
-  getPlacements: () => TilePlacement<T>[];
+  getPlacements: () => TilePlacement[];
 }
 
 /**
  * The BaseTurnAction class stores the information about a specific turn, which includes:
  * - The description of the action taken in the turn
- * - The tile placments made in the turn, if it is a place action
+ * - The tile placements made in the turn, if it is a place action
  */
-export class BaseTurnAction<T extends QTile> implements TurnAction<T> {
+export class BaseTurnAction implements TurnAction {
   private type: TurnActionDescription;
-  private placements: TilePlacement<T>[] | undefined;
+  private placements: TilePlacement[] | undefined;
 
-  constructor(type: TurnActionDescription, placements?: TilePlacement<T>[]) {
+  constructor(type: TurnActionDescription, placements?: TilePlacement[]) {
     this.type = type;
     if (this.type === 'PLACE' && placements === undefined) {
       throw new Error(
@@ -52,7 +51,7 @@ export class BaseTurnAction<T extends QTile> implements TurnAction<T> {
     return typeDescription === this.type;
   }
 
-  public getPlacements(): TilePlacement<T>[] {
+  public getPlacements(): TilePlacement[] {
     if (this.type === 'PLACE' && this.placements !== undefined) {
       return this.placements;
     } else {

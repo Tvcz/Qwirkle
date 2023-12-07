@@ -1,4 +1,3 @@
-import { ShapeColorTile } from '../../game/map/tile';
 import { TilePlacement } from '../../game/types/gameState.types';
 import { TurnAction } from '../../player/turnAction';
 import { JChoice, OnePlacement } from '../data/data.types';
@@ -9,7 +8,7 @@ import { toJTile } from './jMap';
  * @param turnAction a TurnAction
  * @returns a json representation of a turn action
  */
-export function toJChoice(turnAction: TurnAction<ShapeColorTile>): JChoice {
+export function toJChoice(turnAction: TurnAction): JChoice {
   if (turnAction.ofType('PASS')) {
     return 'pass';
   }
@@ -24,9 +23,7 @@ export function toJChoice(turnAction: TurnAction<ShapeColorTile>): JChoice {
  * @param placement a TilePlacement
  * @returns a json representation of a tile placement
  */
-function toOnePlacement(
-  placement: TilePlacement<ShapeColorTile>
-): OnePlacement {
+function toOnePlacement(placement: TilePlacement): OnePlacement {
   const coordinate = placement.coordinate.getCoordinate();
   return {
     '1tile': toJTile(placement.tile),

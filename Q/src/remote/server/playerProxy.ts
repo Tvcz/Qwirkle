@@ -12,7 +12,7 @@ import {
 } from '../../json/messages/messagesTypeGuards';
 import { toJTile } from '../../json/serialize/jMap';
 import { toJPub } from '../../json/serialize/jPub';
-import { isValidJSON, validateJSON } from '../../json/validator';
+import { isValidJSON, validateJSON } from '../../json/validator/validator';
 import { Player } from '../../player/player';
 import { TurnAction } from '../../player/turnAction';
 import { toMs } from '../../utils';
@@ -29,7 +29,7 @@ import { Connection } from '../connection';
  * `REFEREE_PLAYER_TIMEOUT_MS`, in order to align with the timeout in the
  * referee.
  */
-export class TCPPlayer implements Player<ShapeColorTile> {
+export class TCPPlayer implements Player {
   private readonly connection: Connection;
   private readonly maxResponseWait: number;
   private cachedName: string = '';
@@ -68,10 +68,7 @@ export class TCPPlayer implements Player<ShapeColorTile> {
     return this.cachedName;
   }
 
-  async setUp(
-    s: RelevantPlayerInfo<ShapeColorTile>,
-    st: ShapeColorTile[]
-  ): Promise<void> {
+  async setUp(s: RelevantPlayerInfo, st: ShapeColorTile[]): Promise<void> {
     const setUpArgs = this.buildSetUpArgs(s, st);
     const parsedRes = await this.sendMessageAndGetParsedResponse(
       'setup',
@@ -82,15 +79,13 @@ export class TCPPlayer implements Player<ShapeColorTile> {
 
   // INVARIANT: the name of the player is cached before this method is called
   private buildSetUpArgs(
-    s: RelevantPlayerInfo<ShapeColorTile>,
+    s: RelevantPlayerInfo,
     st: ShapeColorTile[]
   ): [JPub, JTile[]] {
     return [toJPub(s, this.cachedName), st.map(toJTile)];
   }
 
-  async takeTurn(
-    s: RelevantPlayerInfo<ShapeColorTile>
-  ): Promise<TurnAction<ShapeColorTile>> {
+  async takeTurn(s: RelevantPlayerInfo): Promise<TurnAction> {
     const takeTurnArgs = this.buildTakeTurnArgs(s);
     const parsedRes = await this.sendMessageAndGetParsedResponse(
       'take-turn',
@@ -104,7 +99,7 @@ export class TCPPlayer implements Player<ShapeColorTile> {
     return toTurnAction(validTakeTurn);
   }
 
-  private buildTakeTurnArgs(s: RelevantPlayerInfo<ShapeColorTile>): [JPub] {
+  private buildTakeTurnArgs(s: RelevantPlayerInfo): [JPub] {
     return [toJPub(s, this.cachedName)];
   }
 

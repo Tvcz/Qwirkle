@@ -1,5 +1,4 @@
 import { RenderableGameState } from '../../game/types/gameState.types';
-import { ShapeColorTile } from '../../game/map/tile';
 import { JPlayer, JState } from '../data/data.types';
 import { toJMap, toJTile } from './jMap';
 import { toJPlayer } from './jPlayer';
@@ -10,9 +9,7 @@ import { toJPlayer } from './jPlayer';
  * @param gameState a RenderableGameState
  * @returns a JState
  */
-export function toJState(
-  gameState: RenderableGameState<ShapeColorTile>
-): JState {
+export function toJState(gameState: RenderableGameState): JState {
   const map = toJMap(gameState.mapState.tilePlacements);
   const refsTiles = gameState.remainingTiles.map(toJTile);
 

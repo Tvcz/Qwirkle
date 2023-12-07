@@ -1,5 +1,5 @@
 import { SafePlayer } from '../../referee/safePlayer';
-import { QTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { TurnState } from '../types/gameState.types';
 
 /**
@@ -8,7 +8,7 @@ import { TurnState } from '../types/gameState.types';
  * It also stores the Player object associated with the Player,
  * for communicating with the 'client'.
  */
-interface QPlayerState<T extends QTile> {
+interface QPlayerState {
   /**
    * Get the name of the player
    * @returns number representing the id
@@ -19,20 +19,20 @@ interface QPlayerState<T extends QTile> {
    * Get a SafePlayer object, which exposes the methods needed for communicating with a Player.
    * @returns The SafePlayer object
    */
-  getPlayerController: () => SafePlayer<T>;
+  getPlayerController: () => SafePlayer;
 
   /**
    * Gets all the tiles the player currently has
    * @returns a list of tiles
    */
-  getAllTiles: () => T[];
+  getAllTiles: () => ShapeColorTile[];
 
   /**
    * Replace the players current tiles with a new array of tiles
    * @param tiles the players new tiles
    * @returns void
    */
-  setTiles: (tiles: T[]) => void;
+  setTiles: (tiles: ShapeColorTile[]) => void;
 
   /**
    * Get the number of tiles the player currently has
@@ -57,30 +57,30 @@ interface QPlayerState<T extends QTile> {
    * Records the most recent turn taken by the player
    * @param turn the turn to record
    */
-  setMostRecentTurn: (turnState: TurnState<T>) => void;
+  setMostRecentTurn: (turnState: TurnState) => void;
 
   /**
    * Returns the most recent turn taken by the player or undefined if they have
    * not taken a turn yet
    */
-  getMostRecentTurn: () => TurnState<T> | undefined;
+  getMostRecentTurn: () => TurnState | undefined;
 }
 
 /**
  * Class representing the player state information. Contains the players name,
  * tiles, and score.
- * The PlayerState accepts a Player object in the constrcutor, which is a way to communicate
+ * The PlayerState accepts a Player object in the constructor, which is a way to communicate
  * with the 'client' Player. The name of the Player is retrieved from the name()
  * method of this Player in the constructor, and if name() throws an error so will this constructor.
  */
-class PlayerState<T extends QTile> implements QPlayerState<T> {
-  private tiles: T[];
+class PlayerState implements QPlayerState {
+  private tiles: ShapeColorTile[];
   private score: number;
-  private mostRecentTurnState: TurnState<T> | undefined;
+  private mostRecentTurnState: TurnState | undefined;
   private name: string;
-  private player: SafePlayer<T>;
+  private player: SafePlayer;
 
-  constructor(player: SafePlayer<T>, playerName: string) {
+  constructor(player: SafePlayer, playerName: string) {
     this.name = playerName;
     this.tiles = [];
     this.score = 0;
@@ -100,7 +100,7 @@ class PlayerState<T extends QTile> implements QPlayerState<T> {
     return [...this.tiles];
   }
 
-  public setTiles(tiles: T[]) {
+  public setTiles(tiles: ShapeColorTile[]) {
     this.tiles = tiles;
   }
 
@@ -116,11 +116,11 @@ class PlayerState<T extends QTile> implements QPlayerState<T> {
     this.score += scoreDelta;
   }
 
-  public setMostRecentTurn(turnState: TurnState<T>): void {
+  public setMostRecentTurn(turnState: TurnState): void {
     this.mostRecentTurnState = turnState;
   }
 
-  public getMostRecentTurn(): TurnState<T> | undefined {
+  public getMostRecentTurn(): TurnState | undefined {
     return this.mostRecentTurnState;
   }
 }

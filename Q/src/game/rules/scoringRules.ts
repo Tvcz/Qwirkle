@@ -2,7 +2,7 @@ import { Set } from 'typescript-collections';
 import Coordinate from '../map/coordinate';
 import { CoordinateGetter, ScoringRule } from '../types/rules.types';
 import { TilePlacement } from '../types/gameState.types';
-import { QTile, ShapeColorTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { colorList, shapeList, Shape, Color } from '../types/map.types';
 
 /**
@@ -10,7 +10,7 @@ import { colorList, shapeList, Shape, Color } from '../types/map.types';
  * @param tilePlacements The tiles and coordinates placed in this turn.
  * @returns The number of additional points given from this rule
  */
-export const pointPerTilePlaced: ScoringRule<QTile> = (turnState) => {
+export const pointPerTilePlaced: ScoringRule = (turnState) => {
   return turnState.turnAction.getPlacements().length;
 };
 
@@ -21,9 +21,9 @@ export const pointPerTilePlaced: ScoringRule<QTile> = (turnState) => {
  * location or undefined if it does not exist
  * @returns a getter method that takes a coordinate and gets the tile from either the map or the tile placement list, or returns undefined if the coordinate is not present in either.
  */
-export const getTileWithPlacements = <T extends QTile>(
-  tilePlacements: TilePlacement<T>[],
-  getTile: CoordinateGetter<T>
+export const getTileWithPlacements = (
+  tilePlacements: TilePlacement[],
+  getTile: CoordinateGetter
 ) => {
   return (coord: Coordinate) => {
     const tileFromPlacements = tilePlacements.find((tilePlacement) =>
@@ -41,7 +41,7 @@ export const getTileWithPlacements = <T extends QTile>(
  */
 export const pointsForPlayingAllTiles = (
   bonusPointsAmount: number
-): ScoringRule<QTile> => {
+): ScoringRule => {
   return (turnState) => {
     const numPlacements = turnState.turnAction.getPlacements().length;
     const numTilesInHand = turnState.playerTiles.length;
@@ -59,9 +59,7 @@ export const pointsForPlayingAllTiles = (
  * A Q is a contiguous sequence of tiles that contains all the shapes or all the colors
  * @returns The number of Q's completed in the turn times the amount of the bonus
  */
-export const pointsPerQ = (
-  bonusPointsAmount: number
-): ScoringRule<ShapeColorTile> => {
+export const pointsPerQ = (bonusPointsAmount: number): ScoringRule => {
   return (turnState, getTile) => {
     const tilePlacements = turnState.turnAction.getPlacements();
 
@@ -111,14 +109,11 @@ const getOpposingNeighbors = (
  * location or undefined if it does not exist
  * @returns The number of Q's found for the given attribute,
  */
-const qForSpecificAttribute = <
-  T extends ShapeColorTile,
-  A extends Shape | Color
->(
-  tilePlacements: TilePlacement<T>[],
-  getTileAttribute: (tile: T) => A,
+const qForSpecificAttribute = <A extends Shape | Color>(
+  tilePlacements: TilePlacement[],
+  getTileAttribute: (tile: ShapeColorTile) => A,
   numberOfAttributes: number,
-  getTile: CoordinateGetter<T>
+  getTile: CoordinateGetter
 ) => {
   const seenTiles = new Set<Coordinate>();
 
@@ -159,14 +154,11 @@ const qForSpecificAttribute = <
  * @param getOpposingNeighbors Get the opposing neighbors for a tile, either left and right, or top and bottom
  * @returns 1 if a new Q is found, and 0 otherwise
  */
-const qForSpecificDirection = <
-  T extends ShapeColorTile,
-  A extends Shape | Color
->(
+const qForSpecificDirection = <A extends Shape | Color>(
   initialCoordinate: Coordinate,
-  getTile: CoordinateGetter<T>,
+  getTile: CoordinateGetter,
   seenTiles: Set<Coordinate>,
-  getTileAttribute: (tile: T) => A,
+  getTileAttribute: (tile: ShapeColorTile) => A,
   numberOfAttributes: number,
   getOpposingNeighbors: (coord: Coordinate) => [Coordinate, Coordinate]
 ) => {
@@ -231,15 +223,12 @@ const compareDirectionSetsOfQs = <A extends Shape | Color>(
  * @param getTileAttribute Get the attribute for a given tile, either the Shape or Color
  * @returns The set of attributes in a single direction. Empty set if a tile in the direction has already been seen or there is a dublicate attribute.
  */
-const qFromSequenceInOneDirection = <
-  T extends ShapeColorTile,
-  A extends Shape | Color
->(
+const qFromSequenceInOneDirection = <A extends Shape | Color>(
   initialCoord: Coordinate,
   nextCoordinate: (coord: Coordinate) => Coordinate,
-  getTile: CoordinateGetter<T>,
+  getTile: CoordinateGetter,
   seenTiles: Set<Coordinate>,
-  getTileAttribute: (tile: T) => A
+  getTileAttribute: (tile: ShapeColorTile) => A
 ) => {
   const seenAttributes = new Set<A>();
   let coordinate = initialCoord;
@@ -269,10 +258,7 @@ const qFromSequenceInOneDirection = <
  * location or undefined if it does not exist
  * @returns The number of additional points given from this rule
  */
-export const pointPerTileInSequence: ScoringRule<QTile> = (
-  turnState,
-  getTile
-) => {
+export const pointPerTileInSequence: ScoringRule = (turnState, getTile) => {
   const seenTiles = new Set<Coordinate>();
   const tilePlacements = turnState.turnAction.getPlacements();
   return tilePlacements.reduce((score, tilePlacement) => {
@@ -306,9 +292,9 @@ export const pointPerTileInSequence: ScoringRule<QTile> = (
  * @param getOpposingNeighbors Get the opposing neighbors for a tile, either left and right, or top and bottom
  * @returns The score for the sequence of tiles in the given direction
  */
-const scoreSequence = <T extends QTile>(
+const scoreSequence = (
   coordinate: Coordinate,
-  getTile: CoordinateGetter<T>,
+  getTile: CoordinateGetter,
   seenTiles: Set<Coordinate>,
   getOpposingNeighbors: (coord: Coordinate) => [Coordinate, Coordinate]
 ): number => {

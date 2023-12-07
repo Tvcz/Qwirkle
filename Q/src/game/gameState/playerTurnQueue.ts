@@ -1,5 +1,5 @@
 import { Set } from 'typescript-collections';
-import { QTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import {
   PlayerEndGameInformation,
   PlayerSetupInformation,
@@ -23,7 +23,7 @@ import { TurnAction } from '../../player/turnAction';
  * INVARIANT: all player names in the queue are unique,
  * and that a queue cannot be created with 0 players.
  */
-export interface QPlayerTurnQueue<T extends QTile> {
+export interface QPlayerTurnQueue {
   /**
    * Change the active player to be the next player in queue. Move the
    * previously active player to be last in the queue.
@@ -32,21 +32,21 @@ export interface QPlayerTurnQueue<T extends QTile> {
    * @throws Error if there are no players remaining in the queue
    * @returns void
    */
-  nextTurn: (turnState: TurnState<T>) => void;
+  nextTurn: (turnState: TurnState) => void;
 
   /**
    * Get the player whose turn it currently is
    * @throws Error if there are no players remaining in the queue
    * @returns the player whose turn it is
    */
-  getActivePlayer: () => PlayerState<T>;
+  getActivePlayer: () => PlayerState;
 
   /**
    * Get the player who went just before the currently active player
    * @throws Error if there are no players remaining in the queue
    * @returns the last active player
    */
-  getLastActivePlayer: () => PlayerState<T>;
+  getLastActivePlayer: () => PlayerState;
 
   /**
    * Remove the player with the given name from the queue/game.
@@ -58,8 +58,8 @@ export interface QPlayerTurnQueue<T extends QTile> {
    */
   eliminatePlayer: (
     playerName: string,
-    attemptedTurnAction?: TurnAction<T>
-  ) => T[];
+    attemptedTurnAction?: TurnAction
+  ) => ShapeColorTile[];
 
   /**
    * Get the scores of all players in the queue in the form of a Scoreboard
@@ -96,14 +96,14 @@ export interface QPlayerTurnQueue<T extends QTile> {
    * This includes the most recent turns of both the current players, as well as the players who were eliminated while attempting an invalid move during the current round.
    * @returns a list of the turn states of the players
    */
-  getAllMostRecentTurns: () => (TurnState<T> | undefined)[];
+  getAllMostRecentTurns: () => (TurnState | undefined)[];
 
   /**
    * Gets the information needed to setup each Player controller
    * @returns a list of objects containing each player's tiles and respective
    * setup callback
    */
-  getAllPlayersSetupInformation: () => PlayerSetupInformation<T>[];
+  getAllPlayersSetupInformation: () => PlayerSetupInformation[];
 
   /**
    * Gets the information needed to communicate the end of game with each Player controller
@@ -116,24 +116,24 @@ export interface QPlayerTurnQueue<T extends QTile> {
    * @returns a list of objects containing each player's score and tiles, in the
    * turn order of the players
    */
-  getRenderablePlayerStates: () => RenderablePlayer<T>[];
+  getRenderablePlayerStates: () => RenderablePlayer[];
 }
 
 /**
  * Class representing the players in the game and the order they take turns.
  */
-class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
+class PlayerTurnQueue implements QPlayerTurnQueue {
   // This is a queue of Player States. It will only be accessed by using the shift() method to remove from the front, or the push() method to add to the back
-  private playerQueue: PlayerState<T>[];
+  private playerQueue: PlayerState[];
 
   // This set contains the names of the players who have taken turns so far this
   // round.
   private playersActedThisRound: Set<string>;
 
   // This list contains the PlayerStates of the players who were eliminated while attempting an invalid move in the current round
-  private playersEliminatedAttemptingTurnThisRound: PlayerState<T>[];
+  private playersEliminatedAttemptingTurnThisRound: PlayerState[];
 
-  constructor(players: PlayerState<T>[]) {
+  constructor(players: PlayerState[]) {
     this.playerQueue = players;
     if (players.length === 0) {
       throw new Error('Cannot create a turn queue with 0 players');
@@ -142,7 +142,7 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     this.playersEliminatedAttemptingTurnThisRound = [];
   }
 
-  public nextTurn(turnState: TurnState<T>) {
+  public nextTurn(turnState: TurnState) {
     const player = this.playerQueue.shift();
     if (!player) {
       throw new Error('No players in queue');
@@ -176,10 +176,7 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     return lastActivePlayer;
   }
 
-  public eliminatePlayer(
-    playerName: string,
-    attemptedTurnAction?: TurnAction<T>
-  ) {
+  public eliminatePlayer(playerName: string, attemptedTurnAction?: TurnAction) {
     const player = this.playerQueue.find((p) => p.getName() === playerName);
     if (!player) {
       throw new Error('player does not exist, or has already been eliminated');
@@ -199,9 +196,9 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
   }
 
   private updateEliminatedPlayersAttemptingTurnThisRound(
-    attemptedTurnAction: TurnAction<T> | undefined,
-    playerTiles: T[],
-    player: PlayerState<T>
+    attemptedTurnAction: TurnAction | undefined,
+    playerTiles: ShapeColorTile[],
+    player: PlayerState
   ) {
     if (attemptedTurnAction) {
       player.setMostRecentTurn({
@@ -241,9 +238,9 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     );
   }
 
-  public getAllMostRecentTurns(): (TurnState<T> | undefined)[] {
-    const allTurns: (TurnState<T> | undefined)[] = [];
-    const addTurnsFromPlayers = (players: PlayerState<T>[]) => {
+  public getAllMostRecentTurns(): (TurnState | undefined)[] {
+    const allTurns: (TurnState | undefined)[] = [];
+    const addTurnsFromPlayers = (players: PlayerState[]) => {
       players.forEach((player) => {
         allTurns.push(player.getMostRecentTurn());
       });
@@ -257,7 +254,7 @@ class PlayerTurnQueue<T extends QTile> implements QPlayerTurnQueue<T> {
     return this.playerQueue.map((playerState) => ({
       name: playerState.getName(),
       tiles: playerState.getAllTiles(),
-      setUp: (s: RelevantPlayerInfo<T>, st: T[]) =>
+      setUp: (s: RelevantPlayerInfo, st: ShapeColorTile[]) =>
         playerState.getPlayerController().setUp(s, st)
     }));
   }

@@ -1,5 +1,4 @@
 import { TILE_SCALE } from '../../../constants';
-import { QTile } from '../../map/tile';
 import { RenderableMapState, TilePlacement } from '../../types/gameState.types';
 import { Dimensions } from '../../types/map.types';
 import { tileHtmlBuilder } from './tileHtmlBuilder';
@@ -15,7 +14,7 @@ import { tileHtmlBuilder } from './tileHtmlBuilder';
 export const mapHtmlBuilder = ({
   dimensions,
   tilePlacements
-}: RenderableMapState<QTile>) => {
+}: RenderableMapState) => {
   const width = dimensions.rightmost + 1 - dimensions.leftmost;
   const height = dimensions.topmost + 1 - dimensions.bottommost;
 
@@ -45,7 +44,7 @@ export const mapHtmlBuilder = ({
  * @returns An HTML string visualizing the tiles on the map
  */
 const tilePlacementsHtmlBuilder = (
-  tilePlacments: TilePlacement<QTile>[],
+  tilePlacments: TilePlacement[],
   dimensions: Dimensions
 ) => {
   return tilePlacments

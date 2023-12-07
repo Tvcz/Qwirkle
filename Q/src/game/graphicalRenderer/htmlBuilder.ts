@@ -1,4 +1,3 @@
-import { ShapeColorTile } from '../map/tile';
 import { RenderableGameState } from '../types/gameState.types';
 import { mapHtmlBuilder } from './HtmlRendererUtils/mapHtmlBuilder';
 import { remainingTilesHtmlBuilder } from './HtmlRendererUtils/remainingTilesHtmlBuilder';
@@ -10,9 +9,7 @@ import { scoreboardHtmlBuilder } from './HtmlRendererUtils/scoreboardHtmlBuilder
  * @param renderableData The game state data that is publically available to be rendered
  * @returns the body of an HTML string visualizing the game state data
  */
-export const gameStateHtmlBuilder = (
-  renderableData: RenderableGameState<ShapeColorTile>
-) => {
+export const gameStateHtmlBuilder = (renderableData: RenderableGameState) => {
   const gameHeader = '<h1>Q Game</h1>';
   const gameStateInfoStyle = ['display: flex;', 'column-gap: 50px;'].join('');
 

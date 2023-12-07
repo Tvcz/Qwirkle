@@ -16,6 +16,13 @@ export const VIEW_ID = 'game-state-view';
 
 export const TILE_SCALE = 50;
 
+// Electron messages
+export const NEXT_STATE = 'next-state';
+export const PREVIOUS_STATE = 'previous-state';
+export const SAVE_STATE = 'save-state';
+export const UPDATE_VIEW = 'update-view';
+export const END_GAME = 'end-game';
+
 // Server communication config
 export const SERVER_WAIT_FOR_SIGNUPS_MS: number = 20000;
 export const SERVER_MIN_PLAYERS: number = 2;

@@ -1,4 +1,3 @@
-import { ShapeColorTile } from '../../map/tile';
 import { RenderablePlayer } from '../../types/gameState.types';
 import { renderTilesInline } from './tileHtmlBuilder';
 
@@ -7,9 +6,7 @@ import { renderTilesInline } from './tileHtmlBuilder';
  * @param scoreboard a list of player names and their scores
  * @returns An HTML string visualizing the scoreboard and header
  */
-export const scoreboardHtmlBuilder = (
-  players: RenderablePlayer<ShapeColorTile>[]
-) => {
+export const scoreboardHtmlBuilder = (players: RenderablePlayer[]) => {
   const scoreboardHeader = '<h3>Scoreboard: </h3>';
 
   const scoreboardContainerStyle = [
@@ -57,7 +54,7 @@ export const scoreboardHtmlBuilder = (
  * @returns An HTML string visualizing the scoreboard
  */
 const scoreHtmlBuilder = (
-  players: RenderablePlayer<ShapeColorTile>[],
+  players: RenderablePlayer[],
   scoreboardStyle: string,
   nameStyle: string,
   scoreStyleFixed: string

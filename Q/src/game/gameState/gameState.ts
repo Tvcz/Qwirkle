@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import { QTile, ShapeColorTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { QMap } from '../map/map';
 import { QPlayerTurnQueue } from './playerTurnQueue';
 import { QBagOfTiles } from './bagOfTiles';
@@ -26,7 +26,7 @@ import { SafePlayer } from '../../referee/safePlayer';
  * status, the map, the bag of tiles, and the PlayerTurnQueue, which contains
  * information about the players and the order in which they take turns.
  */
-export interface QGameState<T extends QTile> {
+export interface QGameState {
   /**
    * Check if placing a tile at a given coordinate is valid for the given rules
    * @param tilePlacements The tile and coordinates to be placed on the map
@@ -35,8 +35,8 @@ export interface QGameState<T extends QTile> {
    * sets of rules, false otherwise
    */
   isValidPlacement: (
-    tilePlacements: TilePlacement<T>[],
-    placementRules: ReadonlyArray<PlacementRule<T>>
+    tilePlacements: TilePlacement[],
+    placementRules: ReadonlyArray<PlacementRule>
   ) => boolean;
 
   /**
@@ -47,8 +47,8 @@ export interface QGameState<T extends QTile> {
    * @returns The score for the given placement
    */
   getPlacementScore: (
-    turnState: TurnState<T>,
-    scoringRules: ReadonlyArray<ScoringRule<T>>
+    turnState: TurnState,
+    scoringRules: ReadonlyArray<ScoringRule>
   ) => number;
 
   /**
@@ -58,7 +58,7 @@ export interface QGameState<T extends QTile> {
    * the beginning of their turn
    * @param turnAction the action taken by the player who just took a turn
    */
-  nextTurn: (playerTiles: T[], turnAction: TurnAction<T>) => void;
+  nextTurn: (playerTiles: ShapeColorTile[], turnAction: TurnAction) => void;
 
   /**
    * Execute a turn where the player passes.
@@ -66,7 +66,7 @@ export interface QGameState<T extends QTile> {
    * Moves the active turn to the next player.
    * @returns The player's tiles at the beginning of the turn
    */
-  passTurn: () => T[];
+  passTurn: () => ShapeColorTile[];
 
   /**
    * Execute a turn where the player exchanges all of their current tiles for
@@ -77,7 +77,7 @@ export interface QGameState<T extends QTile> {
    * @throws Error if there are not enough tiles in the bag to exchange.
    * @returns The player's tiles at the beginning of the turn
    */
-  exchangeTurn: (replacementTiles: T[]) => T[];
+  exchangeTurn: (replacementTiles: ShapeColorTile[]) => ShapeColorTile[];
 
   /**
    * Execute a turn where the player places tiles on the board and receives the
@@ -90,13 +90,16 @@ export interface QGameState<T extends QTile> {
    * tiles must be empty and tiles must share a side
    * @returns The player's tiles at the beginning of the turn
    */
-  placeTurn: (tilePlacements: TilePlacement<T>[], replacementTiles: T[]) => T[];
+  placeTurn: (
+    tilePlacements: TilePlacement[],
+    replacementTiles: ShapeColorTile[]
+  ) => ShapeColorTile[];
 
   /**
    * Draws tile from the bag to replace all those being exhanged.
    * @returns The tiles to replace with
    */
-  getReplacementTilesExchange: () => T[];
+  getReplacementTilesExchange: () => ShapeColorTile[];
 
   /**
    * Draws tile from the bag to replace the ones placed in a turn.
@@ -104,7 +107,9 @@ export interface QGameState<T extends QTile> {
    * @param tilePlacements Placements the player is attempting to place
    * @returns The tiles to replace with
    */
-  getReplacementTilesPlace: (tilePlacements: TilePlacement<T>[]) => T[];
+  getReplacementTilesPlace: (
+    tilePlacements: TilePlacement[]
+  ) => ShapeColorTile[];
 
   /**
    * Get the relevant information the active player needs before their turn.
@@ -113,21 +118,21 @@ export interface QGameState<T extends QTile> {
    * status
    * @returns The RelevantPlayerInfo for a players turn
    */
-  getActivePlayerInfo: () => RelevantPlayerInfo<T>;
+  getActivePlayerInfo: () => RelevantPlayerInfo;
 
   /**
    * Get the Player that corresponds to the active PlayerState.
    * @throws Error if there are no players remaining in the queue
    * @returns The active Player
    */
-  getActivePlayerController: () => SafePlayer<T>;
+  getActivePlayerController: () => SafePlayer;
 
   /**
    * Gets the information needed to setup each Player controller
    * @returns a list of objects containing each player's name, tiles and respective
    * setup callback
    */
-  getAllPlayersSetupInformation: () => PlayerSetupInformation<T>[];
+  getAllPlayersSetupInformation: () => PlayerSetupInformation[];
 
   /**
    * Gets the information needed to communicate the end of game with each Player controller
@@ -145,7 +150,7 @@ export interface QGameState<T extends QTile> {
    */
   eliminatePlayer: (
     playerName: string,
-    attemptedTurnAction?: TurnAction<T>
+    attemptedTurnAction?: TurnAction
   ) => void;
 
   /**
@@ -168,14 +173,14 @@ export interface QGameState<T extends QTile> {
    * @param endOfGameRules the rules which each specify end condition for the game
    * @returns true if at least one of the end game conditions are satisfied, false otherwise
    */
-  isGameOver: (endOfGameRules: ReadonlyArray<EndOfGameRule<T>>) => boolean;
+  isGameOver: (endOfGameRules: ReadonlyArray<EndOfGameRule>) => boolean;
 
   /**
    * Gets the data that the referee knows about the game state that is needed to
    * render the game
    * @returns An object containing the map state, player data, and remaining tiles
    */
-  getRenderableData: () => RenderableGameState<T>;
+  getRenderableData: () => RenderableGameState;
 
   /**
    * Check if a full round of turns has been completed.
@@ -197,16 +202,16 @@ export interface QGameState<T extends QTile> {
  * the map of the game, the players queue, and a bag of remaining tiles. Also
  * keeps track of the status of the game.
  */
-abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
-  private map: QMap<T>;
-  private playerTurnQueue: QPlayerTurnQueue<T>;
-  private bagOfTiles: QBagOfTiles<T>;
+abstract class AbstractGameState implements QGameState {
+  private map: QMap;
+  private playerTurnQueue: QPlayerTurnQueue;
+  private bagOfTiles: QBagOfTiles;
   private eliminatedPlayerNames: string[];
 
   constructor(
-    map: QMap<T>,
-    playerTurnQueue: QPlayerTurnQueue<T>,
-    bagOfTiles: QBagOfTiles<T>
+    map: QMap,
+    playerTurnQueue: QPlayerTurnQueue,
+    bagOfTiles: QBagOfTiles
   ) {
     this.map = map;
     this.playerTurnQueue = playerTurnQueue;
@@ -215,8 +220,8 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
   }
 
   public isValidPlacement(
-    tilePlacements: TilePlacement<T>[],
-    placementRules: ReadonlyArray<PlacementRule<T>>
+    tilePlacements: TilePlacement[],
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
     const playerOwnsTiles = this.playerOwnsPlacedTiles(tilePlacements);
 
@@ -233,7 +238,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
    * @param tilePlacements List of placements the player is attempting to make
    * @returns true if they own all of the tiles in the placement, false otherwise
    */
-  private playerOwnsPlacedTiles(tilePlacements: TilePlacement<T>[]) {
+  private playerOwnsPlacedTiles(tilePlacements: TilePlacement[]) {
     const activePlayer = this.playerTurnQueue.getActivePlayer();
     const activePlayerTiles = activePlayer.getAllTiles();
 
@@ -252,8 +257,8 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
   }
 
   public getPlacementScore(
-    turnState: TurnState<T>,
-    scoringRules: ReadonlyArray<ScoringRule<T>>
+    turnState: TurnState,
+    scoringRules: ReadonlyArray<ScoringRule>
   ) {
     const getTile = (coord: Coordinate) => this.map.getTile(coord);
 
@@ -262,7 +267,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     }, 0);
   }
 
-  public nextTurn(playerTiles: T[], turnAction: TurnAction<T>) {
+  public nextTurn(playerTiles: ShapeColorTile[], turnAction: TurnAction) {
     this.playerTurnQueue.nextTurn({ turnAction, playerTiles });
   }
 
@@ -272,7 +277,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     return originalTiles;
   }
 
-  public exchangeTurn(replacementTiles: T[]) {
+  public exchangeTurn(replacementTiles: ShapeColorTile[]) {
     const player = this.playerTurnQueue.getActivePlayer();
     const originalTiles = player.getAllTiles();
     player.setTiles(replacementTiles);
@@ -291,7 +296,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
    * @throws if the player has more tiles than are in the bag
    * @returns the active players tiles
    */
-  private getTilesToExchange(activePlayer: PlayerState<T>) {
+  private getTilesToExchange(activePlayer: PlayerState) {
     const playerTiles = activePlayer.getAllTiles();
     if (playerTiles.length > this.bagOfTiles.getRemainingCount()) {
       throw new Error('player has more tiles than remaining in the bag');
@@ -299,7 +304,10 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     return playerTiles;
   }
 
-  public placeTurn(tilePlacements: TilePlacement<T>[], replacementTiles: T[]) {
+  public placeTurn(
+    tilePlacements: TilePlacement[],
+    replacementTiles: ShapeColorTile[]
+  ) {
     const player = this.playerTurnQueue.getActivePlayer();
 
     const originalTiles = player.getAllTiles();
@@ -319,8 +327,8 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
    * @param tilePlacements Placcements the player is attempting to place
    * @returns The tiles to replace with
    */
-  public getReplacementTilesPlace(tilePlacements: TilePlacement<T>[]) {
-    const replacementTiles: T[] = [];
+  public getReplacementTilesPlace(tilePlacements: TilePlacement[]) {
+    const replacementTiles: ShapeColorTile[] = [];
     tilePlacements.forEach(() => {
       try {
         const drawnTile = this.bagOfTiles.drawTile();
@@ -334,7 +342,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     return [...replacementTiles, ...unplayedTiles];
   }
 
-  private getPlayersUnplacedTiles(tilePlacements: TilePlacement<T>[]) {
+  private getPlayersUnplacedTiles(tilePlacements: TilePlacement[]) {
     const tilePlacementsCopy = [...tilePlacements];
     const activePlayer = this.playerTurnQueue.getActivePlayer();
     const activePlayerTiles = activePlayer.getAllTiles();
@@ -384,14 +392,11 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
    * Get a list of every tile placement on the map
    * @returns a list of placements
    */
-  private getTilePlacementsList(): TilePlacement<T>[] {
+  private getTilePlacementsList(): TilePlacement[] {
     return this.map.getAllPlacements();
   }
 
-  public eliminatePlayer(
-    playerName: string,
-    attemptedTurnAction?: TurnAction<T>
-  ) {
+  public eliminatePlayer(playerName: string, attemptedTurnAction?: TurnAction) {
     const playersTiles = this.playerTurnQueue.eliminatePlayer(
       playerName,
       attemptedTurnAction
@@ -408,7 +413,7 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
     this.playerTurnQueue.updatePlayerScore(playerName, scoreDelta);
   }
 
-  public isGameOver(endOfGameRules: ReadonlyArray<EndOfGameRule<T>>) {
+  public isGameOver(endOfGameRules: ReadonlyArray<EndOfGameRule>) {
     return endOfGameRules.some((rule) => rule(this.playerTurnQueue));
   }
 
@@ -459,11 +464,11 @@ abstract class AbstractGameState<T extends QTile> implements QGameState<T> {
 /**
  * A class representing the game state for a game of Q using BaseTiles.
  */
-export class BaseGameState extends AbstractGameState<ShapeColorTile> {
+export class BaseGameState extends AbstractGameState {
   constructor(
-    map: QMap<ShapeColorTile>,
-    playerTurnQueue: QPlayerTurnQueue<ShapeColorTile>,
-    bagOfTiles: QBagOfTiles<ShapeColorTile>
+    map: QMap,
+    playerTurnQueue: QPlayerTurnQueue,
+    bagOfTiles: QBagOfTiles
   ) {
     super(map, playerTurnQueue, bagOfTiles);
   }

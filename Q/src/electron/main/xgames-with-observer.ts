@@ -1,7 +1,6 @@
 import { BaseBagOfTiles } from '../../game/gameState/bagOfTiles';
 import { BaseGameState } from '../../game/gameState/gameState';
 import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
-import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import { JActorsB, JState } from '../../json/data/data.types';
 import { BaseObserver } from '../../observer/observer';
@@ -14,7 +13,7 @@ import { isJActorsB, isJState } from '../../json/data/dataTypeGuards';
 let inputState: JState | undefined = undefined;
 let inputActors: JActorsB | undefined = undefined;
 
-export function processInputAndRunGame(observers: BaseObserver<BaseTile>[]) {
+export function processInputAndRunGame(observers: BaseObserver[]) {
   processInput();
   runGame(observers);
 }
@@ -58,7 +57,7 @@ function processInput() {
  * Runs the game with the given observers.
  * @param observers the observers who spectate the game
  */
-function runGame(observers: BaseObserver<BaseTile>[]) {
+function runGame(observers: BaseObserver[]) {
   process.stdin.on('end', async () => {
     if (!inputState || !inputActors) {
       throw new Error('invalid JSON input, JPub and JStrategy not defined');
@@ -80,7 +79,7 @@ function runGame(observers: BaseObserver<BaseTile>[]) {
     );
 
     const qBagOfTiles = new BaseBagOfTiles(qTilesInBag);
-    const qPlayerTurnQueue = new PlayerTurnQueue<ShapeColorTile>(playerStates);
+    const qPlayerTurnQueue = new PlayerTurnQueue(playerStates);
 
     const qGameState = new BaseGameState(qMap, qPlayerTurnQueue, qBagOfTiles);
 

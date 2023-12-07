@@ -1,4 +1,3 @@
-import { ShapeColorTile } from '../../game/map/tile';
 import { QRuleBook } from '../../game/rules/ruleBook';
 import { JActorsB, JCheat, JExn, JStrategy } from '../data/data.types';
 import {
@@ -38,8 +37,8 @@ import {
  */
 export const toQPlayers = (
   jActors: JActorsB,
-  rulebook: QRuleBook<ShapeColorTile>
-): Player<ShapeColorTile>[] => {
+  rulebook: QRuleBook
+): Player[] => {
   return jActors.map((jActor) => {
     const name = jActor[0];
     const jStrategy = jActor[1];
@@ -72,10 +71,7 @@ export const toQPlayers = (
  * @param qStrategy the base strategy to use
  * @returns a cheat strategy
  */
-const getCheatStrategy = (
-  jCheat: JCheat,
-  qStrategy: Strategy<ShapeColorTile>
-): Strategy<ShapeColorTile> => {
+const getCheatStrategy = (jCheat: JCheat, qStrategy: Strategy): Strategy => {
   switch (jCheat) {
     case 'non-adjacent-coordinate':
       return new NonAdjacentCoordinateStrategy();
@@ -90,9 +86,7 @@ const getCheatStrategy = (
   }
 };
 
-const jStrategyToQStrategy = (
-  jStrategy: JStrategy
-): Strategy<ShapeColorTile> => {
+const jStrategyToQStrategy = (jStrategy: JStrategy): Strategy => {
   switch (jStrategy) {
     case 'dag':
       return new DagStrategy();
@@ -111,10 +105,10 @@ const jStrategyToQStrategy = (
  */
 const getExceptionPlayer = (
   name: string,
-  strategy: Strategy<ShapeColorTile>,
-  rulebook: QRuleBook<ShapeColorTile>,
+  strategy: Strategy,
+  rulebook: QRuleBook,
   jExn: JExn
-): Player<ShapeColorTile> => {
+): Player => {
   switch (jExn) {
     case 'setup':
       return new SetupExceptionPlayer(name, strategy, rulebook);
@@ -131,11 +125,11 @@ const getExceptionPlayer = (
 
 const getInfiniteLoopPlayer = (
   name: string,
-  strategy: Strategy<ShapeColorTile>,
-  rulebook: QRuleBook<ShapeColorTile>,
+  strategy: Strategy,
+  rulebook: QRuleBook,
   jExn: JExn,
   count: number
-): Player<ShapeColorTile> => {
+): Player => {
   switch (jExn) {
     case 'setup':
       return new DelayedSetupTimeoutPlayer(name, strategy, rulebook, count);
