@@ -9,7 +9,7 @@ import { Observer } from '../observer/observer';
 export interface RefereeConfigurations {
   state: JState;
   turnTimeMS: number;
-  observer: Observer<ShapeColorTile> | undefined;
+  observer: Observer | undefined;
 }
 
 const DEFAULT_STATE: JState = {

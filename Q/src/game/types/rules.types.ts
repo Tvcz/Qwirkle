@@ -1,6 +1,6 @@
 import { QPlayerTurnQueue } from '../gameState/playerTurnQueue';
 import Coordinate from '../map/coordinate';
-import { QTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { TilePlacement, TurnState } from './gameState.types';
 
 /**
@@ -9,9 +9,9 @@ import { TilePlacement, TurnState } from './gameState.types';
  * this type may consider the tiles placed, their desired positions, and the Q
  * Game board via a getter method when determining satisfaction
  */
-export type PlacementRule<T extends QTile> = <U extends T>(
-  tilePlacements: TilePlacement<T>[],
-  getTile: (coordinate: Coordinate) => U | undefined
+export type PlacementRule = (
+  tilePlacements: TilePlacement[],
+  getTile: (coordinate: Coordinate) => ShapeColorTile | undefined
 ) => boolean;
 
 type BonusScoringPoints = {
@@ -21,13 +21,13 @@ type BonusScoringPoints = {
 
 /**
  * Type representing a Q Game rule that determines how a turn is scored. Returns
- * a nunber that indicates the number of points given for that rule and turn. A
- * rule of this type may consider the tile placments of all tiles in the turn,
+ * a number that indicates the number of points given for that rule and turn. A
+ * rule of this type may consider the tile placements of all tiles in the turn,
  * the map state after the tiles have been placed, and the player's tiles.
  */
-export type ScoringRule<T extends QTile> = <U extends T>(
-  turnState: TurnState<T>,
-  getTile: (coordinate: Coordinate) => U | undefined,
+export type ScoringRule = (
+  turnState: TurnState,
+  getTile: (coordinate: Coordinate) => ShapeColorTile | undefined,
   bonusScoringPoints?: BonusScoringPoints
 ) => number;
 
@@ -36,15 +36,13 @@ export type ScoringRule<T extends QTile> = <U extends T>(
  * coordinate and returns the tile at that coordinate, or undefined if that tile
  * does not exist.
  */
-export type CoordinateGetter<T extends QTile> = (
+export type CoordinateGetter = (
   coordinate: Coordinate
-) => T | undefined;
+) => ShapeColorTile | undefined;
 
 /**
  * Type representing a Q game rule that determines whether the game should be over.
  * This type of rule considers the player turn queue, which contains information about the number of players remaining, the action those players took on their most recent turn, when in the order a round starts and ends, among other things.
  * EndOfGameRules return true if the game should be considered finished, or false otherwise.
  */
-export type EndOfGameRule<T extends QTile> = <U extends T>(
-  playerTurnQueue: QPlayerTurnQueue<U>
-) => boolean;
+export type EndOfGameRule = (playerTurnQueue: QPlayerTurnQueue) => boolean;

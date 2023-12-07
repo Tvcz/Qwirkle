@@ -1,5 +1,4 @@
 import Coordinate from '../game/map/coordinate';
-import { QTile } from '../game/map/tile';
 import { CoordinateGetter } from '../game/types/rules.types';
 
 /**
@@ -39,7 +38,7 @@ export function sortCoordinatesByRowColumnOrder(
 export function sortCoordinatesByMostNeighbors(
   coord1: Coordinate,
   coord2: Coordinate,
-  getTile: CoordinateGetter<QTile>
+  getTile: CoordinateGetter
 ): number {
   const neighbors1 = getNeighborCount(coord1, getTile);
   const neighbors2 = getNeighborCount(coord2, getTile);
@@ -57,9 +56,9 @@ export function sortCoordinatesByMostNeighbors(
  * @param getTile A getter method for tiles on the map
  * @returns the number of neighbors a coordinate has on the map
  */
-const getNeighborCount = <T extends QTile>(
+const getNeighborCount = (
   coord: Coordinate,
-  getTile: CoordinateGetter<T>
+  getTile: CoordinateGetter
 ): number => {
   const neighbors = Object.values(coord.getNeighbors());
 

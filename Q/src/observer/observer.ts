@@ -1,5 +1,4 @@
 import puppeteer from 'puppeteer';
-import { QTile, ShapeColorTile } from '../game/map/tile';
 import { RenderableGameState } from '../game/types/gameState.types';
 import { gameStateHtmlBuilder } from '../game/graphicalRenderer/htmlBuilder';
 import { createWindow } from '../electron/main/gameStateWindow';
@@ -11,12 +10,12 @@ import { toJState } from '../json/serialize/jState';
  * Provides functionality for receiving game state updates and game over
  * notifications.
  */
-export interface Observer<T extends QTile> {
+export interface Observer {
   /**
    * Receives an updated game state which can be used to render the game.
    * @param gameState the game data which is available for observation
    */
-  receiveState(gameState: RenderableGameState<T>): void;
+  receiveState(gameState: RenderableGameState): void;
 
   /**
    * Alerts the observer that no more states will be received.
@@ -25,7 +24,7 @@ export interface Observer<T extends QTile> {
    * @param eliminatedNames the names of the eliminated players
    */
   gameOver(
-    gameState: RenderableGameState<T>,
+    gameState: RenderableGameState,
     winnerNames: string[],
     eliminatedNames: string[]
   ): void;
@@ -69,10 +68,8 @@ export interface ObserverAPI {
   ): void;
 }
 
-export class BaseObserver<T extends ShapeColorTile>
-  implements Observer<T>, ObserverAPI
-{
-  stateHistory: RenderableGameState<T>[];
+export class BaseObserver implements Observer, ObserverAPI {
+  stateHistory: RenderableGameState[];
   currentStateIndex: number;
   updateViewCallback: (html: string) => void;
   endGameCallback: (gameStateHtml: string, endGameCardHtml: string) => void;
@@ -86,7 +83,7 @@ export class BaseObserver<T extends ShapeColorTile>
   }
 
   public gameOver(
-    gameState: RenderableGameState<T>,
+    gameState: RenderableGameState,
     winnerNames: string[],
     eliminatedNames: string[]
   ) {
@@ -108,13 +105,13 @@ export class BaseObserver<T extends ShapeColorTile>
       </div>`;
   }
 
-  public receiveState(gameState: RenderableGameState<T>) {
+  public receiveState(gameState: RenderableGameState) {
     this.saveStateToMemory(gameState);
     this.saveStateToImage(this.stateHistory.length - 1);
     this.updateGUIView();
   }
 
-  private saveStateToMemory(gameState: RenderableGameState<T>) {
+  private saveStateToMemory(gameState: RenderableGameState) {
     this.stateHistory.push(gameState);
   }
 
@@ -132,7 +129,7 @@ export class BaseObserver<T extends ShapeColorTile>
     );
   }
 
-  private toHtmlView(gameState: RenderableGameState<T>): string {
+  private toHtmlView(gameState: RenderableGameState): string {
     return gameStateHtmlBuilder(gameState);
   }
 

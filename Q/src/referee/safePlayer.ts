@@ -1,4 +1,4 @@
-import { QTile } from '../game/map/tile';
+import { ShapeColorTile } from '../game/map/tile';
 import { RelevantPlayerInfo } from '../game/types/gameState.types';
 import { Player } from '../player/player';
 import { TurnAction } from '../player/turnAction';
@@ -8,8 +8,8 @@ import { Result } from './referee.types';
  * A safe player is a decorator for a player that will eliminate the player if
  * they take too long to take a turn or if they throw an error.
  */
-export class SafePlayer<T extends QTile> {
-  private readonly player: Player<T>;
+export class SafePlayer {
+  private readonly player: Player;
   private readonly timeout: number;
 
   /**
@@ -18,7 +18,7 @@ export class SafePlayer<T extends QTile> {
    * @param timeout the amount of time the safe player waits for a method to run
    * before failing
    */
-  constructor(player: Player<T>, timeout: number) {
+  constructor(player: Player, timeout: number) {
     this.player = player;
     this.timeout = timeout;
   }
@@ -60,7 +60,10 @@ export class SafePlayer<T extends QTile> {
    * @param st The player's starting tiles
    * @returns a result which indicates whether the call was successful
    */
-  public async setUp(s: RelevantPlayerInfo<T>, st: T[]): Promise<Result<void>> {
+  public async setUp(
+    s: RelevantPlayerInfo,
+    st: ShapeColorTile[]
+  ): Promise<Result<void>> {
     return this.handleErrorsAndTimeout(() => this.player.setUp(s, st));
   }
 
@@ -70,9 +73,7 @@ export class SafePlayer<T extends QTile> {
    * @returns a result which indicates whether the call was successful and if so
    * contains the turn action that the player wants to take
    */
-  public async takeTurn(
-    s: RelevantPlayerInfo<T>
-  ): Promise<Result<TurnAction<T>>> {
+  public async takeTurn(s: RelevantPlayerInfo): Promise<Result<TurnAction>> {
     return this.handleErrorsAndTimeout(() => this.player.takeTurn(s));
   }
 
@@ -81,7 +82,7 @@ export class SafePlayer<T extends QTile> {
    * @param st The new tiles
    * @returns a result which indicates whether the call was successful
    */
-  public async newTiles(st: T[]): Promise<Result<void>> {
+  public async newTiles(st: ShapeColorTile[]): Promise<Result<void>> {
     return this.handleErrorsAndTimeout(() => this.player.newTiles(st));
   }
 

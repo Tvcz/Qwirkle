@@ -1,4 +1,4 @@
-import { QTile } from '../game/map/tile';
+import { ShapeColorTile } from '../game/map/tile';
 import {
   RelevantPlayerInfo,
   TilePlacement
@@ -12,7 +12,7 @@ import { TurnAction } from './turnAction';
  * Players are identified by a unique name, and are abstracted over a Strategy to play the game.
  * The interface provides functionality for setting up a player for a game, making moves, getting new tiles
  */
-export interface Player<T extends QTile> {
+export interface Player {
   /**
    * Getter method for the player's name
    * @returns the player's name
@@ -25,7 +25,7 @@ export interface Player<T extends QTile> {
    * @param st The player's starting tiles
    * @returns void
    */
-  setUp: (s: RelevantPlayerInfo<T>, st: T[]) => Promise<void>;
+  setUp: (s: RelevantPlayerInfo, st: ShapeColorTile[]) => Promise<void>;
 
   /**
    * Given the current public game state, which includes the current map, the number of remaining tiles, and the player's tiles, make a move based on the player's strategy.
@@ -36,14 +36,14 @@ export interface Player<T extends QTile> {
    * @param s The current public game state. Includes the map, number of remaining tiles, and the player's tiles.
    * @returns The turn action that the player wants to take
    */
-  takeTurn: (s: RelevantPlayerInfo<T>) => Promise<TurnAction<T>>;
+  takeTurn: (s: RelevantPlayerInfo) => Promise<TurnAction>;
 
   /**
    * Method to receive a new hand of tiles. The new tiles are added onto whatever tiles the player currently has after their last move
    * @param st The new tiles
    * @returns void
    */
-  newTiles: (st: T[]) => Promise<void>;
+  newTiles: (st: ShapeColorTile[]) => Promise<void>;
 
   /**
    * Method to alert this Player that they have won the game.
@@ -57,15 +57,15 @@ export interface Player<T extends QTile> {
  * Implementation of a Base Player.
  * The Player takes in their name, strategy, and a rulebook on initialization.
  */
-export class BasePlayer<T extends QTile> implements Player<T> {
+export class BasePlayer implements Player {
   private playerName: string;
-  private strategy: Strategy<T>;
-  private rulebook: QRuleBook<T>;
-  private tiles: T[];
-  private map: TilePlacement<T>[];
+  private strategy: Strategy;
+  private rulebook: QRuleBook;
+  private tiles: ShapeColorTile[];
+  private map: TilePlacement[];
   private hasWon: boolean;
 
-  constructor(name: string, strategy: Strategy<T>, rulebook: QRuleBook<T>) {
+  constructor(name: string, strategy: Strategy, rulebook: QRuleBook) {
     this.playerName = name;
     this.strategy = strategy;
     this.rulebook = rulebook;
@@ -78,12 +78,12 @@ export class BasePlayer<T extends QTile> implements Player<T> {
     return this.playerName;
   }
 
-  public async setUp(s: RelevantPlayerInfo<T>, st: T[]) {
+  public async setUp(s: RelevantPlayerInfo, st: ShapeColorTile[]) {
     this.map = s.mapState;
     this.tiles = st;
   }
 
-  public async takeTurn(s: RelevantPlayerInfo<T>) {
+  public async takeTurn(s: RelevantPlayerInfo) {
     const { mapState, remainingTilesCount, playerTiles } = s;
 
     this.tiles = playerTiles;
@@ -101,7 +101,7 @@ export class BasePlayer<T extends QTile> implements Player<T> {
     return action;
   }
 
-  private reduceExistingTiles(action: TurnAction<T>) {
+  private reduceExistingTiles(action: TurnAction) {
     if (action.ofType('PLACE')) {
       this.tiles = this.tiles.filter(
         (playerTile) =>
@@ -121,8 +121,8 @@ export class BasePlayer<T extends QTile> implements Player<T> {
   }
 }
 
-export class SetupExceptionPlayer<T extends QTile> extends BasePlayer<T> {
-  public async setUp(s: RelevantPlayerInfo<T>, st: T[]) {
+export class SetupExceptionPlayer extends BasePlayer {
+  public async setUp(s: RelevantPlayerInfo, st: ShapeColorTile[]) {
     const mapString = JSON.stringify(s.mapState);
     const startingTileString = JSON.stringify(st);
     throw new Error(
@@ -131,8 +131,8 @@ export class SetupExceptionPlayer<T extends QTile> extends BasePlayer<T> {
   }
 }
 
-export class TurnExceptionPlayer<T extends QTile> extends BasePlayer<T> {
-  public async takeTurn(s: RelevantPlayerInfo<T>): Promise<TurnAction<T>> {
+export class TurnExceptionPlayer extends BasePlayer {
+  public async takeTurn(s: RelevantPlayerInfo): Promise<TurnAction> {
     const stateString = JSON.stringify(s);
     throw new Error(
       `Turn exception for player ${this.name()} when called with state: ${stateString}`
@@ -140,7 +140,9 @@ export class TurnExceptionPlayer<T extends QTile> extends BasePlayer<T> {
   }
 }
 
-export class NewTilesExceptionPlayer<T extends QTile> extends BasePlayer<T> {
+export class NewTilesExceptionPlayer<
+  T extends ShapeColorTile
+> extends BasePlayer {
   public async newTiles(st: T[]) {
     const tilesString = JSON.stringify(st);
     throw new Error(
@@ -149,7 +151,7 @@ export class NewTilesExceptionPlayer<T extends QTile> extends BasePlayer<T> {
   }
 }
 
-export class WinExceptionPlayer<T extends QTile> extends BasePlayer<T> {
+export class WinExceptionPlayer extends BasePlayer {
   public async win(w: boolean) {
     throw new Error(
       `Win exception for player ${this.name()} when called with win: ${w}`
@@ -157,15 +159,13 @@ export class WinExceptionPlayer<T extends QTile> extends BasePlayer<T> {
   }
 }
 
-abstract class AbstractDelayedTimeoutPlayer<
-  T extends QTile
-> extends BasePlayer<T> {
+abstract class AbstractDelayedTimeoutPlayer extends BasePlayer {
   methodCallCount: number;
 
   constructor(
     name: string,
-    strategy: Strategy<T>,
-    rulebook: QRuleBook<T>,
+    strategy: Strategy,
+    rulebook: QRuleBook,
     private readonly methodCallsUntilDelay: number
   ) {
     super(name, strategy, rulebook);
@@ -180,36 +180,28 @@ abstract class AbstractDelayedTimeoutPlayer<
   }
 }
 
-export class DelayedSetupTimeoutPlayer<
-  T extends QTile
-> extends AbstractDelayedTimeoutPlayer<T> {
-  public async setUp(s: RelevantPlayerInfo<T>, st: T[]) {
+export class DelayedSetupTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
+  public async setUp(s: RelevantPlayerInfo, st: ShapeColorTile[]) {
     await this.callDelayedTimeoutMethod();
     super.setUp(s, st);
   }
 }
 
-export class DelayedTurnTimeoutPlayer<
-  T extends QTile
-> extends AbstractDelayedTimeoutPlayer<T> {
-  public async takeTurn(s: RelevantPlayerInfo<T>) {
+export class DelayedTurnTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
+  public async takeTurn(s: RelevantPlayerInfo) {
     await this.callDelayedTimeoutMethod();
     return super.takeTurn(s);
   }
 }
 
-export class DelayedNewTilesTimeoutPlayer<
-  T extends QTile
-> extends AbstractDelayedTimeoutPlayer<T> {
+export class DelayedNewTilesTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   public async newTiles(st: T[]) {
     await this.callDelayedTimeoutMethod();
     super.newTiles(st);
   }
 }
 
-export class DelayedWinTimeoutPlayer<
-  T extends QTile
-> extends AbstractDelayedTimeoutPlayer<T> {
+export class DelayedWinTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   public async win(w: boolean) {
     await this.callDelayedTimeoutMethod();
     super.win(w);
