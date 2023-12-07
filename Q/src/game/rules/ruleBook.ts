@@ -5,7 +5,7 @@ import {
   tilesPlacedMustShareRowOrColumn,
   mustPlaceAtLeastOneTile
 } from './placementRules';
-import { ShapeColorTile, type QTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import {
   pointPerTileInSequence,
   pointPerTilePlaced,
@@ -44,50 +44,50 @@ import {
  * This RuleBook is not responsible for enforcing any rules, only defining them,
  * so the only functionality provided are getter methods to get each type of rule.
  */
-export interface QRuleBook<T extends QTile> {
+export interface QRuleBook {
   /**
    * Returns a list of the placement rules used for determining the validity
    * of a placement of a tiles.
    * This includes the structural map rules.
    * @returns A list of PlacementRules
    */
-  getPlacementRules: () => ReadonlyArray<PlacementRule<T>>;
+  getPlacementRules: () => ReadonlyArray<PlacementRule>;
 
   /**
    * Returns a list of the scoring rules used to score a turn.
    * @returns A list of ScoringRules
    */
-  getScoringRules: () => ReadonlyArray<ScoringRule<T>>;
+  getScoringRules: () => ReadonlyArray<ScoringRule>;
 
   /**
    * Returns a list of the end of game rules used to determine when a game has ended
    * @returns a list of EndOfGameRules
    */
-  getEndOfGameRules: () => ReadonlyArray<EndOfGameRule<T>>;
+  getEndOfGameRules: () => ReadonlyArray<EndOfGameRule>;
 }
 
 /**
  * Abstract class for a RuleBook that uses a QTile.
  */
-abstract class AbstractRuleBook<T extends QTile> implements QRuleBook<T> {
+abstract class AbstractRuleBook implements QRuleBook {
   // List of rules that are always enforced by the map when placing a tile This
   // array will contain rules stating that tiles can only be placed next to one
   // another, and that tiles cannot be placed on top of one another
-  protected structuralMapRules: ReadonlyArray<PlacementRule<T>>;
+  protected structuralMapRules: ReadonlyArray<PlacementRule>;
 
   // List of rules used to determine where a placement of tiles can be placed on the map
-  protected placementRules: ReadonlyArray<PlacementRule<T>>;
+  protected placementRules: ReadonlyArray<PlacementRule>;
 
   // List of rules used to determine how a turn is scored
-  protected scoringRules: ReadonlyArray<ScoringRule<T>>;
+  protected scoringRules: ReadonlyArray<ScoringRule>;
 
   // List of rules used to determine when a game is over
-  protected endOfGameRules: ReadonlyArray<EndOfGameRule<T>>;
+  protected endOfGameRules: ReadonlyArray<EndOfGameRule>;
 
   constructor(
-    placementRules: PlacementRule<T>[],
-    scoringRules: ScoringRule<T>[],
-    endOfGameRules: EndOfGameRule<T>[]
+    placementRules: PlacementRule[],
+    scoringRules: ScoringRule[],
+    endOfGameRules: EndOfGameRule[]
   ) {
     this.structuralMapRules = [coordinateMustBeEmpty, coordinateMustShareASide];
     this.placementRules = placementRules;
@@ -114,7 +114,7 @@ abstract class AbstractRuleBook<T extends QTile> implements QRuleBook<T> {
  * and about how tiles can be placed in the same turn.
  * Contains scoring rules about BaseTiles.
  */
-export class BaseRuleBook extends AbstractRuleBook<ShapeColorTile> {
+export class BaseRuleBook extends AbstractRuleBook {
   constructor() {
     super(
       [
@@ -137,7 +137,7 @@ export class BaseRuleBook extends AbstractRuleBook<ShapeColorTile> {
   }
 }
 
-export class ConfigedRulebook extends AbstractRuleBook<ShapeColorTile> {
+export class ConfiguredRulebook extends AbstractRuleBook {
   constructor(endOfGameBonus: number, qBonus: number) {
     super(
       [

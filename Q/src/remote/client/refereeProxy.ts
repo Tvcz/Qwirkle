@@ -1,5 +1,4 @@
 import { Player } from '../../player/player';
-import { ShapeColorTile } from '../../game/map/tile';
 import { Connection } from '../connection';
 import { validateJSON } from '../../json/validator/validator';
 import {
@@ -32,7 +31,7 @@ import { VOID_METHOD_RESPONSE } from '../../constants';
  * @param connection - The connection to the server.
  */
 export function refereeProxy(
-  player: Player<ShapeColorTile>,
+  player: Player,
   connection: Connection,
   shouldLog: boolean
 ) {
@@ -52,7 +51,7 @@ export function refereeProxy(
 
 async function handleMessage(
   parsedMessage: unknown,
-  player: Player<ShapeColorTile>,
+  player: Player,
   connection: Connection
 ) {
   if (isNameCall(parsedMessage)) {
@@ -76,10 +75,7 @@ async function handleMessage(
  * @param player - The player to make the call on.
  * @param connection - The connection to the server.
  */
-async function makeNameCall(
-  player: Player<ShapeColorTile>,
-  connection: Connection
-) {
+async function makeNameCall(player: Player, connection: Connection) {
   const result = await player.name();
   connection.send(JSON.stringify(result));
 }
@@ -92,7 +88,7 @@ async function makeNameCall(
  * @param message - The setup call message received from the server.
  */
 async function makeSetUpCall(
-  player: Player<ShapeColorTile>,
+  player: Player,
   connection: Connection,
   message: SetUpCall
 ) {
@@ -111,7 +107,7 @@ async function makeSetUpCall(
  * @param message - The takeTurn call message received from the server.
  */
 async function makeTakeTurnCall(
-  player: Player<ShapeColorTile>,
+  player: Player,
   connection: Connection,
   message: TakeTurnCall
 ) {
@@ -130,7 +126,7 @@ async function makeTakeTurnCall(
  * @param message - The newTiles call message received from the server.
  */
 async function makeNewTilesCall(
-  player: Player<ShapeColorTile>,
+  player: Player,
   connection: Connection,
   message: NewTilesCall
 ) {
@@ -148,7 +144,7 @@ async function makeNewTilesCall(
  * @param message - The win call message received from the server.
  */
 async function makeWinCall(
-  player: Player<ShapeColorTile>,
+  player: Player,
   connection: Connection,
   message: WinCall
 ) {

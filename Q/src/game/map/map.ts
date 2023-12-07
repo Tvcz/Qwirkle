@@ -2,7 +2,7 @@ import {
   coordinateMustBeEmpty,
   coordinateMustShareASide
 } from '../rules/placementRules';
-import { type QTile, ShapeColorTile } from './tile';
+import { ShapeColorTile } from './tile';
 import { Dictionary, Set } from 'typescript-collections';
 import Coordinate from './coordinate';
 import { Dimensions } from '../types/map.types';
@@ -20,7 +20,7 @@ import { PlacementRule } from '../types/rules.types';
  *
  * This Map data representation keeps track of the dimensions of the map, meaning the x coordinates of the furthest left and right tile, and the y coordinate of the furthest top and bottom coordinate. These dimensions are not currently being used, but could have applications in the future.
  */
-export interface QMap<T extends QTile> {
+export interface QMap {
   /**
    * Get a list of all the coordinates where the given tile could be placed according to both the provided rules and the default structural rules.
    * @param tile The tile to check valid placements of.
@@ -28,8 +28,8 @@ export interface QMap<T extends QTile> {
    * @returns A list of Coordinates representing the valid positions the given tile can be placed.
    */
   getAllValidPlacements: (
-    tile: T,
-    placementRules: PlacementRule<T>[]
+    tile: ShapeColorTile,
+    placementRules: PlacementRule[]
   ) => Coordinate[];
 
   /**
@@ -38,14 +38,14 @@ export interface QMap<T extends QTile> {
    * @throws Error if placement doesn't follow the structural rules
    * @returns void
    */
-  placeTile: (tile: T, coordinate: Coordinate) => void;
+  placeTile: (tile: ShapeColorTile, coordinate: Coordinate) => void;
 
   /**
    * Gets the tile stored at the given coordinate or returns undefined if no tile exists
    * @param coordinate A Coordinate representing the position to get
    * @returns the tile stored at the coordinate, or undefined if it does not exist
    */
-  getTile: (coordinate: Coordinate) => T | undefined;
+  getTile: (coordinate: Coordinate) => ShapeColorTile | undefined;
 
   /**
    * Gets the dimensions of the board.
@@ -57,7 +57,7 @@ export interface QMap<T extends QTile> {
    * Gets a list of all tile placements in the map
    * @returns a list of TilePlacements
    */
-  getAllPlacements: () => TilePlacement<T>[];
+  getAllPlacements: () => TilePlacement[];
 }
 
 /**
@@ -65,20 +65,20 @@ export interface QMap<T extends QTile> {
  * Contains the board and keeps track of the furthest position of tiles in each direction.
  * Maintains the structural rules that all tiles must share a side and no tile can be placed where another tile already exists
  */
-abstract class AbstractQMap<T extends QTile> implements QMap<T> {
-  private readonly board: Dictionary<Coordinate, T>;
+abstract class AbstractQMap implements QMap {
+  private readonly board: Dictionary<Coordinate, ShapeColorTile>;
 
   // An object containing the position of the furthest tile in each direction.
   private readonly dimensions: Dimensions;
 
   // This array contains the rules that are always enforced by the map to maintain the its structural integrity
-  private readonly structuralMapRules: ReadonlyArray<PlacementRule<T>> = [
+  private readonly structuralMapRules: ReadonlyArray<PlacementRule> = [
     coordinateMustBeEmpty,
     coordinateMustShareASide
   ];
 
-  constructor(startingTilePlacements: TilePlacement<T>[]) {
-    this.board = new Dictionary<Coordinate, T>();
+  constructor(startingTilePlacements: TilePlacement[]) {
+    this.board = new Dictionary<Coordinate, ShapeColorTile>();
     this.dimensions = { topmost: 0, bottommost: 0, leftmost: 0, rightmost: 0 };
     startingTilePlacements.forEach(({ tile, coordinate }) => {
       this.addToBoard(tile, coordinate);
@@ -86,8 +86,8 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
   }
 
   public getAllValidPlacements(
-    tile: T,
-    placementRules: PlacementRule<T>[]
+    tile: ShapeColorTile,
+    placementRules: PlacementRule[]
   ): Coordinate[] {
     const seenTiles = new Set<Coordinate>();
 
@@ -109,7 +109,7 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
     return validPlacements;
   }
 
-  public placeTile(tile: T, coordinate: Coordinate): void {
+  public placeTile(tile: ShapeColorTile, coordinate: Coordinate): void {
     if (!this.isValidPlacement([{ tile, coordinate }], [])) {
       throw new Error('Invalid tile placement');
     }
@@ -121,7 +121,7 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
    * @param tile the tile to add to the board
    * @param coordinate the coordinate to place the tile at
    */
-  private addToBoard(tile: T, coordinate: Coordinate): void {
+  private addToBoard(tile: ShapeColorTile, coordinate: Coordinate): void {
     this.board.setValue(coordinate, tile);
     this.expandDimensions(coordinate);
   }
@@ -147,8 +147,8 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
   }
 
   private isValidPlacement(
-    tilePlacements: TilePlacement<T>[],
-    placementRules: PlacementRule<T>[]
+    tilePlacements: TilePlacement[],
+    placementRules: PlacementRule[]
   ): boolean {
     const structuralMapRulesUpheld = this.structuralMapRules.every((rule) =>
       rule(tilePlacements, (coord: Coordinate) => this.getTile(coord))
@@ -166,7 +166,7 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
         tile: this.board.getValue(coordinate)
       };
     });
-    const filteredEntries: TilePlacement<T>[] = [];
+    const filteredEntries: TilePlacement[] = [];
     allEntries.forEach((placement) => {
       const coordinate = placement.coordinate;
       const tile = placement.tile;
@@ -181,8 +181,8 @@ abstract class AbstractQMap<T extends QTile> implements QMap<T> {
 /**
  * Class representing a map for the Q Game.
  */
-class BaseMap extends AbstractQMap<ShapeColorTile> {
-  constructor(startingTiles: TilePlacement<ShapeColorTile>[]) {
+class BaseMap extends AbstractQMap {
+  constructor(startingTiles: TilePlacement[]) {
     super(startingTiles);
   }
 }

@@ -1,5 +1,4 @@
 import Coordinate from '../game/map/coordinate';
-import { QTile } from '../game/map/tile';
 import { CoordinateGetter } from '../game/types/rules.types';
 
 /**
@@ -14,8 +13,8 @@ export type TurnActionDescription = 'PASS' | 'EXCHANGE' | 'PLACE';
  * Type describing the signature of a function to compare two coordinates for some sorting algorithm, such as Row-Column ordering.
  * Takes in two coordinates, and a getter function for the map if needed.
  */
-export type SorterFunction<T extends QTile> = (
+export type SorterFunction = (
   coord1: Coordinate,
   coord2: Coordinate,
-  getTile: CoordinateGetter<T>
+  getTile: CoordinateGetter
 ) => number;

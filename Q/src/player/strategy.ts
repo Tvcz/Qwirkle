@@ -1,4 +1,4 @@
-import { BaseTile, QTile, ShapeColorTile } from '../game/map/tile';
+import { BaseTile, ShapeColorTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
 import {
   getAllValidPlacementCoordinates,
@@ -26,7 +26,7 @@ import { Dictionary } from 'typescript-collections';
  * Interface representing an implementation of a strategy for taking a turn in a Q game.
  * Strategies implement a suggestMove method that take in the necessary components of a game state and return the TurnAction that the player should take
  */
-export interface Strategy<T extends QTile> {
+export interface Strategy {
   /**
    * Suggests a turn action based on the state of the map, the player's
    * available tiles, and the number of remaining tiles.
@@ -37,11 +37,11 @@ export interface Strategy<T extends QTile> {
    * @returns The TurnAction that the player should play
    */
   suggestMove: (
-    mapState: TilePlacement<T>[],
-    playerTiles: T[],
+    mapState: TilePlacement[],
+    playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<T>>
-  ) => TurnAction<T>;
+    placementRules: ReadonlyArray<PlacementRule>
+  ) => TurnAction;
 }
 
 /**
@@ -54,14 +54,14 @@ export interface Strategy<T extends QTile> {
  *
  * Row Column Ordering compares a coordinates row first, and then column if there is a tie.
  */
-export class DagStrategy implements Strategy<ShapeColorTile> {
+export class DagStrategy implements Strategy {
   public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
-    return suggestMoveByStrategy<ShapeColorTile>(
+    return suggestMoveByStrategy(
       mapState,
       playerTiles,
       remainingTilesCount,
@@ -81,14 +81,14 @@ export class DagStrategy implements Strategy<ShapeColorTile> {
  *
  * Row Column Ordering compares a coordinates row first, and then column if there is a tie.
  */
-export class LdasgStrategy implements Strategy<ShapeColorTile> {
+export class LdasgStrategy implements Strategy {
   public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
-    return suggestMoveByStrategy<ShapeColorTile>(
+    return suggestMoveByStrategy(
       mapState,
       playerTiles,
       remainingTilesCount,
@@ -102,11 +102,8 @@ export class LdasgStrategy implements Strategy<ShapeColorTile> {
  * Denotes a player that in response to being granted a turn, requests the
  * placement of a tile that is not adjacent to a placed tile.
  */
-export class NonAdjacentCoordinateStrategy implements Strategy<ShapeColorTile> {
-  public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
-    playerTiles: ShapeColorTile[]
-  ) {
+export class NonAdjacentCoordinateStrategy implements Strategy {
+  public suggestMove(mapState: TilePlacement[], playerTiles: ShapeColorTile[]) {
     const maxRight = Math.max(
       ...mapState.map((tp) => tp.coordinate.getCoordinate().x)
     );
@@ -121,17 +118,17 @@ export class NonAdjacentCoordinateStrategy implements Strategy<ShapeColorTile> {
  * Denotes a player that in response to being granted a turn, requests the
  * placement of a tile that it does not own.
  */
-export class TileNotOwnedStrategy implements Strategy<ShapeColorTile> {
-  private backupStrategy: Strategy<ShapeColorTile>;
-  constructor(backupStrategy: Strategy<ShapeColorTile>) {
+export class TileNotOwnedStrategy implements Strategy {
+  private backupStrategy: Strategy;
+  constructor(backupStrategy: Strategy) {
     this.backupStrategy = backupStrategy;
   }
 
   public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
     const tilesNotInHand: ShapeColorTile[] = [];
     for (const shape of shapeList) {
@@ -168,9 +165,9 @@ export class TileNotOwnedStrategy implements Strategy<ShapeColorTile> {
  * Denotes a player that in response to being granted a turn, requests
  * placements that are not in one line (row, column).
  */
-export class NotALineStrategy implements Strategy<ShapeColorTile> {
-  private backupStrategy: Strategy<ShapeColorTile>;
-  constructor(backupStrategy: Strategy<ShapeColorTile>) {
+export class NotALineStrategy implements Strategy {
+  private backupStrategy: Strategy;
+  constructor(backupStrategy: Strategy) {
     this.backupStrategy = backupStrategy;
   }
 
@@ -187,9 +184,9 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
     parentTile: ShapeColorTile,
     hand: ShapeColorTile[],
     map: Dictionary<Coordinate, ShapeColorTile>,
-    placements: TilePlacement<ShapeColorTile>[],
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
-  ): TilePlacement<ShapeColorTile>[] {
+    placements: TilePlacement[],
+    placementRules: ReadonlyArray<PlacementRule>
+  ): TilePlacement[] {
     const allValidPlacements = getAllValidPlacementCoordinates(
       parentTile,
       map,
@@ -197,7 +194,7 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
       placementRules
     );
     for (const coordinate of allValidPlacements) {
-      const parentTilePlacement: TilePlacement<ShapeColorTile> = {
+      const parentTilePlacement: TilePlacement = {
         tile: parentTile,
         coordinate
       };
@@ -225,7 +222,7 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
     return [];
   }
 
-  private isCheating(tilePlacements: TilePlacement<QTile>[]): boolean {
+  private isCheating(tilePlacements: TilePlacement[]): boolean {
     if (tilePlacements.length === 0) {
       return false;
     }
@@ -245,9 +242,9 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
   }
 
   private attemptToCheat(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[]
-  ): TurnAction<ShapeColorTile> {
+  ): TurnAction {
     for (const tile of playerTiles) {
       const remainingHand = [...playerTiles];
       remainingHand.splice(remainingHand.indexOf(tile), 1);
@@ -272,10 +269,10 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
   }
 
   public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
     const cheatTurn = this.attemptToCheat(mapState, playerTiles);
 
@@ -296,20 +293,20 @@ export class NotALineStrategy implements Strategy<ShapeColorTile> {
  * Denotes a player that in response to being granted a turn, requests a tile
  * replacement but it owns more tiles than the referee has left.
  */
-export class BadAskForTilesStrategy implements Strategy<ShapeColorTile> {
-  private backupStrategy: Strategy<ShapeColorTile>;
-  constructor(backupStrategy: Strategy<ShapeColorTile>) {
+export class BadAskForTilesStrategy implements Strategy {
+  private backupStrategy: Strategy;
+  constructor(backupStrategy: Strategy) {
     this.backupStrategy = backupStrategy;
   }
 
   public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
     if (playerTiles.length > remainingTilesCount) {
-      return new BaseTurnAction<ShapeColorTile>('EXCHANGE');
+      return new BaseTurnAction('EXCHANGE');
     }
     return this.backupStrategy.suggestMove(
       mapState,
@@ -324,20 +321,20 @@ export class BadAskForTilesStrategy implements Strategy<ShapeColorTile> {
  * Denotes a player that in response to being granted a turn, requests the
  * placement of a tile that does not match its adjacent tiles.
  */
-export class NoFitStrategy implements Strategy<ShapeColorTile> {
-  private backupStrategy: Strategy<ShapeColorTile>;
-  constructor(backupStrategy: Strategy<ShapeColorTile>) {
+export class NoFitStrategy implements Strategy {
+  private backupStrategy: Strategy;
+  constructor(backupStrategy: Strategy) {
     this.backupStrategy = backupStrategy;
   }
 
   public suggestMove(
-    mapState: TilePlacement<ShapeColorTile>[],
+    mapState: TilePlacement[],
     playerTiles: ShapeColorTile[],
     remainingTilesCount: number,
-    placementRules: ReadonlyArray<PlacementRule<ShapeColorTile>>
+    placementRules: ReadonlyArray<PlacementRule>
   ) {
     const invertNeighborMatch = (
-      tilePlacements: TilePlacement<ShapeColorTile>[],
+      tilePlacements: TilePlacement[],
       getTile: (coordinate: Coordinate) => ShapeColorTile | undefined
     ) => !mustMatchNeighboringShapesOrColors(tilePlacements, getTile);
 

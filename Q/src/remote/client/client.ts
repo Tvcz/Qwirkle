@@ -1,7 +1,6 @@
 import { createConnection } from 'net';
 import { TCPConnection } from '../connection';
 import { Player } from '../../player/player';
-import { ShapeColorTile } from '../../game/map/tile';
 import { refereeProxy } from './refereeProxy';
 import { DEFAULT_CONNECTION_OPTIONS } from '../../constants';
 import { ClientConfig } from '../../json/config/clientConfig';
@@ -38,7 +37,7 @@ export async function runClient(config: ClientConfig) {
  * @param shouldLog Whether to log the game state to the console.
  */
 export function joinGame(
-  player: Player<ShapeColorTile>,
+  player: Player,
   connectionOptions = DEFAULT_CONNECTION_OPTIONS,
   shouldLog: boolean
 ): Promise<void> {

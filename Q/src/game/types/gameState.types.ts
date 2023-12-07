@@ -1,7 +1,7 @@
 import { TurnAction } from '../../player/turnAction';
 import { Result } from '../../referee/referee.types';
 import Coordinate from '../map/coordinate';
-import { QTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { Dimensions } from './map.types';
 
 /**
@@ -12,10 +12,10 @@ export type Scoreboard = { name: string; score: number }[];
 
 /**
  * Type representing a tile placement on the board.
- * Made up of a QTile and a Coordinate.
+ * Made up of a ShapeColorTile and a Coordinate.
  */
-export type TilePlacement<T extends QTile> = {
-  tile: T;
+export type TilePlacement = {
+  tile: ShapeColorTile;
   coordinate: Coordinate;
 };
 
@@ -32,12 +32,12 @@ export type GameStatus = 'In Progress' | 'Finished';
  * Type representing the info a player will need when it's their turn.
  * Contains info regarding the player's tiles, the current map, the scoreboard, the remaining tiles in the bag, the order of the players, and the status of the game.
  */
-export type RelevantPlayerInfo<T extends QTile> = {
+export type RelevantPlayerInfo = {
   // The tiles that the current player has and can play or exchange.
-  playerTiles: T[];
+  playerTiles: ShapeColorTile[];
 
   // A list of every tile placement currently on the board. A tile placement consists of a coordinate and a tile.
-  mapState: TilePlacement<T>[];
+  mapState: TilePlacement[];
 
   // The scoreboard of the game, a list of player ids and scores
   scoreboard: Scoreboard;
@@ -54,8 +54,8 @@ export type RelevantPlayerInfo<T extends QTile> = {
  * the a list of tile placements (tiles and coordinates) and the dimensions of
  * the map, which helps the graphical renderer create the map more efficiently.
  */
-export type RenderableMapState<T extends QTile> = {
-  tilePlacements: TilePlacement<T>[];
+export type RenderableMapState = {
+  tilePlacements: TilePlacement[];
   dimensions: Dimensions;
 };
 
@@ -65,10 +65,10 @@ export type RenderableMapState<T extends QTile> = {
  * state, the player data (in their turn order), and the remaining referee tiles
  * (in the order that they will be drawn).
  */
-export type RenderableGameState<T extends QTile> = {
-  mapState: RenderableMapState<T>;
-  players: RenderablePlayer<T>[];
-  remainingTiles: T[];
+export type RenderableGameState = {
+  mapState: RenderableMapState;
+  players: RenderablePlayer[];
+  remainingTiles: ShapeColorTile[];
 };
 
 /**
@@ -76,10 +76,10 @@ export type RenderableGameState<T extends QTile> = {
  * create a graphical rendering of the player's state. Includes the player's
  * score and their tiles.
  */
-export type RenderablePlayer<T extends QTile> = {
+export type RenderablePlayer = {
   name: string;
   score: number;
-  tiles: T[];
+  tiles: ShapeColorTile[];
 };
 
 /**
@@ -87,9 +87,9 @@ export type RenderablePlayer<T extends QTile> = {
  * they made that turn.
  * Could also be undefined, meaning that the player has not made a turn yet.
  */
-export type TurnState<T extends QTile> = {
-  turnAction: TurnAction<T>;
-  playerTiles: T[];
+export type TurnState = {
+  turnAction: TurnAction;
+  playerTiles: ShapeColorTile[];
 };
 
 /**
@@ -97,10 +97,10 @@ export type TurnState<T extends QTile> = {
  * Contains the player's name, their initial tiles, and a setUp method
  * to communicate to the player the initial map and starting tiles.
  */
-export type PlayerSetupInformation<T extends QTile> = {
+export type PlayerSetupInformation = {
   name: string;
-  tiles: T[];
-  setUp: (s: RelevantPlayerInfo<T>, st: T[]) => Promise<Result<void>>;
+  tiles: ShapeColorTile[];
+  setUp: (s: RelevantPlayerInfo, st: ShapeColorTile[]) => Promise<Result<void>>;
 };
 
 /**

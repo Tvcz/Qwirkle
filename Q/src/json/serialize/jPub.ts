@@ -15,7 +15,7 @@ import { toJPlayer } from './jPlayer';
  * @returns a JPub object
  */
 export function toJPub(
-  gameState: RelevantPlayerInfo<ShapeColorTile>,
+  gameState: RelevantPlayerInfo,
   playerName: string
 ): JPub {
   const map = toJMap(gameState.mapState);

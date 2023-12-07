@@ -1,5 +1,4 @@
 import { QGameState } from '../game/gameState/gameState';
-import { QTile } from '../game/map/tile';
 import { QRuleBook } from '../game/rules/ruleBook';
 import { Player } from '../player/player';
 import { Observer } from '../observer/observer';
@@ -15,11 +14,11 @@ export type GameResult = [string[], string[]];
  * The referee is a function that takes in a list of the players and a rulebook.
  * It returns the winners of the game and the eliminated players.
  */
-export type RefereeFunction<T extends QTile> = (
-  players: Player<T>[],
-  observers: Observer<T>[],
-  ruleBook: QRuleBook<T>,
-  existingGameState?: QGameState<T>,
+export type RefereeFunction = (
+  players: Player[],
+  observers: Observer[],
+  ruleBook: QRuleBook,
+  existingGameState?: QGameState,
   perTurnTimeoutMs?: number
 ) => Promise<GameResult>;
 

@@ -1,4 +1,3 @@
-import { QTile } from '../map/tile';
 import { EndOfGameRule } from '../types/rules.types';
 
 /**
@@ -7,7 +6,7 @@ import { EndOfGameRule } from '../types/rules.types';
  * @param playerTurnQueue The queue of PlayerStates in the game
  * @returns true if all players have have passed or exchanged in the last round, false otherwises
  */
-export const allPlayersPassedOrExchangedInRound: EndOfGameRule<QTile> = (
+export const allPlayersPassedOrExchangedInRound: EndOfGameRule = (
   playerTurnQueue
 ) => {
   if (playerTurnQueue.isRoundOver()) {
@@ -27,7 +26,7 @@ export const allPlayersPassedOrExchangedInRound: EndOfGameRule<QTile> = (
  * @param playerTurnQueue The queue of PlayerStates in the game
  * @returns true if the last active player placed all of their tiles, false otherwise
  */
-export const playerHasPlacedAllTilesInPossession: EndOfGameRule<QTile> = (
+export const playerHasPlacedAllTilesInPossession: EndOfGameRule = (
   playerTurnQueue
 ) => {
   const lastActivePlayerTurnState = playerTurnQueue
@@ -50,6 +49,6 @@ export const playerHasPlacedAllTilesInPossession: EndOfGameRule<QTile> = (
  * @param playerTurnQueue The queue of PlayerStates in the game
  * @returns true if there are no players left, false otherwise
  */
-export const noPlayersRemaining: EndOfGameRule<QTile> = (playerTurnQueue) => {
+export const noPlayersRemaining: EndOfGameRule = (playerTurnQueue) => {
   return playerTurnQueue.getAllPlayersNames().length === 0;
 };

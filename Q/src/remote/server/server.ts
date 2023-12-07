@@ -2,9 +2,8 @@ import * as net from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
-import { ShapeColorTile } from '../../game/map/tile';
 import { BaseReferee } from '../../referee/referee';
-import { ConfigedRulebook } from '../../game/rules/ruleBook';
+import { ConfiguredRulebook } from '../../game/rules/ruleBook';
 import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
 import { GameResult } from '../../referee/referee.types';
 import {
@@ -40,7 +39,7 @@ import { toMs } from '../../utils';
  */
 export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
   !config.quiet && console.error('running TCP game in func');
-  const players: Player<ShapeColorTile>[] = [];
+  const players: Player[] = [];
   const connections: Connection[] = [];
   const server = net.createServer();
   const maxResponseWait = Math.max(
@@ -91,7 +90,7 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
  * @returns true if the game should be run, false otherwise
  */
 function waitForAdditionalPlayers(
-  players: Player<ShapeColorTile>[],
+  players: Player[],
   config: ServerConfig,
   attempt = 1
 ): Promise<boolean> {
@@ -129,7 +128,7 @@ function waitForAdditionalPlayers(
  * Attempts to inform all players that the game will not be run.
  * @param players the players to inform
  */
-function informPlayersOfNoGame(players: Player<ShapeColorTile>[]) {
+function informPlayersOfNoGame(players: Player[]) {
   players.forEach((player) => {
     try {
       player.win(false);
@@ -154,11 +153,11 @@ function terminateConnections(connections: Connection[]) {
  * @returns the result of the game
  */
 async function startGame(
-  players: Player<ShapeColorTile>[],
+  players: Player[],
   refereeConfig: RefereeConfig
 ): Promise<GameResult> {
   const gameState = await toQGameState(refereeConfig.state0, players);
-  const observers: Observer<ShapeColorTile>[] = [];
+  const observers: Observer[] = [];
   if (refereeConfig.observe) {
     observers.push(new BaseObserver());
   }
@@ -166,7 +165,7 @@ async function startGame(
   return await BaseReferee(
     players,
     observers,
-    new ConfigedRulebook(
+    new ConfiguredRulebook(
       refereeConfig['config-s'].fbo,
       refereeConfig['config-s'].qbo
     ),
@@ -183,8 +182,8 @@ async function startGame(
  * time
  */
 async function signUp(
-  player: Player<ShapeColorTile>,
-  players: Player<ShapeColorTile>[],
+  player: Player,
+  players: Player[],
   config: ServerConfig
 ): Promise<void> {
   const waitForSignupMs = toMs(config['wait-for-signup']);

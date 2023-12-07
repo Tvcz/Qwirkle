@@ -1,6 +1,5 @@
 import { JPub } from '../data/data.types';
 import { RelevantPlayerInfo } from '../../game/types/gameState.types';
-import { ShapeColorTile } from '../../game/map/tile';
 import { toQMap, toQTile } from './qMap';
 
 /**
@@ -8,9 +7,7 @@ import { toQMap, toQTile } from './qMap';
  * @param jPub a json representation of a public game state
  * @returns a RelevantPlayerInfo, which is a representation of the game state
  */
-export function toQRelevantPlayerInfo(
-  jPub: JPub
-): RelevantPlayerInfo<ShapeColorTile> {
+export function toQRelevantPlayerInfo(jPub: JPub): RelevantPlayerInfo {
   const [activePlayer, ...playerScores] = jPub.players;
   const playerTiles = activePlayer['tile*'].map(toQTile);
 
