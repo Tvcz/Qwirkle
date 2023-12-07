@@ -1,7 +1,7 @@
 import { Server, createConnection } from 'net';
 import { Connection, TCPConnection } from '../connection';
 import { BaseTurnAction } from '../../player/turnAction';
-import { BaseTile, ShapeColorTile } from '../../game/map/tile';
+import { BaseTile } from '../../game/map/tile';
 import Coordinate from '../../game/map/coordinate';
 import { Player } from '../../player/player';
 import { refereeProxy } from './refereeProxy';

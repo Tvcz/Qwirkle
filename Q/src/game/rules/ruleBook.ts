@@ -5,7 +5,6 @@ import {
   tilesPlacedMustShareRowOrColumn,
   mustPlaceAtLeastOneTile
 } from './placementRules';
-import { ShapeColorTile } from '../map/tile';
 import {
   pointPerTileInSequence,
   pointPerTilePlaced,
