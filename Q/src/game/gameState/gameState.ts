@@ -58,7 +58,7 @@ export interface QGameState {
    * the beginning of their turn
    * @param turnAction the action taken by the player who just took a turn
    */
-  nextTurn(playerTiles: ShapeColorTile[], turnAction: TurnAction);
+  nextTurn: (playerTiles: ShapeColorTile[], turnAction: TurnAction) => void;
 
   /**
    * Execute a turn where the player passes.
