@@ -53,7 +53,7 @@ const tilePlacementsHtmlBuilder = (
       const xAdjusted = x + 1 - dimensions.leftmost;
       const yAdjusted = y + 1 - dimensions.bottommost;
 
-      return tileHtmlBuilder(xAdjusted, yAdjusted, tile);
+      return tileHtmlBuilder(tile, xAdjusted, yAdjusted);
     })
     .join('');
 };

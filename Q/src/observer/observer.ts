@@ -52,7 +52,6 @@ export interface ObserverAPI {
    */
   saveState(filepath: string): void;
 
-  // TODO Check for correctness
   /**
    * Sets the callback function for updating the GUI view.
    * @param updateViewCallback the callback function for updating the GUI view
@@ -88,7 +87,7 @@ export class BaseObserver implements Observer, ObserverAPI {
     eliminatedNames: string[]
   ) {
     this.endGameCallback(
-      this.toHtmlView(gameState),
+      gameStateHtmlBuilder(gameState),
       this.makeGameOverCard(winnerNames, eliminatedNames)
     );
   }
@@ -124,15 +123,16 @@ export class BaseObserver implements Observer, ObserverAPI {
     }
 
     this.saveHtmlToImage(
-      this.toHtmlView(gameState),
+      gameStateHtmlBuilder(gameState),
       `${tmpFolderPath}/${gameStateIndex}.png`
     );
   }
 
-  private toHtmlView(gameState: RenderableGameState): string {
-    return gameStateHtmlBuilder(gameState);
-  }
-
+  /**
+   * Saves an html string to an image file.
+   * @param html the html string to save
+   * @param outputPath the path to save the image to
+   */
   private async saveHtmlToImage(html: string, outputPath: string) {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
@@ -166,9 +166,12 @@ export class BaseObserver implements Observer, ObserverAPI {
     this.updateViewCallback = updateViewCallback;
   }
 
+  /**
+   * Updates the GUI view to the current state.
+   */
   private updateGUIView() {
     this.updateViewCallback(
-      this.toHtmlView(this.stateHistory[this.currentStateIndex])
+      gameStateHtmlBuilder(this.stateHistory[this.currentStateIndex])
     );
   }
 

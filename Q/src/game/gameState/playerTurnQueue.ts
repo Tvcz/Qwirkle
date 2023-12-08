@@ -20,8 +20,8 @@ import { TurnAction } from '../../player/turnAction';
  * line, removing a player from the game, getting a scoreboard of all players
  * scores, and getting the names of all players.
  *
- * INVARIANT: all player names in the queue are unique,
- * and that a queue cannot be created with 0 players.
+ * INVARIANTS: all player names in the queue are unique, and a queue cannot be
+ * created with 0 players.
  */
 export interface QPlayerTurnQueue {
   /**
@@ -49,10 +49,16 @@ export interface QPlayerTurnQueue {
   getLastActivePlayer: () => PlayerState;
 
   /**
-   * Remove the player with the given name from the queue/game.
-   * If the eliminated player is also the 'first player' (the player who started the round), then the first player is changed to the next, non eliminated player.
+   * Remove the player with the given name from the queue (which also implicitly
+   * removes them from the game).
+   *
+   * If the eliminated player is also the 'first
+   * player' (the player who started the round), then the first player is
+   * changed to the next, non eliminated player.
+   *
    * @param playerName name of the player to be eliminated
-   * @param attemptedTurnAction an optional turn action if the player got eliminated for attempting to make an invalid move
+   * @param attemptedTurnAction an optional turn action if the player got
+   * eliminated for attempting to make an invalid move
    * @throws an error if the player name does not exist in the turn queue
    * @returns a list of the eliminated players tiles
    */
@@ -91,9 +97,16 @@ export interface QPlayerTurnQueue {
   isRoundOver: () => boolean;
 
   /**
-   * Gets the most recent turn state of each player.
-   * A TurnState includes the player's most recent turn action, and their tiles before taking that turn. Or it is undefined if they haven't taken a turn yet.
-   * This includes the most recent turns of both the current players, as well as the players who were eliminated while attempting an invalid move during the current round.
+   * Gets the most recent turn state of each player. A TurnState includes the
+   * player's most recent turn action, and their tiles before taking that turn
+   * .
+   * For every player who has not yet taken a turn, there will be an undefined
+   * value in the list.
+   *
+   * This includes the most recent turns of both the current players, as well as
+   * the players who were eliminated while attempting an invalid move during the
+   * current round.
+   *
    * @returns a list of the turn states of the players
    */
   getAllMostRecentTurns: () => (TurnState | undefined)[];
@@ -152,6 +165,12 @@ class PlayerTurnQueue implements QPlayerTurnQueue {
     this.playerQueue.push(player);
   }
 
+  /**
+   * If the given player has already taken a turn this round, reset the set of
+   * players who have taken a turn this round. Otherwise, add the player to the
+   * set of players who have taken a turn this round.
+   * @param playerName the name of the player who took a turn
+   */
   private updateRound(playerName: string) {
     if (this.playersActedThisRound.contains(playerName)) {
       this.playersActedThisRound = new Set<string>();
@@ -187,18 +206,25 @@ class PlayerTurnQueue implements QPlayerTurnQueue {
     );
 
     this.updateEliminatedPlayersAttemptingTurnThisRound(
+      player,
       attemptedTurnAction,
-      playerTiles,
-      player
+      playerTiles
     );
 
     return playerTiles;
   }
 
+  /**
+   * If the player was eliminated for attempting an invalid move, add them to
+   * the list of players who were eliminated attempting a turn this round.
+   * @param player the player who attempted the turn
+   * @param attemptedTurnAction the turn action the player attempted
+   * @param playerTiles the tiles the player had before attempting the turn
+   */
   private updateEliminatedPlayersAttemptingTurnThisRound(
+    player: PlayerState,
     attemptedTurnAction: TurnAction | undefined,
-    playerTiles: ShapeColorTile[],
-    player: PlayerState
+    playerTiles: ShapeColorTile[]
   ) {
     if (attemptedTurnAction) {
       player.setMostRecentTurn({

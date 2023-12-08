@@ -3,6 +3,11 @@ import { join } from 'path';
 import { ObserverAPI } from '../../observer/observer';
 import { dialog } from 'electron';
 
+/**
+ * Creates the window that displays the game state
+ * @param observer - The observer that is used to update the window
+ * @returns A promise that resolves when the window is ready to be shown
+ */
 export const createWindow = (observer: ObserverAPI) => {
   app.on('ready', () => {
     const windowOptions: Electron.BrowserWindowConstructorOptions = {

@@ -121,6 +121,9 @@ export class BasePlayer implements Player {
   }
 }
 
+/**
+ * A player that throws an exception when its name method is called.
+ */
 export class SetupExceptionPlayer extends BasePlayer {
   public async setUp(s: RelevantPlayerInfo, st: ShapeColorTile[]) {
     const mapString = JSON.stringify(s.mapState);
@@ -131,6 +134,9 @@ export class SetupExceptionPlayer extends BasePlayer {
   }
 }
 
+/**
+ * A player that throws an exception when its takeTurn method is called.
+ */
 export class TurnExceptionPlayer extends BasePlayer {
   public async takeTurn(s: RelevantPlayerInfo): Promise<TurnAction> {
     const stateString = JSON.stringify(s);
@@ -140,6 +146,9 @@ export class TurnExceptionPlayer extends BasePlayer {
   }
 }
 
+/**
+ * A player that throws an exception when its newTiles method is called.
+ */
 export class NewTilesExceptionPlayer extends BasePlayer {
   public async newTiles(st: ShapeColorTile[]) {
     const tilesString = JSON.stringify(st);
@@ -149,6 +158,9 @@ export class NewTilesExceptionPlayer extends BasePlayer {
   }
 }
 
+/**
+ * A player that throws an exception when its win method is called.
+ */
 export class WinExceptionPlayer extends BasePlayer {
   public async win(w: boolean) {
     throw new Error(
@@ -157,6 +169,9 @@ export class WinExceptionPlayer extends BasePlayer {
   }
 }
 
+/**
+ * An abstract player that delays its method calls by a specified number of method calls.
+ */
 abstract class AbstractDelayedTimeoutPlayer extends BasePlayer {
   methodCallCount: number;
 
@@ -178,6 +193,9 @@ abstract class AbstractDelayedTimeoutPlayer extends BasePlayer {
   }
 }
 
+/**
+ * A player that delays its name method call by a specified number of method calls.
+ */
 export class DelayedSetupTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   public async setUp(s: RelevantPlayerInfo, st: ShapeColorTile[]) {
     await this.callDelayedTimeoutMethod();
@@ -185,6 +203,9 @@ export class DelayedSetupTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   }
 }
 
+/**
+ * A player that delays its takeTurn method call by a specified number of method calls.
+ */
 export class DelayedTurnTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   public async takeTurn(s: RelevantPlayerInfo) {
     await this.callDelayedTimeoutMethod();
@@ -192,6 +213,9 @@ export class DelayedTurnTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   }
 }
 
+/**
+ * A player that delays its newTiles method call by a specified number of method calls.
+ */
 export class DelayedNewTilesTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   public async newTiles(st: ShapeColorTile[]) {
     await this.callDelayedTimeoutMethod();
@@ -199,6 +223,9 @@ export class DelayedNewTilesTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   }
 }
 
+/**
+ * A player that delays its win method call by a specified number of method calls.
+ */
 export class DelayedWinTimeoutPlayer extends AbstractDelayedTimeoutPlayer {
   public async win(w: boolean) {
     await this.callDelayedTimeoutMethod();

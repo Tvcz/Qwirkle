@@ -1,9 +1,8 @@
 import { BaseTurnAction } from './turnAction';
-import { QTile } from '../game/map/tile';
 import { TilePlacement } from '../game/types/gameState.types';
 
 describe('turn action tests', () => {
-  let tilePlacement: TilePlacement<QTile>;
+  let tilePlacement: TilePlacement;
 
   it('should throw an error if placements are undefined for a PLACE action', () => {
     // arrange, act, assert

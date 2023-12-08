@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import { QTile, ShapeColorTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { Set } from 'typescript-collections';
 import { PlacementRule } from '../types/rules.types';
 import { getTileWithPlacements } from './scoringRules';
@@ -7,7 +7,7 @@ import { getTileWithPlacements } from './scoringRules';
 /**
  * A rule requiring that a given coordinate on a game board must be empty. In
  * other words, checks to ensure a tile does not exist at the provided
- * coordinate
+ * coordinate.
  * @param tilePlacements the tiles and coordinates to be placed on the board
  * @param getTile a method to get a tile at a given coordinate, returns the tile
  * or undefined if no tile exists
@@ -35,9 +35,12 @@ export const coordinateMustBeEmpty: PlacementRule = (
 
 /**
  * A rule requiring that a given coordinate on a game board shares at least one
- * side with a tile. The given tiles are placed in order, so the tiles placed
- * need to share a side with either a tile on the map, or a tile that was placed
- * previously in this turn
+ * side with a tile.
+ *
+ * The given tiles are placed in order, so the tiles placed need to share a side
+ * with either a tile on the map, or a tile that was placed previously in this
+ * turn.
+ *
  * @param tilePlacements the tiles and coordinates to be placed on the board
  * @param getTile a method to get a tile at a given coordinate, returns the tile
  * or undefined if no tile exists
@@ -62,7 +65,7 @@ export const coordinateMustShareASide: PlacementRule = (
 };
 
 /**
- * Check if the coordinates given as _neighbors_ are on the map already or have been placed this turn
+ * Check if the coordinates given as _neighbors_ are on the map already or have been placed this turn.
  * @param neighbors Neigbors of the coordinate that's being placed
  * @param tilesPlacedInTurn The tiles already placed in this turn
  * @param getTile a method to get a tile at a given coordinate, returns the tile
@@ -72,7 +75,7 @@ export const coordinateMustShareASide: PlacementRule = (
 const neighborIsOnMapOrWasPlaced = (
   neighbors: Coordinate[],
   tilesPlacedInTurn: Set<Coordinate>,
-  getTile: (coordinate: Coordinate) => QTile | undefined
+  getTile: (coordinate: Coordinate) => ShapeColorTile | undefined
 ) => {
   return neighbors.some((neighbor) => {
     const isInMap = getTile(neighbor) !== undefined;

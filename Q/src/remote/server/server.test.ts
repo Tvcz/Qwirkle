@@ -21,7 +21,7 @@ import { RelevantPlayerInfo } from '../../game/types/gameState.types';
 import { toJChoice } from '../../json/serialize/jTurn';
 import { toJPub } from '../../json/serialize/jPub';
 
-describe('tests for tcp player proxy', () => {
+describe('tests for the server', () => {
   let server: Server;
   let clientConnection: Connection;
   let serverConnection: Connection;

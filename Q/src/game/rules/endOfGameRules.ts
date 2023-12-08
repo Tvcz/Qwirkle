@@ -3,7 +3,7 @@ import { EndOfGameRule } from '../types/rules.types';
 /**
  * A rule that checks whether all players have made pass or exchange moves at the end of a round.
  * If true, then the game should be over.
- * @param playerTurnQueue The queue of PlayerStates in the game
+ * @param playerTurnQueue the player turn order and state tracker for the game
  * @returns true if all players have have passed or exchanged in the last round, false otherwises
  */
 export const allPlayersPassedOrExchangedInRound: EndOfGameRule = (
@@ -23,7 +23,7 @@ export const allPlayersPassedOrExchangedInRound: EndOfGameRule = (
 
 /**
  * A rule that checks whether the last active player placed all of the tiles in its possession.
- * @param playerTurnQueue The queue of PlayerStates in the game
+ * @param playerTurnQueue the player turn order and state tracker for the game
  * @returns true if the last active player placed all of their tiles, false otherwise
  */
 export const playerHasPlacedAllTilesInPossession: EndOfGameRule = (
@@ -45,8 +45,8 @@ export const playerHasPlacedAllTilesInPossession: EndOfGameRule = (
 };
 
 /**
- * A rule that checks if there are no players remaining in the game
- * @param playerTurnQueue The queue of PlayerStates in the game
+ * A rule that checks if there are no players remaining in the game.
+ * @param playerTurnQueue the player turn order and state tracker for the game
  * @returns true if there are no players left, false otherwise
  */
 export const noPlayersRemaining: EndOfGameRule = (playerTurnQueue) => {

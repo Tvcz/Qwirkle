@@ -29,19 +29,25 @@ import {
 /**
  * Interface representing a RuleBook for the Q Game to adhere to.
  *
- * There are Structural Map Rules, which are rules that are defined in every abstract rulebook since they are always enforced by the map.
- * These rules are defined directly in the constructor of AbstractQMap class.
- * Checking these rules is redundant by the referee, since they are defined and checked in the map, but it is important for users of the RuleBook to know that they exist and will be enforced.
+ * There are Structural Map Rules, which are rules that are defined in every
+ * abstract rulebook since they are always enforced by the map.
  *
- * There are Placement Rules which determine which tiles can be placed
- * next to one another based on their internal properties.
+ * These rules are defined directly in the constructor of TileMap class.
+ *
+ * Checking these rules is redundant by the referee, since they are defined and
+ * checked in the map, but it is important for users of the RuleBook to know
+ * that they exist and will be enforced.
+ *
+ * There are Placement Rules which determine which tiles can be placed next to
+ * one another based on their internal properties.
  *
  * There are scoring rules which determine how a move is scored.
  *
  * There are end of game rules which determine when a game has ended.
  *
  * This RuleBook is not responsible for enforcing any rules, only defining them,
- * so the only functionality provided are getter methods to get each type of rule.
+ * so the only functionality provided are getter methods to get each type of
+ * rule.
  */
 export interface QRuleBook {
   /**
@@ -66,7 +72,7 @@ export interface QRuleBook {
 }
 
 /**
- * Abstract class for a RuleBook that uses a QTile.
+ * Abstract class for a RuleBook that uses a ShapeColorTile.
  */
 abstract class AbstractRuleBook implements QRuleBook {
   // List of rules that are always enforced by the map when placing a tile This
@@ -108,10 +114,9 @@ abstract class AbstractRuleBook implements QRuleBook {
 }
 
 /**
- * Represents a RuleBook for shape color tiles.
- * Contains placement rules about neighbor matching properties of BaseTiles
- * and about how tiles can be placed in the same turn.
- * Contains scoring rules about BaseTiles.
+ * Represents a RuleBook for shape color tiles. Contains placement rules about
+ * neighbor matching properties of ShapeColorTiles and about how tiles can be
+ * placed in the same turn. Contains scoring rules about BaseTiles.
  */
 export class BaseRuleBook extends AbstractRuleBook {
   constructor() {
@@ -136,6 +141,10 @@ export class BaseRuleBook extends AbstractRuleBook {
   }
 }
 
+/**
+ * Represents a RuleBook whose scoring bonuses can be configured by parameters
+ * passed in during the construction of the RuleBook.
+ */
 export class ConfiguredRulebook extends AbstractRuleBook {
   constructor(endOfGameBonus: number, qBonus: number) {
     super(

@@ -1,10 +1,10 @@
 import { NUMBER_OF_EACH_TILE, NUMBER_OF_PLAYER_TILES } from '../constants';
 import { RandomBagOfTiles, QBagOfTiles } from '../game/gameState/bagOfTiles';
-import { BaseGameState, QGameState } from '../game/gameState/gameState';
+import { GameState, QGameState } from '../game/gameState/gameState';
 import PlayerState from '../game/gameState/playerState';
 import PlayerTurnQueue from '../game/gameState/playerTurnQueue';
 import Coordinate from '../game/map/coordinate';
-import BaseMap from '../game/map/map';
+import TileMap from '../game/map/map';
 import { BaseTile, ShapeColorTile } from '../game/map/tile';
 import { QRuleBook } from '../game/rules/ruleBook';
 import {
@@ -40,7 +40,7 @@ export const setUpGame = async (players: SafePlayer[]) => {
 
   const turnQueue = await createPlayerTurnQueue(bagOfTiles, players);
 
-  const gameState = new BaseGameState(map, turnQueue, bagOfTiles);
+  const gameState = new GameState(map, turnQueue, bagOfTiles);
 
   return gameState;
 };
@@ -81,7 +81,7 @@ const createNumOfEachTile = (numOfEach: number) => {
  */
 const createMap = (bagOfTiles: QBagOfTiles) => {
   const startingTile = bagOfTiles.drawTile();
-  return new BaseMap([
+  return new TileMap([
     { tile: startingTile, coordinate: new Coordinate(0, 0) }
   ]);
 };

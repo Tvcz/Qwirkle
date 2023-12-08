@@ -1,10 +1,14 @@
 import * as net from 'net';
-import { Connection, TCPConnection } from '../connection';
+import { TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
 import { Player } from '../../player/player';
 import { BaseReferee } from '../../referee/referee';
 import { ConfiguredRulebook } from '../../game/rules/ruleBook';
-import { SERVER_MAX_PLAYERS, SERVER_MIN_PLAYERS } from '../../constants';
+import {
+  SERVER_MAX_PLAYERS,
+  SERVER_MIN_PLAYERS,
+  SERVER_WAIT_CHECK_INTERVAL_MS
+} from '../../constants';
 import { GameResult } from '../../referee/referee.types';
 import {
   DEFAULT_SERVER_CONFIG,
@@ -21,58 +25,42 @@ const EMPTY_RESULT: GameResult = [[], []];
 let debug: DebugLog | undefined;
 
 /**
- * Runs a game over TCP. Waits for a minimum number of remote clients to connect and
- * sign up during a waiting period. Re-enters the waiting state for a given number
- * of attempts. If the minimum number of players is not met and all waiting periods
- * have been exhausted the server doesn’t run a game and instead delivers a empty result.
+ * Starts a game over TCP, where the server runs the referee and clients connect
+ * to run players.
  *
- * The steps are as follows:
- *  1) Create a TCP server and wait for players to connect
- *  2) On connect, create a `TCPConnection` using the `Socket` and create a
- *     `TCPPlayer` using the new `TCPConnection`
- *  3) On the first connection, wait for additional players to connect
- *    3.1) While there are less than the maximum number of players, keep waiting.
- *    3.2) If the wait time has exceeded the maximum wait time, check if there
- *         are enough players to run the game.
- *     3.2.1) If there are enough players to run the game, jump to step (4).
- *       3.2.2) If there are not enough players to run the game, check if the wait
- *             period has already been restarted the maximum number of times.
- *        3.2.2.1) If no, start an additional wait period, jumping back to step (3.1).
- *        3.2.2.2) If yes, jump to step (4).
- *  4) If there are enough players to run the game, start the game, passing the
- *     referee the `TCPPlayer`s to run the game with. Otherwise, do not run the game
- *     and return an empty result
+ * Details of this process can be found in the README.
  *
+ * @param config the server config
  * @returns the result of the game
  */
 export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
   debug = new DebugLog(!config.quiet);
   debug.log('running TCP game in func');
-  const players: Player[] = [];
-  const connections: Connection[] = [];
+  const players: TCPPlayer[] = [];
+
   const server = net.createServer();
 
-  debug.log('starting server');
-  server.listen(config.port);
-  debug.log(`server started listening on port ${config.port}`);
-
-  const enoughPlayersToRun = await new Promise<boolean>((resolve) => {
+  const enoughPlayersToRun = new Promise<boolean>((resolve) => {
     server.once('connection', () => {
       waitForAdditionalPlayers(players, config).then(resolve);
     });
   });
 
   server.on('connection', (socket) =>
-    handleConnection(socket, connections, players, config)
+    handleConnection(socket, players, config)
   );
 
+  debug.log('starting server');
+  server.listen(config.port);
+  debug.log(`server started listening on port ${config.port}`);
+
   const gameResult = await runGameIfPossible(
-    enoughPlayersToRun,
+    await enoughPlayersToRun,
     players,
     config
   );
 
-  terminateConnections(connections);
+  terminateConnections(players);
   server.close();
   return gameResult;
 }
@@ -87,8 +75,7 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
  */
 function handleConnection(
   socket: net.Socket,
-  connections: Connection[],
-  players: Player[],
+  players: TCPPlayer[],
   config: ServerConfig
 ) {
   debug?.log('received connection on the server');
@@ -98,21 +85,21 @@ function handleConnection(
     config['ref-spec']['per-turn']
   );
   const newConnection = new TCPConnection(socket);
-  connections.push(newConnection);
   signUp(new TCPPlayer(newConnection, maxResponseWait), players, config);
 }
 
 /**
  * Attempts to wait for additional players to connect to the game.
  *
- * This is a asynchronous operation which relies on the callbacks triggering when
- * a client connects mutating the players array while this function is running.
+ * This is a asynchronous operation which relies on the the signUp method to
+ * concurrently mutate the players list.
  *
  * @param players the player list which new players are added to as they connect.
+ * @param config the server config
  * @param attempt the number of times the wait period has been tried
  * @returns true if the game should be run, false otherwise
  */
-function waitForAdditionalPlayers(
+async function waitForAdditionalPlayers(
   players: Player[],
   config: ServerConfig,
   attempt = 1
@@ -122,28 +109,48 @@ function waitForAdditionalPlayers(
 
   return new Promise<boolean>((resolve) => {
     const start = Date.now();
-    const checkIntervalMs = 200; // check every 200ms
-    const intervalId = setInterval(() => {
+
+    // Check if there are the max number of players or if the wait period has ended
+    const checkForAdditionalPlayers = () => {
       if (players.length >= SERVER_MAX_PLAYERS) {
         clearInterval(intervalId);
         resolve(true);
       } else if (Date.now() >= start + serverWaitMs) {
-        if (players.length >= SERVER_MIN_PLAYERS) {
-          clearInterval(intervalId);
-          resolve(true);
-        } else if (attempt < config['server-tries']) {
-          debug?.log(
-            `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
-          );
-          clearInterval(intervalId);
-          waitForAdditionalPlayers(players, config, attempt + 1).then(resolve);
-        } else {
-          clearInterval(intervalId);
-          resolve(false);
-        }
+        clearInterval(intervalId);
+        handleWaitPeriodEnd(players, config, attempt).then(resolve);
       }
-    }, checkIntervalMs);
+    };
+
+    const intervalId = setInterval(
+      checkForAdditionalPlayers,
+      SERVER_WAIT_CHECK_INTERVAL_MS
+    );
   });
+}
+
+/**
+ * Handles the server's behavior when the time has ran our for a wait period
+ * without the maximum number of players joining.
+ * @param players the player list which new players are added to as they connect.
+ * @param config the server config
+ * @param attempt the number of times the wait period has been tried
+ * @returns
+ */
+async function handleWaitPeriodEnd(
+  players: Player[],
+  config: ServerConfig,
+  attempt: number
+): Promise<boolean> {
+  if (players.length >= SERVER_MIN_PLAYERS) {
+    return true;
+  } else if (attempt < config['server-tries']) {
+    debug?.log(
+      `not enough players, restarting wait period ${attempt}, will retry ${config['server-tries']} times`
+    );
+    return await waitForAdditionalPlayers(players, config, attempt + 1);
+  } else {
+    return false;
+  }
 }
 
 /**
@@ -156,13 +163,14 @@ function waitForAdditionalPlayers(
  */
 async function runGameIfPossible(
   enoughPlayersToRun: boolean,
-  players: Player[],
+  players: TCPPlayer[],
   config: ServerConfig
 ): Promise<GameResult> {
   if (enoughPlayersToRun) {
-    const playerNames = await Promise.all(players.map((p) => p.name()));
+    const cappedPlayers = players.slice(0, 4); // It is possible for multiple players to sign up during a single checkForAdditionalPlayers interval. Since this could make it so that more than 4 playesr sign up, we cap the players at 4.
+    const playerNames = await Promise.all(cappedPlayers.map((p) => p.name()));
     debug?.log(`running game with players ${playerNames.join(', ')}`);
-    const gameResults = await startGame(players, config['ref-spec']);
+    const gameResults = await startGame(cappedPlayers, config['ref-spec']);
     return gameResults;
   }
   informPlayersOfNoGame(players);
@@ -173,7 +181,7 @@ async function runGameIfPossible(
  * Attempts to inform all players that the game will not be run.
  * @param players the players to inform
  */
-function informPlayersOfNoGame(players: Player[]) {
+function informPlayersOfNoGame(players: TCPPlayer[]) {
   players.forEach((player) => {
     try {
       player.win(false);
@@ -188,8 +196,10 @@ function informPlayersOfNoGame(players: Player[]) {
  *
  * @param connections the client connections to terminate.
  */
-function terminateConnections(connections: Connection[]) {
-  connections.forEach((connection) => connection.close());
+function terminateConnections(players: TCPPlayer[]) {
+  players.forEach((player) => {
+    player.killConnection();
+  });
 }
 
 /**
@@ -232,23 +242,42 @@ async function startGame(
  * time
  */
 async function signUp(
-  player: Player,
-  players: Player[],
+  player: TCPPlayer,
+  players: TCPPlayer[],
   config: ServerConfig
 ): Promise<void> {
   const waitForSignupMs = toMs(config['wait-for-signup']);
   debug?.log(`waiting for signup for ${waitForSignupMs}ms`);
-  await Promise.race([
-    player.name().then((name) => {
-      debug?.log(`received signup from ${name}`);
-      players.push(player);
-    }),
-    new Promise((_, reject) => {
-      setTimeout(() => {
-        reject();
-      }, waitForSignupMs);
-    })
-  ]).catch(() => {
+  const name = Promise.race([
+    createWaitForNamePromise(player),
+    createPlayerExceededNameTimeoutPromise(waitForSignupMs)
+  ]);
+  name.catch(() => {
+    player.killConnection();
     debug?.log('signup timed out');
+  });
+  name.then((name) => {
+    if (name) {
+      players.push(player);
+    }
+  });
+  await name;
+}
+
+/**
+ * Create a promise that resolves when the player sends their name.
+ * @param player the player to get the name from
+ */
+async function createWaitForNamePromise(player: TCPPlayer) {
+  const name = await player.name();
+  debug?.log(`received signup from ${name}`);
+  return name;
+}
+
+function createPlayerExceededNameTimeoutPromise(waitForSignupMs: number) {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject();
+    }, waitForSignupMs);
   });
 }

@@ -1,9 +1,9 @@
 import { REFEREE_PLAYER_TIMEOUT_MS } from '../constants';
 import { RandomBagOfTiles } from '../game/gameState/bagOfTiles';
-import { BaseGameState, QGameState } from '../game/gameState/gameState';
+import { GameState, QGameState } from '../game/gameState/gameState';
 import PlayerState from '../game/gameState/playerState';
 import PlayerTurnQueue from '../game/gameState/playerTurnQueue';
-import BaseMap from '../game/map/map';
+import TileMap from '../game/map/map';
 import { BaseTile } from '../game/map/tile';
 import { BaseRuleBook } from '../game/rules/ruleBook';
 import { BasePlayer } from '../player/player';
@@ -35,8 +35,8 @@ describe('tests for referee function', () => {
     const rulebook = new BaseRuleBook();
     const player1 = new BasePlayer('jacob', new DagStrategy(), rulebook);
     const players = [player1];
-    const map = new BaseMap([]);
-    const gameState = new BaseGameState(
+    const map = new TileMap([]);
+    const gameState = new GameState(
       map,
       new PlayerTurnQueue<BaseTile>([
         new PlayerState(

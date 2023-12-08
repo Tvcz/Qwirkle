@@ -11,6 +11,12 @@ import { runClient } from '../../remote/client/client';
 let inputClientConfig: ClientConfig | undefined = undefined;
 let inputServerConfig: ServerConfig | undefined = undefined;
 
+/**
+ * Reads input from stdin for a server or client config, and runs a game using the config.
+ * @param port the port to use for the game
+ * @param isServer true if the input should be a server config, false if it
+ * should be a client config
+ */
 export function processInputAndRunTCPGame(port: number, isServer: boolean) {
   processInput(port, isServer);
   if (isServer) {
@@ -39,8 +45,11 @@ function ensureIsType<T>(
 }
 
 /**
- * Processes the input from stdin and stores it in the inputState and inputActors variables.
- * @param isServer true if the input is a server config, false if it is a client config
+ * Sets a handler to process the input from stdin and stores it in the
+ * inputServerConfig or inputClientConfig variables.
+ * @param port the port to use for the game
+ * @param isServer true if the input is a server config, false if it is a client
+ * config
  */
 function processInput(port: number, isServer: boolean) {
   process.stdin.pipe(parse()).on('data', (data: unknown) => {
@@ -57,7 +66,7 @@ function processInput(port: number, isServer: boolean) {
 }
 
 /**
- * Runs a game using a server.
+ * Runs a game using a server, using the global inputServerConfig variable.
  */
 function runServerGame() {
   process.stdin.on('end', async () => {
@@ -79,7 +88,7 @@ function runServerGame() {
 }
 
 /**
- * Connects to and plays a game as a client.
+ * Connects to and plays a game as a client, using the global inputClientConfig variable.
  */
 function runClientGame() {
   process.stdin.on('end', async () => {
