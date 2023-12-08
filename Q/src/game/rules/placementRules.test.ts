@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import BaseMap from '../map/map';
+import TileMap from '../map/map';
 import {
   coordinateMustBeEmpty,
   coordinateMustShareASide,
@@ -14,7 +14,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
     // Act, Assert
     expect(
       coordinateMustBeEmpty(
@@ -27,7 +27,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act, Assert
     expect(
@@ -40,7 +40,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     const tilePlacements = [
       {
@@ -64,7 +64,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(tile, new Coordinate(1, 0));
@@ -80,7 +80,7 @@ describe('Tests for PlacementRules', () => {
     // Arrrange
     const tile = new BaseTile('square', 'red');
     const coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
     const newTilePlacements = [
       {
         tile,
@@ -105,7 +105,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act, Assert
     expect(
@@ -119,7 +119,7 @@ describe('Tests for PlacementRules', () => {
     // Arrrange
     const tile = new BaseTile('square', 'red');
     const coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
     const newTilePlacements = [
       {
         tile,
@@ -144,7 +144,7 @@ describe('Tests for PlacementRules', () => {
     // Arrrange
     const tile = new BaseTile('square', 'red');
     const coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
     const newTilePlacements = [
       {
         tile,
@@ -173,7 +173,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('square', 'blue'), new Coordinate(-1, 0));
@@ -193,7 +193,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('circle', 'red'), new Coordinate(-1, 0));
@@ -213,7 +213,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('circle', 'red'), new Coordinate(-1, 0));
@@ -233,7 +233,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('square', 'blue'), new Coordinate(-1, 0));
@@ -253,7 +253,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('circle', 'green'), new Coordinate(-1, 0));
@@ -273,7 +273,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('diamond', 'blue'), new Coordinate(-1, 0));
@@ -293,7 +293,7 @@ describe('Tests for PlacementRules', () => {
     // Arrange
     const tile = new BaseTile('square', 'red');
     const coordinate: Coordinate = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile, coordinate }]);
+    const map = new TileMap([{ tile, coordinate }]);
 
     // Act
     map.placeTile(new BaseTile('square', 'red'), new Coordinate(-1, 0));

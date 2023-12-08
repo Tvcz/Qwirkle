@@ -61,11 +61,11 @@ export interface QMap {
 }
 
 /**
- * Abstract class representing a Map in the QGame.
+ * Class representing a Map in the QGame.
  * Contains the board and keeps track of the furthest position of tiles in each direction.
  * Maintains the structural rules that all tiles must share a side and no tile can be placed where another tile already exists
  */
-abstract class AbstractQMap implements QMap {
+class TileMap implements QMap {
   private readonly board: Dictionary<Coordinate, ShapeColorTile>;
 
   // An object containing the position of the furthest tile in each direction.
@@ -178,13 +178,4 @@ abstract class AbstractQMap implements QMap {
   }
 }
 
-/**
- * Class representing a map for the Q Game.
- */
-class BaseMap extends AbstractQMap {
-  constructor(startingTiles: TilePlacement[]) {
-    super(startingTiles);
-  }
-}
-
-export default BaseMap;
+export default TileMap;

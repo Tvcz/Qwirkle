@@ -4,7 +4,7 @@ import { GameState, QGameState } from '../game/gameState/gameState';
 import PlayerState from '../game/gameState/playerState';
 import PlayerTurnQueue from '../game/gameState/playerTurnQueue';
 import Coordinate from '../game/map/coordinate';
-import BaseMap from '../game/map/map';
+import TileMap from '../game/map/map';
 import { BaseTile, ShapeColorTile } from '../game/map/tile';
 import { QRuleBook } from '../game/rules/ruleBook';
 import {
@@ -81,7 +81,7 @@ const createNumOfEachTile = (numOfEach: number) => {
  */
 const createMap = (bagOfTiles: QBagOfTiles) => {
   const startingTile = bagOfTiles.drawTile();
-  return new BaseMap([
+  return new TileMap([
     { tile: startingTile, coordinate: new Coordinate(0, 0) }
   ]);
 };

@@ -1,5 +1,5 @@
 import Coordinate from '../../game/map/coordinate';
-import BaseMap, { QMap } from '../../game/map/map';
+import TileMap, { QMap } from '../../game/map/map';
 import { BaseTile, ShapeColorTile } from '../../game/map/tile';
 import { TilePlacement } from '../../game/types/gameState.types';
 import { JCell, JMap, JTile } from '../data/data.types';
@@ -16,7 +16,7 @@ export function toQMap(jMap: JMap): QMap {
       tilePlacements.push(toTilePlacement(cell, row[0]))
     );
   });
-  return new BaseMap(tilePlacements);
+  return new TileMap(tilePlacements);
 }
 
 /**

@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import BaseMap from '../map/map';
+import TileMap from '../map/map';
 import { BaseTile } from '../map/tile';
 import { TilePlacement } from '../types/gameState.types';
 import { Shape, Color } from '../types/map.types';
@@ -27,7 +27,7 @@ const arrangeGameState = (
   tilePlacements: TilePlacement<BaseTile>[]
 ) => {
   // Arrange
-  const map = new BaseMap(mapTiles);
+  const map = new TileMap(mapTiles);
   const pointsPerQRule = pointsPerQ(BONUS_POINT_AMOUNT);
 
   // Act
@@ -206,7 +206,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointsPerTilePlaced returns a point per tile in tilePlacements', () => {
     // Arrange
-    const map = new BaseMap([]);
+    const map = new TileMap([]);
     const tilePlacements = [
       createTilePlacement('circle', 'red', 0, 0),
       createTilePlacement('circle', 'red', 1, 0),
@@ -225,7 +225,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointsPerTilePlaced returns 0 if no tiles in tilePlacements', () => {
     // Arrange
-    const map = new BaseMap([]);
+    const map = new TileMap([]);
     const tilePlacements = [];
 
     // Act
@@ -240,7 +240,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 3 point for a tile placed into a sequence of 3 in a row', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       createTilePlacement('square', 'red', 0, 0),
       createTilePlacement('diamond', 'blue', 0, 1)
     ]);
@@ -258,7 +258,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 3 point for a tile placed into a sequence of 3 in a column', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       createTilePlacement('square', 'red', 1, 0),
       createTilePlacement('diamond', 'blue', 0, 0)
     ]);
@@ -276,7 +276,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 5 points for tile placed into two sequences of 2 and 3', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       createTilePlacement('square', 'red', 1, 0),
       createTilePlacement('diamond', 'blue', 2, 0),
       createTilePlacement('diamond', 'green', 0, 1)
@@ -295,7 +295,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 10 points for tile placed into a sequence of 10', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       createTilePlacement('square', 'red', 1, 0),
       createTilePlacement('diamond', 'blue', 2, 0),
       createTilePlacement('diamond', 'blue', 3, 0),
@@ -320,7 +320,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 4 points for placing two tiles in a sequence of 4', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       createTilePlacement('square', 'red', 1, 0),
       createTilePlacement('diamond', 'blue', 2, 0)
     ]);
@@ -341,7 +341,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 8 points for placing four tiles in two sequence of 4', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       createTilePlacement('square', 'red', 1, 0),
       createTilePlacement('diamond', 'blue', 2, 0),
       createTilePlacement('diamond', 'blue', 2, 1)
@@ -365,7 +365,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointPerTileInSequence returns 4 for placing three tiles onto a map with one tile', () => {
     // Arrange
-    const map = new BaseMap([
+    const map = new TileMap([
       { tile: new BaseTile('circle', 'red'), coordinate: new Coordinate(0, 0) }
     ]);
     const tilePlacements = [
@@ -386,7 +386,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointsForPlayingAllTiles returns bonus point amount if player placed all of their tiles', () => {
     // Arrange
-    const map = new BaseMap([]);
+    const map = new TileMap([]);
     const tilePlacements = [
       createTilePlacement('square', 'red', 0, 0),
       createTilePlacement('square', 'red', 0, 1),
@@ -412,7 +412,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointsForPlayingAllTiles returns 0 points if player did not place all of their tiles', () => {
     // Arrange
-    const map = new BaseMap([]);
+    const map = new TileMap([]);
     const tilePlacements = [
       createTilePlacement('square', 'red', 0, 0),
       createTilePlacement('square', 'red', 0, 1),
@@ -438,7 +438,7 @@ describe('tests for scoring rules', () => {
   });
   test('pointsForPlayingAllTiles returns 0 points if player placed zero tiles', () => {
     // Arrange
-    const map = new BaseMap([]);
+    const map = new TileMap([]);
     const tilePlacements = [];
     const playerTiles = [];
     const pointsForPlayingAllTilesRule =

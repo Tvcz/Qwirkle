@@ -1,18 +1,18 @@
-import Coordinate from "./coordinate";
-import BaseMap from "./map";
-import { mustMatchNeighboringShapesOrColors } from "../rules/placementRules";
-import { BaseTile } from "./tile";
+import Coordinate from './coordinate';
+import TileMap from './map';
+import { mustMatchNeighboringShapesOrColors } from '../rules/placementRules';
+import { BaseTile } from './tile';
 
-describe("Tests for AbstractMapClass methods", () => {
-  test("placeTile method adds the given tile to the map if it satisfies default rule conditions", () => {
+describe('Tests for AbstractMapClass methods', () => {
+  test('placeTile method adds the given tile to the map if it satisfies default rule conditions', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
-    const tileToPlace = new BaseTile("circle", "blue");
+    const tileToPlace = new BaseTile('circle', 'blue');
     const coordinateToPlace = new Coordinate(1, 0);
 
     // Act
@@ -22,29 +22,29 @@ describe("Tests for AbstractMapClass methods", () => {
     const newTile = map.getTile(coordinateToPlace);
     expect(newTile).toBe(tileToPlace);
   });
-  test("placeTile method throws error if the coordinate already has a tile", () => {
+  test('placeTile method throws error if the coordinate already has a tile', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
-    const tileToPlace = new BaseTile("circle", "blue");
+    const tileToPlace = new BaseTile('circle', 'blue');
     const coordinateToPlace = new Coordinate(0, 0);
 
     // Act, Assert
     expect(() => map.placeTile(tileToPlace, coordinateToPlace)).toThrow();
   });
-  test("placeTile method extends leftmost dimension to the left when adding a tile past the current bounds", () => {
+  test('placeTile method extends leftmost dimension to the left when adding a tile past the current bounds', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
-    const tileToPlace = new BaseTile("square", "blue");
+    const tileToPlace = new BaseTile('square', 'blue');
     const coordinateToPlace = new Coordinate(-1, 0);
 
     // Act
@@ -53,15 +53,15 @@ describe("Tests for AbstractMapClass methods", () => {
     // Assert
     expect(map.getDimensions().leftmost).toBe(-1);
   });
-  test("placeTile method extends rightmost dimension to the right when adding a tile past the current bounds", () => {
+  test('placeTile method extends rightmost dimension to the right when adding a tile past the current bounds', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
-    const tileToPlace = new BaseTile("square", "blue");
+    const tileToPlace = new BaseTile('square', 'blue');
     const coordinateToPlace = new Coordinate(1, 0);
 
     // Act
@@ -70,15 +70,15 @@ describe("Tests for AbstractMapClass methods", () => {
     // Assert
     expect(map.getDimensions().rightmost).toBe(1);
   });
-  test("placeTile method extends topmost dimension up when adding a tile past the current bounds", () => {
+  test('placeTile method extends topmost dimension up when adding a tile past the current bounds', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
-    const tileToPlace = new BaseTile("square", "blue");
+    const tileToPlace = new BaseTile('square', 'blue');
     const coordinateToPlace = new Coordinate(0, 1);
 
     // Act
@@ -87,15 +87,15 @@ describe("Tests for AbstractMapClass methods", () => {
     // Assert
     expect(map.getDimensions().topmost).toBe(1);
   });
-  test("placeTile method extends bottomMost dimension down when adding a tile past the current bounds", () => {
+  test('placeTile method extends bottomMost dimension down when adding a tile past the current bounds', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
-    const tileToPlace = new BaseTile("square", "blue");
+    const tileToPlace = new BaseTile('square', 'blue');
     const coordinateToPlace = new Coordinate(0, -1);
 
     // Act
@@ -104,19 +104,19 @@ describe("Tests for AbstractMapClass methods", () => {
     // Assert
     expect(map.getDimensions().bottommost).toBe(-1);
   });
-  test("getAllValidPositions returns a list of the valid coordinate positions for the given rules plus the default rules", () => {
+  test('getAllValidPositions returns a list of the valid coordinate positions for the given rules plus the default rules', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
-    map.placeTile(new BaseTile("square", "blue"), new Coordinate(1, 0));
-    map.placeTile(new BaseTile("diamond", "blue"), new Coordinate(1, 1));
+    map.placeTile(new BaseTile('square', 'blue'), new Coordinate(1, 0));
+    map.placeTile(new BaseTile('diamond', 'blue'), new Coordinate(1, 1));
 
     // Act
     const validPositions = map.getAllValidPlacements(
-      new BaseTile("square", "purple"),
+      new BaseTile('square', 'purple'),
       [mustMatchNeighboringShapesOrColors]
     );
 
@@ -125,7 +125,7 @@ describe("Tests for AbstractMapClass methods", () => {
       new Coordinate(-1, 0),
       new Coordinate(0, -1),
       new Coordinate(1, -1),
-      new Coordinate(2, 0),
+      new Coordinate(2, 0)
     ];
     validCoordinates.forEach((coordinate) => {
       const { x: x1, y: y1 } = coordinate.getCoordinate();
@@ -138,12 +138,12 @@ describe("Tests for AbstractMapClass methods", () => {
     });
     expect(validPositions.length).toBe(validCoordinates.length);
   });
-  test("getTile method returns the tile at the given coordinate", () => {
+  test('getTile method returns the tile at the given coordinate', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
     // Act
@@ -152,12 +152,12 @@ describe("Tests for AbstractMapClass methods", () => {
     // Assert
     expect(tile).toBe(startingTile);
   });
-  test("getTile method returns undefined if there is no tile at the given coordinate", () => {
+  test('getTile method returns undefined if there is no tile at the given coordinate', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
     // Act
@@ -166,12 +166,12 @@ describe("Tests for AbstractMapClass methods", () => {
     // Assert
     expect(tile).toBeUndefined();
   });
-  test("getDimensions returns all dimensions as 0 when initialized", () => {
+  test('getDimensions returns all dimensions as 0 when initialized', () => {
     // Arrange
-    const startingTile = new BaseTile("square", "red");
+    const startingTile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([
-      { tile: startingTile, coordinate: startingPosition },
+    const map = new TileMap([
+      { tile: startingTile, coordinate: startingPosition }
     ]);
 
     // Act
@@ -183,11 +183,11 @@ describe("Tests for AbstractMapClass methods", () => {
     expect(topmost).toBe(0);
     expect(bottommost).toBe(0);
   });
-  test("getAllPlacements gets a list of tile placements in the map", () => {
+  test('getAllPlacements gets a list of tile placements in the map', () => {
     // Arrange
-    const tile = new BaseTile("square", "red");
+    const tile = new BaseTile('square', 'red');
     const startingPosition = new Coordinate(0, 0);
-    const map = new BaseMap([{ tile: tile, coordinate: startingPosition }]);
+    const map = new TileMap([{ tile: tile, coordinate: startingPosition }]);
     map.placeTile(tile, new Coordinate(1, 0));
     map.placeTile(tile, new Coordinate(2, 0));
     map.placeTile(tile, new Coordinate(3, 0));
