@@ -100,7 +100,7 @@ function handleConnection(
  * @returns true if the game should be run, false otherwise
  */
 async function waitForAdditionalPlayers(
-  players: Player[],
+  players: TCPPlayer[],
   config: ServerConfig,
   attempt = 1
 ): Promise<boolean> {
@@ -137,7 +137,7 @@ async function waitForAdditionalPlayers(
  * @returns
  */
 async function handleWaitPeriodEnd(
-  players: Player[],
+  players: TCPPlayer[],
   config: ServerConfig,
   attempt: number
 ): Promise<boolean> {
@@ -210,7 +210,7 @@ function terminateConnections(players: TCPPlayer[]) {
  * @returns the result of the game
  */
 async function startGame(
-  players: Player[],
+  players: TCPPlayer[],
   refereeConfig: RefereeConfig
 ): Promise<GameResult> {
   const gameState = await toQGameState(refereeConfig.state0, players);
