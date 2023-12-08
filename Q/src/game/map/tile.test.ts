@@ -1,4 +1,3 @@
-import { shapeColorTileHtmlBuilder } from '../graphicalRenderer/HtmlRendererUtils/tileHtmlBuilder';
 import { colorList, shapeList } from '../types/map.types';
 import { BaseTile, ShapeColorTile } from './tile';
 
