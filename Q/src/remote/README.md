@@ -52,7 +52,7 @@ It contains:
   to be made on a local client player instance. 
 
 
-## Sequence diagram for running a distributed game
+## Sequence Diagram for Running a Distributed Game
 ```mermaid
 sequenceDiagram
     participant Server
@@ -96,18 +96,22 @@ sequenceDiagram
             alt if player placed or exchanged tiles
                 Referee->>PlayerProxy_1: newTiles()
                 PlayerProxy_1->>Player_1: message[newTiles()]
+                Player_1-->>PlayerProxy_1: message[ack[newTiles()]]
 
                 Referee->>PlayerProxy_n: newTiles()
                 PlayerProxy_n->>Player_n: message[newTiles()]
+                Player_n-->>PlayerProxy_n: message[ack[newTiles()]]
             end
 
         end 
 
         Referee->>PlayerProxy_1: win()
         PlayerProxy_1->>Player_1: message[win()]
+        Player_1-->>PlayerProxy_1: message[ack[win()]]
 
         Referee->>PlayerProxy_n: win()
         PlayerProxy_n->>Player_n: message[win()]
+        Player_n-->>PlayerProxy_n: message[ack[win()]]
         
     end
 
