@@ -1,4 +1,4 @@
-import { BaseGameState } from '../game/gameState/gameState';
+import { GameState } from '../game/gameState/gameState';
 import Coordinate from '../game/map/coordinate';
 import { BaseTile } from '../game/map/tile';
 import { BaseRuleBook } from '../game/rules/ruleBook';
@@ -209,13 +209,13 @@ describe('tests for referee util methods', () => {
       const mockGetActivePlayerInfo = jest.fn();
       mockGetActivePlayerInfo.mockReturnValue(mockActivePlayerInfo);
       jest
-        .spyOn(BaseGameState.prototype, 'getActivePlayerInfo')
+        .spyOn(GameState.prototype, 'getActivePlayerInfo')
         .mockImplementation(mockGetActivePlayerInfo);
 
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -238,7 +238,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const error = new Error('throw error on take turn');
@@ -262,7 +262,7 @@ describe('tests for referee util methods', () => {
       // Arrange
       const { gameState, rulebook } = arrangeAndCallSetupGame();
 
-      jest.spyOn(BaseGameState.prototype, 'isGameOver').mockReturnValue(true);
+      jest.spyOn(GameState.prototype, 'isGameOver').mockReturnValue(true);
 
       const mockTakeTurn = jest
         .fn()
@@ -273,7 +273,7 @@ describe('tests for referee util methods', () => {
 
       const mockEliminatePlayer = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'eliminatePlayer')
+        .spyOn(GameState.prototype, 'eliminatePlayer')
         .mockImplementation(mockEliminatePlayer);
 
       // Act
@@ -286,7 +286,7 @@ describe('tests for referee util methods', () => {
       // Arrange
       const { gameState, rulebook } = arrangeAndCallSetupGame();
 
-      jest.spyOn(BaseGameState.prototype, 'isGameOver').mockReturnValue(true);
+      jest.spyOn(GameState.prototype, 'isGameOver').mockReturnValue(true);
 
       const mockTakeTurn = jest
         .fn()
@@ -297,7 +297,7 @@ describe('tests for referee util methods', () => {
 
       const mockEliminatePlayer = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'eliminatePlayer')
+        .spyOn(GameState.prototype, 'eliminatePlayer')
         .mockImplementation(mockEliminatePlayer);
 
       // Act
@@ -314,7 +314,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -325,12 +325,12 @@ describe('tests for referee util methods', () => {
         .mockImplementationOnce(mockTakeTurn);
 
       jest
-        .spyOn(BaseGameState.prototype, 'getActivePlayerInfo')
+        .spyOn(GameState.prototype, 'getActivePlayerInfo')
         .mockReturnValue({ ...activePlayerInfo, remainingTilesCount: 3 });
 
       const mockEliminatePlayer = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'eliminatePlayer')
+        .spyOn(GameState.prototype, 'eliminatePlayer')
         .mockImplementation(mockEliminatePlayer);
 
       // Act
@@ -343,7 +343,7 @@ describe('tests for referee util methods', () => {
       // Arrange
       const { gameState, rulebook } = arrangeAndCallSetupGame();
 
-      jest.spyOn(BaseGameState.prototype, 'isGameOver').mockReturnValue(true);
+      jest.spyOn(GameState.prototype, 'isGameOver').mockReturnValue(true);
 
       const mockTakeTurn = jest.fn().mockReturnValue([]);
       jest
@@ -352,12 +352,12 @@ describe('tests for referee util methods', () => {
 
       const mockIsValidPlacement = jest.fn().mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isValidPlacement')
+        .spyOn(GameState.prototype, 'isValidPlacement')
         .mockImplementation(mockIsValidPlacement);
 
       const mockEliminatePlayer = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'eliminatePlayer')
+        .spyOn(GameState.prototype, 'eliminatePlayer')
         .mockImplementation(mockEliminatePlayer);
 
       // Act
@@ -373,7 +373,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTurnAction = new BaseTurnAction('PLACE', []);
@@ -384,12 +384,12 @@ describe('tests for referee util methods', () => {
 
       const mockIsValidPlacement = jest.fn().mockReturnValue(false);
       jest
-        .spyOn(BaseGameState.prototype, 'isValidPlacement')
+        .spyOn(GameState.prototype, 'isValidPlacement')
         .mockImplementation(mockIsValidPlacement);
 
       const mockEliminatePlayer = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'eliminatePlayer')
+        .spyOn(GameState.prototype, 'eliminatePlayer')
         .mockImplementation(mockEliminatePlayer);
 
       // Act
@@ -405,7 +405,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const turnAction = new BaseTurnAction('PLACE', []);
@@ -416,12 +416,12 @@ describe('tests for referee util methods', () => {
 
       const mockIsValidPlacement = jest.fn().mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isValidPlacement')
+        .spyOn(GameState.prototype, 'isValidPlacement')
         .mockImplementation(mockIsValidPlacement);
 
       const mockGetPlacementScore = jest.fn().mockReturnValue(10);
       jest
-        .spyOn(BaseGameState.prototype, 'getPlacementScore')
+        .spyOn(GameState.prototype, 'getPlacementScore')
         .mockImplementation(mockGetPlacementScore);
 
       // Act
@@ -443,7 +443,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -455,7 +455,7 @@ describe('tests for referee util methods', () => {
 
       const mockUpdatePlayerScore = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'updatePlayerScore')
+        .spyOn(GameState.prototype, 'updatePlayerScore')
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
@@ -471,7 +471,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -483,7 +483,7 @@ describe('tests for referee util methods', () => {
 
       const mockUpdatePlayerScore = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'updatePlayerScore')
+        .spyOn(GameState.prototype, 'updatePlayerScore')
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
@@ -499,7 +499,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -511,17 +511,17 @@ describe('tests for referee util methods', () => {
 
       const mockIsValidPlacement = jest.fn().mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isValidPlacement')
+        .spyOn(GameState.prototype, 'isValidPlacement')
         .mockImplementation(mockIsValidPlacement);
 
       const mockGetPlacementScore = jest.fn().mockReturnValue(10);
       jest
-        .spyOn(BaseGameState.prototype, 'getPlacementScore')
+        .spyOn(GameState.prototype, 'getPlacementScore')
         .mockImplementation(mockGetPlacementScore);
 
       const mockUpdatePlayerScore = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'updatePlayerScore')
+        .spyOn(GameState.prototype, 'updatePlayerScore')
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
@@ -537,7 +537,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -549,7 +549,7 @@ describe('tests for referee util methods', () => {
 
       const mockPassTurn = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'passTurn')
+        .spyOn(GameState.prototype, 'passTurn')
         .mockImplementation(mockPassTurn);
 
       // Act
@@ -565,7 +565,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -577,7 +577,7 @@ describe('tests for referee util methods', () => {
 
       const mockExchangeTurn = jest.fn().mockReturnValue([]);
       jest
-        .spyOn(BaseGameState.prototype, 'exchangeTurn')
+        .spyOn(GameState.prototype, 'exchangeTurn')
         .mockImplementation(mockExchangeTurn);
 
       // Act
@@ -593,7 +593,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const turnAction = new BaseTurnAction('PLACE', []);
@@ -604,12 +604,12 @@ describe('tests for referee util methods', () => {
 
       const mockIsValidPlacement = jest.fn().mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isValidPlacement')
+        .spyOn(GameState.prototype, 'isValidPlacement')
         .mockImplementation(mockIsValidPlacement);
 
       const mockPlaceTurn = jest.fn().mockReturnValue([]);
       jest
-        .spyOn(BaseGameState.prototype, 'placeTurn')
+        .spyOn(GameState.prototype, 'placeTurn')
         .mockImplementation(mockPlaceTurn);
 
       // Act
@@ -625,7 +625,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -653,7 +653,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -673,7 +673,7 @@ describe('tests for referee util methods', () => {
 
       const mockEliminatePlayer = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'eliminatePlayer')
+        .spyOn(GameState.prototype, 'eliminatePlayer')
         .mockImplementation(mockEliminatePlayer);
 
       // Act
@@ -689,7 +689,7 @@ describe('tests for referee util methods', () => {
       const mockIsGameOver = jest.fn().mockReturnValueOnce(false);
       mockIsGameOver.mockReturnValue(true);
       jest
-        .spyOn(BaseGameState.prototype, 'isGameOver')
+        .spyOn(GameState.prototype, 'isGameOver')
         .mockImplementation(mockIsGameOver);
 
       const mockTakeTurn = jest
@@ -699,13 +699,11 @@ describe('tests for referee util methods', () => {
         .spyOn(BasePlayer.prototype, 'takeTurn')
         .mockImplementationOnce(mockTakeTurn);
 
-      jest
-        .spyOn(BaseGameState.prototype, 'isValidPlacement')
-        .mockReturnValue(true);
+      jest.spyOn(GameState.prototype, 'isValidPlacement').mockReturnValue(true);
 
       const mockUpdatePlayerScore = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'updatePlayerScore')
+        .spyOn(GameState.prototype, 'updatePlayerScore')
         .mockImplementation(mockUpdatePlayerScore);
 
       // Act
@@ -725,7 +723,7 @@ describe('tests for referee util methods', () => {
 
       const mockGetActivePlayerInfo = jest.fn();
       jest
-        .spyOn(BaseGameState.prototype, 'getActivePlayerInfo')
+        .spyOn(GameState.prototype, 'getActivePlayerInfo')
         .mockImplementation(mockGetActivePlayerInfo);
 
       // Act

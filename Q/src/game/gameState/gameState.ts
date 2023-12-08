@@ -96,7 +96,7 @@ export interface QGameState {
   ) => ShapeColorTile[];
 
   /**
-   * Draws tile from the bag to replace all those being exhanged.
+   * Draws tiles from the bag to replace all those being exhanged.
    * @returns The tiles to replace with
    */
   getReplacementTilesExchange: () => ShapeColorTile[];
@@ -128,21 +128,21 @@ export interface QGameState {
   getActivePlayerController: () => SafePlayer;
 
   /**
-   * Gets the information needed to setup each Player controller
+   * Gets the information needed to setup each Player controller.
    * @returns a list of objects containing each player's name, tiles and respective
    * setup callback
    */
   getAllPlayersSetupInformation: () => PlayerSetupInformation[];
 
   /**
-   * Gets the information needed to communicate the end of game with each Player controller
+   * Gets the information needed to communicate the end of game with each Player controller.
    * @returns a list of objects containing each player's name and respective win callback
    */
   getAllPlayersEndGameInformation: () => PlayerEndGameInformation[];
 
   /**
    * Eliminates the player with the given name from the game and add their tiles to end of the
-   * bag of tiles
+   * bag of tiles.
    * @param playerName name of player to be eliminated
    * @param attemptedTurnAction an optional turn action if the player got eliminated for attempting to make an invalid move
    * @throws an error if there is no player in the turn order with the given name
@@ -155,13 +155,13 @@ export interface QGameState {
 
   /**
    * Returns an array containing the names of all the players that have been eliminated
-   * during this game
+   * during this game.
    * @returns the names of the eliminated players
    */
   getEliminatedPlayerNames: () => string[];
 
   /**
-   * Update a player's score by the amount given
+   * Update a player's score by the amount given.
    * @param playerName the name of the player whose score to update
    * @param scoreDelta amount to update score
    * @returns void
@@ -169,7 +169,7 @@ export interface QGameState {
   updatePlayerScore: (playerName: string, scoreDelta: number) => void;
 
   /**
-   * Check whether the game is over
+   * Check whether the game is over.
    * @param endOfGameRules the rules which each specify end condition for the game
    * @returns true if at least one of the end game conditions are satisfied, false otherwise
    */
@@ -177,7 +177,7 @@ export interface QGameState {
 
   /**
    * Gets the data that the referee knows about the game state that is needed to
-   * render the game
+   * render the game.
    * @returns An object containing the map state, player data, and remaining tiles
    */
   getRenderableData: () => RenderableGameState;
@@ -185,24 +185,24 @@ export interface QGameState {
   /**
    * Check if a full round of turns has been completed.
    * This is the case if the current player is equal to the first player in the turn order who is still in the game
-   * If there are no players left in the game, then the round is over
+   * If there are no players left in the game, then the round is over.
    * @returns true if the round is over, false otherwise
    */
   isRoundOver: () => boolean;
 
   /**
-   * Returns the current scoreboard for the game
+   * Returns the current scoreboard for the game.
    * @returns The current scoreboard
    */
   getScoreboard: () => Scoreboard;
 }
 
 /**
- * An abstract class representing a game state for the game of Q. Comprised of
- * the map of the game, the players queue, and a bag of remaining tiles. Also
- * keeps track of the status of the game.
+ * An class representing a game state for the game of Q. Comprised of the map of
+ * the game, the players queue, and a bag of remaining tiles. It also keeps track
+ * of the progression of the game.
  */
-abstract class AbstractGameState implements QGameState {
+export class GameState implements QGameState {
   private map: QMap;
   private playerTurnQueue: QPlayerTurnQueue;
   private bagOfTiles: QBagOfTiles;
@@ -321,12 +321,6 @@ abstract class AbstractGameState implements QGameState {
     return originalTiles;
   }
 
-  /**
-   * Draws tile from the bag to replace the ones placed in a turn.
-   * Replaces the minimum between the number of tiles drawn and the number left in the bag.
-   * @param tilePlacements Placcements the player is attempting to place
-   * @returns The tiles to replace with
-   */
   public getReplacementTilesPlace(tilePlacements: TilePlacement[]) {
     const replacementTiles: ShapeColorTile[] = [];
     tilePlacements.forEach(() => {
@@ -458,18 +452,5 @@ abstract class AbstractGameState implements QGameState {
 
   public getScoreboard() {
     return this.playerTurnQueue.getScoreboard();
-  }
-}
-
-/**
- * A class representing the game state for a game of Q using BaseTiles.
- */
-export class BaseGameState extends AbstractGameState {
-  constructor(
-    map: QMap,
-    playerTurnQueue: QPlayerTurnQueue,
-    bagOfTiles: QBagOfTiles
-  ) {
-    super(map, playerTurnQueue, bagOfTiles);
   }
 }

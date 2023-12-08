@@ -7,6 +7,7 @@ import {
   UPDATE_VIEW
 } from '../../constants';
 
+// Exposes the electron API to the renderer process
 contextBridge.exposeInMainWorld('electronAPI', {
   nextState: () => ipcRenderer.send(NEXT_STATE),
   previousState: () => ipcRenderer.send(PREVIOUS_STATE),

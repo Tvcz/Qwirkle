@@ -1,6 +1,6 @@
 import { RandomBagOfTiles } from './bagOfTiles';
 import Coordinate from '../map/coordinate';
-import { BaseGameState } from './gameState';
+import { GameState } from './gameState';
 import BaseMap from '../map/map';
 import PlayerState from './playerState';
 import PlayerTurnQueue from './playerTurnQueue';
@@ -44,7 +44,7 @@ const arrangeGameState = () => {
     new BaseTile('8star', 'blue'),
     new BaseTile('8star', 'blue')
   ]);
-  const gameState = new BaseGameState(map, playerTurnQueue, bagOfTiles);
+  const gameState = new GameState(map, playerTurnQueue, bagOfTiles);
   return { gameState, player1, player2, map };
 };
 

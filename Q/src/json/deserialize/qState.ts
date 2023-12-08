@@ -6,7 +6,7 @@ import { JState } from '../data/data.types';
 import { toQMap, toQTile } from './qMap';
 import { Player } from '../../player/player';
 import { SafePlayer } from '../../referee/safePlayer';
-import { BaseGameState, QGameState } from '../../game/gameState/gameState';
+import { GameState, QGameState } from '../../game/gameState/gameState';
 import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
 import { BaseBagOfTiles } from '../../game/gameState/bagOfTiles';
 
@@ -70,7 +70,7 @@ export async function toQGameState(
   players: Player[]
 ): Promise<QGameState> {
   const { qMap, qTilesInBag, playerStates } = await toQState(jState, players);
-  return new BaseGameState(
+  return new GameState(
     qMap,
     new PlayerTurnQueue(playerStates),
     new BaseBagOfTiles(qTilesInBag)
