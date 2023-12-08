@@ -23,24 +23,10 @@ import { DebugLog } from '../debugLog';
 let debug: DebugLog | undefined;
 
 /**
- * Runs a game over TCP.
+ * Plays a game over TCP, where the server runs the referee and clients connect
+ * to run players.
  *
- * The steps are as follows:
- *  1) Create a TCP server and wait for players to connect
- *  2) On connect, create a `TCPConnection` using the `Socket` and create a
- *     `TCPPlayer` using the new `TCPConnection`
- *  3) On the first connection, wait for additional players to connect
- *    3.1) While there are less than the maximum number of players, keep waiting.
- *    3.2) If the wait time has exceeded the maximum wait time, check if there
- *         are enough players to run the game.
- *     3.2.1) If there are enough players to run the game, jump to step (4).
- *       3.2.2) If there are not enough players to run the game, check if the wait
- *             period has already been restarted the maximum number of times.
- *        3.2.2.1) If no, start an additional wait period, jumping back to step (3.1).
- *        3.2.2.2) If yes, jump to step (4).
- *  4) If there are enough players to run the game, start the game, passing the
- *     referee the `TCPPlayer`s to run the game with. Otherwise, do not run the game
- *     and return an empty result
+ * Details of this process can be found in the README.
  *
  * @param config the server config
  * @returns the result of the game
