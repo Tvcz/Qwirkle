@@ -1,12 +1,28 @@
-import { BaseTile, QTile } from './tile';
+import { shapeColorTileHtmlBuilder } from '../graphicalRenderer/HtmlRendererUtils/tileHtmlBuilder';
+import { colorList, shapeList } from '../types/map.types';
+import { BaseTile, ShapeColorTile } from './tile';
 
 describe('tests for BaseTile class', () => {
   test('BaseTile equals method is false when given a non BaseTile', () => {
     // Arrange
     const tile = new BaseTile('8star', 'blue');
 
-    class SomeTile implements QTile {
-      equals: (tile: QTile) => boolean;
+    class SomeTile implements ShapeColorTile {
+      equals(_tile: ShapeColorTile) {
+        return true;
+      }
+      getShape() {
+        return shapeList[0];
+      }
+      sameShape(_tile: ShapeColorTile) {
+        return true;
+      }
+      getColor() {
+        return colorList[0];
+      }
+      sameColor(_tile: ShapeColorTile) {
+        return true;
+      }
     }
 
     // Act

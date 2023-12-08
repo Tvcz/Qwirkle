@@ -1,23 +1,17 @@
 import { Shape, Color } from '../types/map.types';
 
 /**
- * Interface representing a tile for the Q Game.
- * Does not contain any specific information about tile properties.
- */
-export interface QTile {
-  /**
-   * Check whether the given QTile is equal to this QTile.
-   * @param tile A QTile object to check equality against.
-   * @returns boolean of whether the Tiles are the same.
-   */
-  equals: (tile: QTile) => boolean;
-}
-
-/**
  * Interface representing a QTile that has a Shape and Color field.
  * Provides getters and equals methods for those properties.
  */
-export interface ShapeColorTile extends QTile {
+export interface ShapeColorTile {
+  /**
+   * Check whether the given ShapeColorTile is equal to this ShapeColorTile.
+   * @param tile A ShapeColorTile object to check equality against.
+   * @returns boolean of whether the Tiles are the same.
+   */
+  equals: (tile: ShapeColorTile) => boolean;
+
   /**
    * Getter method for the shape field.
    * @returns a Shape type
@@ -57,7 +51,7 @@ export class BaseTile implements ShapeColorTile {
     this.color = color;
   }
 
-  public equals(tile: QTile): boolean {
+  public equals(tile: ShapeColorTile): boolean {
     if (!(tile instanceof BaseTile)) {
       return false;
     }
