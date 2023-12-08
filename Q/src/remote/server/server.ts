@@ -1,7 +1,6 @@
 import * as net from 'net';
 import { TCPConnection } from '../connection';
 import { TCPPlayer } from './playerProxy';
-import { Player } from '../../player/player';
 import { BaseReferee } from '../../referee/referee';
 import { ConfiguredRulebook } from '../../game/rules/ruleBook';
 import {
