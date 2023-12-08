@@ -6,7 +6,7 @@ import { scoreboardHtmlBuilder } from './HtmlRendererUtils/scoreboardHtmlBuilder
 /**
  * Build the game state view view with a header, the map, the players, including
  * their names, scores, and order, and the remaining tiles
- * @param renderableData The game state data that is publically available to be rendered
+ * @param renderableData All the data which represents the current game state
  * @returns the body of an HTML string visualizing the game state data
  */
 export const gameStateHtmlBuilder = (renderableData: RenderableGameState) => {

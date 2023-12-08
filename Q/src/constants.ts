@@ -14,6 +14,7 @@ export const NUMBER_OF_PLAYER_TILES = 6;
 // The id for the html of the rendered view of the game
 export const VIEW_ID = 'game-state-view';
 
+export const MAX_TILES_DISPLAYED_BEFORE_SCROLLING = 8;
 export const TILE_SCALE = 50;
 
 // Electron messages

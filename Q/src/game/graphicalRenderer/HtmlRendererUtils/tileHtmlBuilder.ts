@@ -1,10 +1,19 @@
-import { TILE_SCALE } from '../../../constants';
+import {
+  MAX_TILES_DISPLAYED_BEFORE_SCROLLING,
+  TILE_SCALE
+} from '../../../constants';
 import { getTilesOrdering } from '../../../player/strategyUtils';
 import { BaseTile, QTile, ShapeColorTile } from '../../map/tile';
 import { Color, Shape } from '../../types/map.types';
 
-// TODO: Use constant for tile size and scale according to that constant for sub-elements
+// TODO: Use constant for tile size and scale according for sub-elements, so
+// they can scale correctly
 
+/**
+ * Renders a list of tiles in a row whcih does not scroll.
+ * @param tiles the tiles to render
+ * @returns An HTML string visualizing the tiles
+ */
 export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
   const tilesSorted = getTilesOrdering(tiles);
   const htmlTiles = tilesSorted
@@ -18,9 +27,13 @@ export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
           </span>`;
 };
 
+/**
+ * Renders a list of tiles in a column which scrolls.
+ * @param tiles the tiles to render
+ * @returns An HTML string visualizing the tiles
+ */
 export const renderTilesVerticallyScrolling = (tiles: ShapeColorTile[]) => {
   const htmlTiles = tiles.map((tile) => baseTileHtmlBuilder(tile)).join('');
-  const MAX_TILES_DISPLAYED_BEFORE_SCROLLING = 8;
   const style = `
     display: flex;
     flex-direction: column;
@@ -50,10 +63,11 @@ export const tileHtmlBuilder = (x: number, y: number, tile: QTile) => {
 };
 
 /**
- * Buld a BaseTile as an html string
- * @param x x-coordinate
- * @param y y-coordinate
- * @param tile A QTile
+ * Build an html string to represent a tile
+ * @param tile the ShapeColorTile to rendeer
+ * @param x x-coordinate (if the tile is in the map)
+ * @param y y-coordinate (if the tile is in the map)
+ * @param inGrid whether the tile is in the map
  * @returns an HTML string visualizing a ShapeColorTile
  */
 const baseTileHtmlBuilder = (

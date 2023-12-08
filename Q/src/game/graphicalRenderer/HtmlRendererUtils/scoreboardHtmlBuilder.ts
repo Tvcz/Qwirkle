@@ -3,12 +3,11 @@ import { renderTilesInline } from './tileHtmlBuilder';
 
 /**
  * Build an html string to display the scoreboard and header
- * @param scoreboard a list of player names and their scores
+ * @param players a list of player names, their scores, and their tiles
  * @returns An HTML string visualizing the scoreboard and header
  */
+const scoreboardHeader = '<h3>Scoreboard: </h3>';
 export const scoreboardHtmlBuilder = (players: RenderablePlayer[]) => {
-  const scoreboardHeader = '<h3>Scoreboard: </h3>';
-
   const scoreboardContainerStyle = [
     'display: flex;',
     'flex-direction: column;'
@@ -24,10 +23,10 @@ export const scoreboardHtmlBuilder = (players: RenderablePlayer[]) => {
   ].join('');
 
   const nameStyle = ['width: 100px;', 'text-align: left;'].join('');
-  const scoreStyleFixed = ['width: 100px;', 'text-align: center;'].join('');
+  const scoreStyle = ['width: 100px;', 'text-align: center;'].join('');
 
   const headerRowName = `<p style="${nameStyle}">Name</p>`;
-  const headerRowScore = `<p style="${scoreStyleFixed}">Score</p>`;
+  const headerRowScore = `<p style="${scoreStyle}">Score</p>`;
   const headerRowTiles = '<p>Tiles</p>';
 
   return `
@@ -42,7 +41,7 @@ export const scoreboardHtmlBuilder = (players: RenderablePlayer[]) => {
               players,
               scoreboardStyle,
               nameStyle,
-              scoreStyleFixed
+              scoreStyle
             ).join('')}
         </div>
     `;
@@ -50,20 +49,23 @@ export const scoreboardHtmlBuilder = (players: RenderablePlayer[]) => {
 
 /**
  * Build an html string to display the scoreboard
- * @param scoreboard a list of player names and their scores
+ * @param players a list of player names, their scores, and their tiles
+ * @param scoreboardStyle the css style for the entire scoreboard
+ * @param nameStyle the css style for the player names
+ * @param scoreStyle the css style for the player scores
  * @returns An HTML string visualizing the scoreboard
  */
 const scoreHtmlBuilder = (
   players: RenderablePlayer[],
   scoreboardStyle: string,
   nameStyle: string,
-  scoreStyleFixed: string
+  scoreStyle: string
 ) => {
   return players.map(({ name, score, tiles }) => {
     return `
             <div style="${scoreboardStyle}">
                 <p style="${nameStyle}">${name}</p>
-                <p style="${scoreStyleFixed}">${score}</p>
+                <p style="${scoreStyle}">${score}</p>
                 ${renderTilesInline(tiles)}
             </div>
         `;

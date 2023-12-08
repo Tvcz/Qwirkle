@@ -4,9 +4,9 @@ describe('tests for scoreboardHtmlBuilder', () => {
   test('scoreboardHtmlBuilder returns a string with the html for the remaining tiles count', () => {
     // Arrange
     const scoreboard = [
-      { name: 'joe', score: 10 },
-      { name: 'bob', score: 20 },
-      { name: 'john', score: 25 }
+      { name: 'joe', score: 10, tiles: [] },
+      { name: 'bob', score: 20, tiles: [] },
+      { name: 'john', score: 25, tiles: [] }
     ];
     const scoreboardContainerStyle = [
       'display: flex;',
