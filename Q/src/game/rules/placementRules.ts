@@ -1,5 +1,5 @@
 import Coordinate from '../map/coordinate';
-import { QTile, ShapeColorTile } from '../map/tile';
+import { ShapeColorTile } from '../map/tile';
 import { Set } from 'typescript-collections';
 import { PlacementRule } from '../types/rules.types';
 import { getTileWithPlacements } from './scoringRules';
@@ -72,7 +72,7 @@ export const coordinateMustShareASide: PlacementRule = (
 const neighborIsOnMapOrWasPlaced = (
   neighbors: Coordinate[],
   tilesPlacedInTurn: Set<Coordinate>,
-  getTile: (coordinate: Coordinate) => QTile | undefined
+  getTile: (coordinate: Coordinate) => ShapeColorTile | undefined
 ) => {
   return neighbors.some((neighbor) => {
     const isInMap = getTile(neighbor) !== undefined;

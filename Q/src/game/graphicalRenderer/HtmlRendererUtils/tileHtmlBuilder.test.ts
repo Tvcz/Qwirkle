@@ -59,7 +59,7 @@ describe('tests for tileHtmlBuilder', () => {
     `;
 
     // Act
-    const html = tileHtmlBuilder(x, y, tile);
+    const html = tileHtmlBuilder(tile, x, y);
 
     // Assert
     expect(html.replace(/\s/g, '')).toBe(expectedHtml.replace(/\s/g, ''));
@@ -96,7 +96,7 @@ describe('tests for tileHtmlBuilder', () => {
     `;
 
     // Act
-    const html = tileHtmlBuilder(x, y, tile);
+    const html = tileHtmlBuilder(tile, x, y);
 
     expect(html.replace(/\s/g, '')).toBe(expectedHtml.replace(/\s/g, ''));
   });
@@ -120,7 +120,7 @@ describe('tests for tileHtmlBuilder', () => {
       `;
 
     // Act
-    const html = tileHtmlBuilder(x, y, tile);
+    const html = tileHtmlBuilder(tile, x, y);
 
     expect(html.replace(/\s/g, '')).toBe(expectedHtml.replace(/\s/g, ''));
   });
@@ -145,7 +145,7 @@ describe('tests for tileHtmlBuilder', () => {
         `;
 
     // Act
-    const html = tileHtmlBuilder(x, y, tile);
+    const html = tileHtmlBuilder(tile, x, y);
 
     expect(html.replace(/\s/g, '')).toBe(expectedHtml.replace(/\s/g, ''));
   });
@@ -185,7 +185,7 @@ describe('tests for tileHtmlBuilder', () => {
       `;
 
     // Act
-    const html = tileHtmlBuilder(x, y, tile);
+    const html = tileHtmlBuilder(tile, x, y);
 
     // Assert
     expect(html.replace(/\s/g, '')).toBe(expectedHtml.replace(/\s/g, ''));
@@ -211,7 +211,7 @@ describe('tests for tileHtmlBuilder', () => {
         `;
 
     // Act
-    const html = tileHtmlBuilder(x, y, tile);
+    const html = tileHtmlBuilder(tile, x, y);
 
     expect(html.replace(/\s/g, '')).toBe(expectedHtml.replace(/\s/g, ''));
   });

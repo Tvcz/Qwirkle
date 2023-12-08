@@ -3,7 +3,7 @@ import {
   TILE_SCALE
 } from '../../../constants';
 import { getTilesOrdering } from '../../../player/strategyUtils';
-import { BaseTile, QTile, ShapeColorTile } from '../../map/tile';
+import { BaseTile, ShapeColorTile } from '../../map/tile';
 import { Color, Shape } from '../../types/map.types';
 
 // TODO: Use constant for tile size and scale according for sub-elements, so
@@ -16,9 +16,7 @@ import { Color, Shape } from '../../types/map.types';
  */
 export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
   const tilesSorted = getTilesOrdering(tiles);
-  const htmlTiles = tilesSorted
-    .map((tile) => baseTileHtmlBuilder(tile))
-    .join('');
+  const htmlTiles = tilesSorted.map((tile) => tileHtmlBuilder(tile)).join('');
   const style = `
     display: flex;
   `;
@@ -33,7 +31,7 @@ export const renderTilesInline = (tiles: ShapeColorTile[]): string => {
  * @returns An HTML string visualizing the tiles
  */
 export const renderTilesVerticallyScrolling = (tiles: ShapeColorTile[]) => {
-  const htmlTiles = tiles.map((tile) => baseTileHtmlBuilder(tile)).join('');
+  const htmlTiles = tiles.map((tile) => tileHtmlBuilder(tile)).join('');
   const style = `
     display: flex;
     flex-direction: column;
@@ -48,33 +46,16 @@ export const renderTilesVerticallyScrolling = (tiles: ShapeColorTile[]) => {
 };
 
 /**
- * Build a tile as an html string.
- * Only BaseTiles can be displayed
- * @param x x-coordinate
- * @param y y-coordinate
- * @param tile A QTile
- * @returns If tile is a BaseTile, an HTML string visualizing a tile at a coordinate, otherwise an empty string
- */
-export const tileHtmlBuilder = (x: number, y: number, tile: QTile) => {
-  if (tile instanceof BaseTile) {
-    return baseTileHtmlBuilder(tile, x, y);
-  }
-  return '';
-};
-
-/**
  * Build an html string to represent a tile
  * @param tile the ShapeColorTile to rendeer
  * @param x x-coordinate (if the tile is in the map)
  * @param y y-coordinate (if the tile is in the map)
- * @param inGrid whether the tile is in the map
  * @returns an HTML string visualizing a ShapeColorTile
  */
-const baseTileHtmlBuilder = (
+export const tileHtmlBuilder = (
   tile: ShapeColorTile,
   x?: number,
-  y?: number,
-  inGrid: boolean = true
+  y?: number
 ) => {
   const shape = tile.getShape();
   const color = tile.getColor();
@@ -88,7 +69,7 @@ const baseTileHtmlBuilder = (
     'align-items: center;'
   ];
 
-  if (inGrid) {
+  if (x !== undefined && y !== undefined) {
     containerStyleItems.push(
       `grid-column-start: ${x};`,
       `grid-row-start: ${y};`
