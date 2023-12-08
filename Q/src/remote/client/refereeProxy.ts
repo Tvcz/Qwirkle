@@ -49,6 +49,14 @@ export function refereeProxy(
   });
 }
 
+/**
+ * Handles a message received from the server and makes the appropriate
+ * call on the given player.
+ *
+ * @param parsedMessage The parsed message received from the server.
+ * @param player The player to make the call on.
+ * @param connection The connection to the server.
+ */
 async function handleMessage(
   parsedMessage: unknown,
   player: Player,

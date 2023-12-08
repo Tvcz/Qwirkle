@@ -127,7 +127,6 @@ export class TCPPlayer implements Player {
    * @param response the message received from the client
    * @param validator a function which returns true if the response is valid
    * @param methodName the name of the method which was called on the client
-   * @param isVoidMethod whether the method should have returned an
    * acknowledgement, since some methods do not return anything
    */
   private validateResponse<T>(

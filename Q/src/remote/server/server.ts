@@ -16,10 +16,15 @@ import { RefereeConfig } from '../../json/config/refereeConfig';
 import { toMs } from '../../utils';
 import { DebugLog } from '../debugLog';
 
+const EMPTY_RESULT: GameResult = [[], []];
+
 let debug: DebugLog | undefined;
 
 /**
- * Runs a game over TCP.
+ * Runs a game over TCP. Waits for a minimum number of remote clients to connect and
+ * sign up during a waiting period. Re-enters the waiting state for a given number
+ * of attempts. If the minimum number of players is not met and all waiting periods
+ * have been exhausted the server doesn’t run a game and instead delivers a empty result.
  *
  * The steps are as follows:
  *  1) Create a TCP server and wait for players to connect
@@ -83,7 +88,7 @@ export async function runTCPGame(config = DEFAULT_SERVER_CONFIG) {
 function handleConnection(
   socket: net.Socket,
   connections: Connection[],
-  players: Player<ShapeColorTile>[],
+  players: Player[],
   config: ServerConfig
 ) {
   debug?.log('received connection on the server');
@@ -151,7 +156,7 @@ function waitForAdditionalPlayers(
  */
 async function runGameIfPossible(
   enoughPlayersToRun: boolean,
-  players: Player<ShapeColorTile>[],
+  players: Player[],
   config: ServerConfig
 ): Promise<GameResult> {
   if (enoughPlayersToRun) {
@@ -161,7 +166,7 @@ async function runGameIfPossible(
     return gameResults;
   }
   informPlayersOfNoGame(players);
-  return [[], []];
+  return EMPTY_RESULT;
 }
 
 /**
@@ -190,6 +195,8 @@ function terminateConnections(connections: Connection[]) {
 /**
  * Runs a game with the given players.
  * @param players the players to run the game with
+ * @param refereeConfig the referee configuration to run the game with
+ *
  * @returns the result of the game
  */
 async function startGame(
@@ -215,8 +222,11 @@ async function startGame(
 }
 
 /**
- * Attempts to sign up a player. If the player responds in time, they are added
- * to the list of players.
+ * Attempts to sign up a player by asking for their name. If the player
+ * responds in time, they are added to the given list of players.
+ *
+ * @mutates players
+ *
  * @param player the player to sign up
  * @param players the list of players to add the player to if they respond in
  * time
