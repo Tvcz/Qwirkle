@@ -1,7 +1,7 @@
 import { RandomBagOfTiles } from './bagOfTiles';
 import Coordinate from '../map/coordinate';
-import { BaseGameState } from './gameState';
-import BaseMap from '../map/map';
+import { GameState } from './gameState';
+import TileMap from '../map/map';
 import PlayerState from './playerState';
 import PlayerTurnQueue from './playerTurnQueue';
 import {
@@ -23,7 +23,7 @@ import { BaseTurnAction } from '../../player/turnAction';
 import { gameStateHtmlBuilder } from '../graphicalRenderer/htmlBuilder';
 
 const arrangeGameState = () => {
-  const map = new BaseMap([
+  const map = new TileMap([
     { coordinate: new Coordinate(0, 0), tile: new BaseTile('square', 'red') }
   ]);
   const playerController1 = new BasePlayer(
@@ -44,7 +44,7 @@ const arrangeGameState = () => {
     new BaseTile('8star', 'blue'),
     new BaseTile('8star', 'blue')
   ]);
-  const gameState = new BaseGameState(map, playerTurnQueue, bagOfTiles);
+  const gameState = new GameState(map, playerTurnQueue, bagOfTiles);
   return { gameState, player1, player2, map };
 };
 

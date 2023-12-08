@@ -81,7 +81,7 @@ abstract class AbstractQBagOfTiles implements QBagOfTiles {
 }
 
 /**
- * Class representing a bag of randomly-arranged Q Game tiles
+ * Class representing a bag of randomly-arranged Q Game tiles.
  */
 export class RandomBagOfTiles extends AbstractQBagOfTiles {
   constructor(tiles: ShapeColorTile[]) {
@@ -91,7 +91,7 @@ export class RandomBagOfTiles extends AbstractQBagOfTiles {
 }
 
 /**
- * Class representing a bag of Q Game tiles arranged in the order given
+ * Class representing a bag of Q Game tiles arranged in the order given.
  */
 export class BaseBagOfTiles extends AbstractQBagOfTiles {
   constructor(tiles: ShapeColorTile[]) {

@@ -1,5 +1,5 @@
 import { BaseBagOfTiles } from '../../game/gameState/bagOfTiles';
-import { BaseGameState } from '../../game/gameState/gameState';
+import { GameState } from '../../game/gameState/gameState';
 import PlayerTurnQueue from '../../game/gameState/playerTurnQueue';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import { JActorsB, JState } from '../../json/data/data.types';
@@ -13,6 +13,10 @@ import { isJActorsB, isJState } from '../../json/data/dataTypeGuards';
 let inputState: JState | undefined = undefined;
 let inputActors: JActorsB | undefined = undefined;
 
+/**
+ * Reads input from stdin for a JState and JActors, and runs a game using the input.
+ * @param observers optional observers to spectate the game
+ */
 export function processInputAndRunGame(observers: BaseObserver[]) {
   processInput();
   runGame(observers);
@@ -81,7 +85,7 @@ function runGame(observers: BaseObserver[]) {
     const qBagOfTiles = new BaseBagOfTiles(qTilesInBag);
     const qPlayerTurnQueue = new PlayerTurnQueue(playerStates);
 
-    const qGameState = new BaseGameState(qMap, qPlayerTurnQueue, qBagOfTiles);
+    const qGameState = new GameState(qMap, qPlayerTurnQueue, qBagOfTiles);
 
     const [winners, eliminated] = await BaseReferee(
       players,

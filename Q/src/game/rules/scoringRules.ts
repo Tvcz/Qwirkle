@@ -15,11 +15,14 @@ export const pointPerTilePlaced: ScoringRule = (turnState) => {
 };
 
 /**
- *This method is a getter for a Map, but treats a tile placement as if it has already been placed on the map.
+ * This method is a getter for a Map, but treats a tile placement as if it has
+ * already been placed on the map.
  * @param tilePlacements The tiles and coordinates placed in this turn
  * @param getTile a function that takes a coordinate and returns a tile at that
  * location or undefined if it does not exist
- * @returns a getter method that takes a coordinate and gets the tile from either the map or the tile placement list, or returns undefined if the coordinate is not present in either.
+ * @returns a getter method that takes a coordinate and gets the tile from
+ * either the map or the tile placement list, or returns undefined if the
+ * coordinate is not present in either.
  */
 export const getTileWithPlacements = (
   tilePlacements: TilePlacement[],
@@ -34,10 +37,13 @@ export const getTileWithPlacements = (
 };
 
 /**
- * This function takes returns a scoring rule that gives bonus points if the player played all of their tiles in the turn
- * The number of bonus points is taken in as an argument
- * @param bonusPointsAmount number of bonus points awarded if the player played all of their tiles
- * @returns the bonus point amount if the player placed all of their tiles, 0 otherwise
+ * This function takes returns a scoring rule that gives bonus points if the
+ * player played all of their tiles in the turn The number of bonus points is
+ * taken in as an argument
+ * @param bonusPointsAmount number of bonus points awarded if the player played
+ * all of their tiles
+ * @returns the bonus point amount if the player placed all of their tiles, 0
+ * otherwise
  */
 export const pointsForPlayingAllTiles = (
   bonusPointsAmount: number
@@ -54,10 +60,13 @@ export const pointsForPlayingAllTiles = (
 };
 
 /**
- * This function returns a scoring rule that awards bonus points for each Q completed in the turn
- * The bonus points are taken in as an argument
+ * This function returns a scoring rule that awards bonus points for each Q
+ * completed in the turn The bonus points are taken in as an argument.
+ *
  * A Q is a contiguous sequence of tiles that contains all the shapes or all the colors
- * @returns The number of Q's completed in the turn times the amount of the bonus
+ *
+ * @returns The number of Q's completed in the turn times the amount of the
+ * bonus
  */
 export const pointsPerQ = (bonusPointsAmount: number): ScoringRule => {
   return (turnState, getTile) => {
@@ -83,7 +92,9 @@ export const pointsPerQ = (bonusPointsAmount: number): ScoringRule => {
 
 /**
  * This function returns a function that gets some list of opposing neighbors.
+ *
  * Opposing neighbors means either the left and right or top and bottom neighbors of a tile.
+ *
  * @param dir Either 'left-right' indicating it should get the left and right neighbors, or top-bottom indicating it should get the top and bottom neighbors
  * @returns a function that returns a list of coordinates where the first element is either the left or top neighbor and the second element is either the right or bottom neighbor.
  */
@@ -100,8 +111,11 @@ const getOpposingNeighbors = (
 
 /**
  * Finds the total number of Q's completed for either all the shapes or all the colors, depending on which attribute is passed in.
+ *
  * In this context, the word 'attribute' refers to either Shape or Color.
+ *
  * Qs found that contain a previously checked tile placement do not count.
+ *
  * @param tilePlacements The tiles and coordinates placed in this turn
  * @param getTileAttribute Get the attribute for a given tile, either the Shape or Color
  * @param numberOfAttributes Number of attributes required for completing a Q

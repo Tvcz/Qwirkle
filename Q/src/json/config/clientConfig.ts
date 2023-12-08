@@ -21,6 +21,14 @@ export const defaultClientConfig: ClientConfig = {
   players: DEFAULT_PLAYERS
 };
 
+/**
+ * The configuration for a client.
+ * @property port the port to connect to
+ * @property host the host to connect to
+ * @property wait the time to wait between connecting players
+ * @property quiet whether to log to the console
+ * @property players the players to connect to the game
+ */
 export type ClientConfig = {
   port: number;
   host: string;

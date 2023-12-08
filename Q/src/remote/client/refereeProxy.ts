@@ -18,6 +18,7 @@ import { toQRelevantPlayerInfo } from '../../json/deserialize/qPub';
 import { toQTile } from '../../json/deserialize/qMap';
 import { toJChoice } from '../../json/serialize/jTurn';
 import { VOID_METHOD_RESPONSE } from '../../constants';
+import { DebugLog } from '../debugLog';
 
 /**
  * A referee proxy listens for messages from the server and converts them
@@ -33,7 +34,7 @@ import { VOID_METHOD_RESPONSE } from '../../constants';
 export function refereeProxy(
   player: Player,
   connection: Connection,
-  shouldLog: boolean
+  debugLog: DebugLog
 ) {
   // listens for tcp messages from the server
   // converts them to method calls on the player
@@ -43,7 +44,7 @@ export function refereeProxy(
     try {
       await handleMessage(parsedMessage, player, connection);
     } catch (error) {
-      !shouldLog && console.error(error);
+      debugLog.log(JSON.stringify(error));
       // pass so that the client doesn't crash
     }
   });

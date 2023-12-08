@@ -30,7 +30,10 @@ export type GameStatus = 'In Progress' | 'Finished';
 
 /**
  * Type representing the info a player will need when it's their turn.
- * Contains info regarding the player's tiles, the current map, the scoreboard, the remaining tiles in the bag, the order of the players, and the status of the game.
+ *
+ * Contains info regarding the player's tiles, the current map, the scoreboard,
+ * the remaining tiles in the bag, the order of the players, and the status of
+ * the game.
  */
 export type RelevantPlayerInfo = {
   // The tiles that the current player has and can play or exchange.

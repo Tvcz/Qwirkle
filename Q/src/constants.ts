@@ -14,6 +14,7 @@ export const NUMBER_OF_PLAYER_TILES = 6;
 // The id for the html of the rendered view of the game
 export const VIEW_ID = 'game-state-view';
 
+export const MAX_TILES_DISPLAYED_BEFORE_SCROLLING = 8;
 export const TILE_SCALE = 50;
 
 // Electron messages
@@ -42,5 +43,9 @@ export const REFEREE_PLAYER_TIMEOUT_MS = 6000;
 
 // The frequency at which the TCPPlayer checks for new messages
 export const TCP_PLAYER_BUFFER_INTERVAL_MS = 10;
+
+// The frequency at which the server checks for whether there are enough players
+// to start a game
+export const SERVER_WAIT_CHECK_INTERVAL_MS = 200;
 
 export const VOID_METHOD_RESPONSE = 'void';
