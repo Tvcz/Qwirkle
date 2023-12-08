@@ -7,6 +7,7 @@ import { ClientConfig } from '../../json/config/clientConfig';
 import { toQPlayers } from '../../json/deserialize/qActor';
 import { BaseRuleBook } from '../../game/rules/ruleBook';
 import { toMs } from '../../utils';
+import { DebugLog } from '../debugLog';
 
 /**
  * Starts a client which creates players according to a client config and
@@ -15,19 +16,20 @@ import { toMs } from '../../utils';
  */
 export async function runClient(config: ClientConfig) {
   const players = toQPlayers(config.players, new BaseRuleBook());
+  const debugLog = new DebugLog(!config.quiet);
   const connectionOptions = {
     host: config.host,
     port: config.port
   };
 
-  await joinGame(players[0], connectionOptions, !config.quiet);
+  debugLog.log(`joining game as player ${config.players[0][0]}`);
+  await joinGame(players[0], connectionOptions, debugLog);
 
   players.splice(1).forEach((player, index) => {
     setTimeout(
       () => {
-        !config.quiet &&
-          console.error(`joining game as player ${config.players[index][0]}`);
-        joinGame(player, connectionOptions, !config.quiet);
+        debugLog.log(`joining game as player ${config.players[index][0]}`);
+        joinGame(player, connectionOptions, debugLog);
       },
       toMs(config.wait * (index + 1))
     );
@@ -44,7 +46,7 @@ export async function runClient(config: ClientConfig) {
 export function joinGame(
   player: Player,
   connectionOptions = DEFAULT_CONNECTION_OPTIONS,
-  shouldLog: boolean
+  debugLog: DebugLog
 ): Promise<void> {
   return new Promise((resolve) => {
     // send initial message to server to join game
@@ -53,12 +55,12 @@ export function joinGame(
       // use server response to build connection
       const connection = new TCPConnection(socket);
       // use connection to create refereeProxy and hand off player instance
-      refereeProxy(player, connection, shouldLog);
+      refereeProxy(player, connection, debugLog);
       resolve();
     });
     socket.on('error', () => {
       setTimeout(
-        () => resolve(joinGame(player, connectionOptions, shouldLog)),
+        () => resolve(joinGame(player, connectionOptions, debugLog)),
         1000
       );
     });
