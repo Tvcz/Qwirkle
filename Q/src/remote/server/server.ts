@@ -20,10 +20,12 @@ import { RefereeConfig } from '../../json/config/refereeConfig';
 import { toMs } from '../../utils';
 import { DebugLog } from '../debugLog';
 
+const EMPTY_RESULT: GameResult = [[], []];
+
 let debug: DebugLog | undefined;
 
 /**
- * Plays a game over TCP, where the server runs the referee and clients connect
+ * Starts a game over TCP, where the server runs the referee and clients connect
  * to run players.
  *
  * Details of this process can be found in the README.
@@ -98,7 +100,7 @@ function handleConnection(
  * @returns true if the game should be run, false otherwise
  */
 async function waitForAdditionalPlayers(
-  players: Player[],
+  players: TCPPlayer[],
   config: ServerConfig,
   attempt = 1
 ): Promise<boolean> {
@@ -135,7 +137,7 @@ async function waitForAdditionalPlayers(
  * @returns
  */
 async function handleWaitPeriodEnd(
-  players: Player[],
+  players: TCPPlayer[],
   config: ServerConfig,
   attempt: number
 ): Promise<boolean> {
@@ -172,14 +174,14 @@ async function runGameIfPossible(
     return gameResults;
   }
   informPlayersOfNoGame(players);
-  return [[], []];
+  return EMPTY_RESULT;
 }
 
 /**
  * Attempts to inform all players that the game will not be run.
  * @param players the players to inform
  */
-function informPlayersOfNoGame(players: Player[]) {
+function informPlayersOfNoGame(players: TCPPlayer[]) {
   players.forEach((player) => {
     try {
       player.win(false);
@@ -203,10 +205,12 @@ function terminateConnections(players: TCPPlayer[]) {
 /**
  * Runs a game with the given players.
  * @param players the players to run the game with
+ * @param refereeConfig the referee configuration to run the game with
+ *
  * @returns the result of the game
  */
 async function startGame(
-  players: Player[],
+  players: TCPPlayer[],
   refereeConfig: RefereeConfig
 ): Promise<GameResult> {
   const gameState = await toQGameState(refereeConfig.state0, players);
@@ -228,8 +232,11 @@ async function startGame(
 }
 
 /**
- * Attempts to sign up a player. If the player responds in time, they are added
- * to the list of players.
+ * Attempts to sign up a player by asking for their name. If the player
+ * responds in time, they are added to the given list of players.
+ *
+ * @mutates players
+ *
  * @param player the player to sign up
  * @param players the list of players to add the player to if they respond in
  * time

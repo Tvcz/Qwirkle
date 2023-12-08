@@ -20,6 +20,9 @@ export interface Connection {
   /**
    * Registers a callback to be called when a message is received from the other
    * end of the connection. The callback is called with each discrete JSON chunk.
+   * This method should only be called once per connection. Additional calls will
+   * add multiple callbacks to the connection.
+   *
    * @param callback the function to be called with a received message
    */
   onResponse(callback: (message: string) => void): void;
