@@ -9,6 +9,7 @@ import { RelevantPlayerInfo } from '../../game/types/gameState.types';
 import { toJPub } from '../../json/serialize/jPub';
 import { toJTile } from '../../json/serialize/jMap';
 import { toJChoice } from '../../json/serialize/jTurn';
+import { DebugLog } from '../debugLog';
 
 const mockPlayer: Player = {
   name: jest.fn().mockResolvedValue('Mock Player'),
@@ -18,7 +19,7 @@ const mockPlayer: Player = {
   win: jest.fn().mockResolvedValue(undefined)
 };
 
-describe('tests for tcp referee proxy', () => {
+describe('tests for the client', () => {
   let server: Server;
   let clientConnection: Connection;
   let serverConnection: Connection;
@@ -35,7 +36,7 @@ describe('tests for tcp referee proxy', () => {
     const clientSocket = createConnection({ port: 4444 });
     clientSocket.once('connect', () => {
       clientConnection = new TCPConnection(clientSocket);
-      refereeProxy(mockPlayer, clientConnection, false);
+      refereeProxy(mockPlayer, clientConnection, new DebugLog(false));
       clientReady = true;
     });
     const interval = setInterval(() => {
